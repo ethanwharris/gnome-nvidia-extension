@@ -19,21 +19,30 @@ function init() {
 		track_hover: true
 	});
 
-  button.set_child(get_util());
-  button.connect('button-press-event', open_settings);
+  settings = GLib.find_program_in_path("nvidia-settings");
 
-  event = GLib.timeout_add_seconds(0, 5, Lang.bind(this, function () {
-      button.set_child(get_util());
-      return true;
-  }));
+  if (settings) {
+    button.set_child(get_info());
+    button.connect('button-press-event', open_settings);
+
+    event = GLib.timeout_add_seconds(0, 2, Lang.bind(this, function () {
+        button.set_child(get_info());
+        return true;
+    }));
+  } else {
+    button.set_child({text: "Error - nvidia-settings not present!"})
+  }
 }
 
-function get_util() {
-  res = GLib.spawn_command_line_sync("nvidia-settings -q GPUUtilization -t")[1].toString();
-  res = res.substring(9,11);
-  res = res.replace(/\D/g,'');
-  res = "GPU: " + res + "%";
+function get_info() {
+  util = GLib.spawn_command_line_sync("nvidia-settings -q GPUUtilization -t")[1].toString();
+  util = util.substring(9,11);
+  util = util.replace(/\D/g,'');
 
+  temp = GLib.spawn_command_line_sync("nvidia-settings -q GPUCoreTemp -t")[1].toString();
+  temp = temp.split('\n')[0];
+
+  res = "GPU: " + util + "%, " + temp + "\xB0" + "C";
   return new St.Label({text: res});
 }
 
