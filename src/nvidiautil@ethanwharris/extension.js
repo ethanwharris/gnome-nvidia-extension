@@ -3,35 +3,13 @@ const Lang = imports.lang;
 const Main = imports.ui.main;
 const GLib = imports.gi.GLib;
 
-let text, button;
+let text, button, timeout_id;
 
 function open_settings() {
   GLib.spawn_command_line_async("nvidia-settings");
 }
 
 function init() {
-	button = new St.Bin({
-		style_class: 'panel-button',
-		reactive: true,
-		can_focus: true,
-		x_fill: true,
-		y_fill: false,
-		track_hover: true
-	});
-
-  settings = GLib.find_program_in_path("nvidia-settings");
-
-  if (settings) {
-    button.set_child(get_info());
-    button.connect('button-press-event', open_settings);
-
-    event = GLib.timeout_add_seconds(0, 2, Lang.bind(this, function () {
-        button.set_child(get_info());
-        return true;
-    }));
-  } else {
-    button.set_child({text: "Error - nvidia-settings not present!"})
-  }
 }
 
 function get_info() {
@@ -47,9 +25,33 @@ function get_info() {
 }
 
 function enable() {
+  button = new St.Bin({
+    style_class: 'panel-button',
+    reactive: true,
+    can_focus: true,
+    x_fill: true,
+    y_fill: false,
+    track_hover: true
+  });
+
+  settings = GLib.find_program_in_path("nvidia-settings");
+
+  if (settings) {
+    button.set_child(get_info());
+    button.connect('button-press-event', open_settings);
+
+    timeout_id = GLib.timeout_add_seconds(0, 2, Lang.bind(this, function () {
+        button.set_child(get_info());
+        return true;
+    }));
+  } else {
+    button.set_child(new St.Label({text: "Error - nvidia-settings not present!"}))
+  }
+
 	Main.panel._rightBox.insert_child_at_index(button, 0);
 }
 
 function disable() {
 	Main.panel._rightBox.remove_child(button);
+  GLib.source_remove(timeout_id);
 }
