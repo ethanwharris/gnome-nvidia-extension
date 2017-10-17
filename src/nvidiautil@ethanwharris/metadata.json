@@ -1,1 +1,8 @@
-{"description": "Shows GPU Stas in bar", "shell-version": ["3.24.0"], "name": "NVIDIA GPU Stats Tool", "uuid": "nvidiautil@ethanwharris"}
+{
+  "description": "Shows GPU Stats in bar",
+  "shell-version": ["3.24.0"],
+  "name": "NVIDIA GPU Stats Tool",
+  "uuid": "nvidiautil@ethanwharris",
+  "url": "https://github.com/ethanwharris/gnome-nvidia-extension",
+  "version": 1
+}
