@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="0.92.1 r15371"
+   version="1.1"
+   width="5"
+   height="16"
+   sodipodi:docname="nvidia-thermo-symbolic.svg"
+   id="svg7384"
+   inkscape:export-filename="/home/matt/.local/share/gnome-shell/extensions/nvidiautil@ethanwharris/icons/g1234.png"
+   inkscape:export-xdpi="1920.0002"
+   inkscape:export-ydpi="1920.0002">
+  <metadata
+     id="metadata90">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Gnome Symbolic Icon Theme</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     pagecolor="#555753"
+     showborder="false"
+     inkscape:pageshadow="2"
+     bordercolor="#666666"
+     inkscape:snap-bbox="true"
+     inkscape:current-layer="layer10"
+     inkscape:snap-grids="true"
+     inkscape:bbox-paths="false"
+     inkscape:snap-others="false"
+     inkscape:window-height="1016"
+     inkscape:snap-nodes="true"
+     borderopacity="1"
+     showguides="true"
+     inkscape:snap-global="true"
+     inkscape:pageopacity="1"
+     inkscape:object-paths="false"
+     objecttolerance="10"
+     gridtolerance="10"
+     showgrid="false"
+     inkscape:zoom="20.48"
+     inkscape:snap-to-guides="true"
+     inkscape:object-nodes="false"
+     id="namedview88"
+     inkscape:snap-bbox-midpoints="false"
+     inkscape:guide-bbox="true"
+     inkscape:window-width="1920"
+     inkscape:cx="0.37596841"
+     inkscape:cy="6.5561396"
+     guidetolerance="10">
+    <inkscape:grid
+       visible="true"
+       spacingx="1px"
+       spacingy="1px"
+       empspacing="2"
+       enabled="true"
+       id="grid4866"
+       snapvisiblegridlinesonly="true"
+       type="xygrid"
+       originx="-9.642"
+       originy="0.12599783" />
+  </sodipodi:namedview>
+  <title
+     id="title9167">Gnome Symbolic Icon Theme</title>
+  <defs
+     id="defs7386">
+    <clipPath
+       id="clippath1">
+      <path
+         id="path9"
+         d="M 0,332 V 792 H 480 V 332 Z"
+         inkscape:connector-curvature="0" />
+    </clipPath>
+  </defs>
+  <g
+     inkscape:label="status"
+     style="display:inline"
+     inkscape:groupmode="layer"
+     id="layer9"
+     transform="translate(-310.642,-447.14024)" />
+  <g
+     inkscape:label="devices"
+     inkscape:groupmode="layer"
+     id="layer10"
+     transform="translate(-310.642,-447.14024)">
+    <g
+       id="g3151"
+       transform="translate(309.542,447.14024)"
+       inkscape:export-xdpi="576.00006"
+       inkscape:export-ydpi="576.00006">
+      <path
+         id="path2996"
+         d="M 8.5,0 C 7.6715729,0 7,0.67157284 7,1.5 v 10 c -0.6118072,0.455718 -1,1.178476 -1,2 0,1.380712 1.1192882,2.5 2.5,2.5 1.3807118,0 2.5,-1.119288 2.5,-2.5 0,-0.821524 -0.388193,-1.544282 -1,-2 V 10 H 9 v 2.09375 C 9.586412,12.29759 10,12.844162 10,13.5 10,14.328427 9.3284271,15 8.5,15 7.6715729,15 7,14.328427 7,13.5 7,12.844162 7.413588,12.29759 8,12.09375 V 1.5 C 8,1.2238576 8.2238576,1 8.5,1 8.7761424,1 9,1.2238576 9,1.5 V 3 h 1 V 1.5 C 10,0.67157284 9.3284271,0 8.5,0 Z M 9,4 v 2 h 1 V 4 Z m 0,3 v 2 h 1 V 7 Z"
+         style="fill:#bebebe;fill-opacity:1;stroke:none"
+         inkscape:connector-curvature="0" />
+      <g
+         style="display:inline"
+         inkscape:label="status"
+         id="layer9-7"
+         transform="translate(-261,-277)" />
+      <g
+         inkscape:label="devices"
+         id="layer10-9"
+         transform="translate(-261,-277)" />
+      <g
+         inkscape:label="apps"
+         id="layer11-3"
+         transform="translate(-261,-277)" />
+      <g
+         inkscape:label="actions"
+         id="layer12-4"
+         transform="translate(-261,-277)" />
+      <g
+         inkscape:label="places"
+         id="layer13-5"
+         transform="translate(-261,-277)" />
+      <g
+         inkscape:label="mimetypes"
+         id="layer14-1"
+         transform="translate(-261,-277)" />
+      <g
+         style="display:inline"
+         inkscape:label="emblems"
+         id="layer15-6"
+         transform="translate(-261,-277)" />
+      <g
+         style="display:inline"
+         inkscape:label="categories"
+         id="g4953-1"
+         transform="translate(-261,-277)" />
+      <path
+         id="rect3817"
+         d="M 8.5,5.90625 C 8.432386,5.90625 8.401075,5.942107 8.375,6 8.36561,6.020842 8.34375,6.038159 8.34375,6.0625 v 6.96875 C 8.1487143,13.099435 8,13.281698 8,13.5 8,13.776142 8.2238576,14 8.5,14 8.7761424,14 9,13.776142 9,13.5 9,13.281698 8.8512857,13.099435 8.65625,13.03125 V 6.0625 C 8.65625,6.0381589 8.6343869,6.0208415 8.625,6 8.5989254,5.9421069 8.5676143,5.90625 8.5,5.90625 Z"
+         style="fill:#bebebe;fill-opacity:1;stroke:none"
+         inkscape:connector-curvature="0" />
+    </g>
+  </g>
+  <g
+     inkscape:label="apps"
+     inkscape:groupmode="layer"
+     id="layer11"
+     transform="translate(-310.642,-447.14024)" />
+  <g
+     inkscape:label="places"
+     inkscape:groupmode="layer"
+     id="layer13"
+     transform="translate(-310.642,-447.14024)" />
+  <g
+     inkscape:label="mimetypes"
+     inkscape:groupmode="layer"
+     id="layer14"
+     transform="translate(-310.642,-447.14024)" />
+  <g
+     inkscape:label="emblems"
+     style="display:inline"
+     inkscape:groupmode="layer"
+     id="layer15"
+     transform="translate(-310.642,-447.14024)" />
+  <g
+     inkscape:label="emotes"
+     style="display:inline"
+     inkscape:groupmode="layer"
+     transform="translate(-310.642,-447.14024)"
+     id="g71291" />
+  <g
+     inkscape:label="categories"
+     style="display:inline"
+     inkscape:groupmode="layer"
+     id="g4953"
+     transform="translate(-310.642,-447.14024)" />
+  <g
+     inkscape:label="actions"
+     style="display:inline"
+     inkscape:groupmode="layer"
+     id="layer12"
+     transform="translate(-310.642,-447.14024)" />
+</svg>

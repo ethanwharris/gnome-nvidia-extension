@@ -50,11 +50,12 @@ function enable() {
     box = new St.BoxLayout({name: 'tempBox'});
 
     let logo = new St.Icon({icon_name: 'nvidia-card-symbolic', style_class: 'system-status-icon'});
+    let logoTemp = new St.Icon({icon_name: 'nvidia-temp-symbolic', style_class: 'system-status-icon'});
     let labelText = get_info();
 
     box.add_actor(logo);
     box.add_actor(labelText);
-
+    box.add_actor(logoTemp);
 
     button.set_child(box);
     button.connect('button-press-event', open_settings);
@@ -64,11 +65,12 @@ function enable() {
         box = new St.BoxLayout({name: 'tempBox'});
 
         let logo = new St.Icon({icon_name: 'nvidia-card-symbolic', style_class: 'system-status-icon'});
-        let logoTemp = new St.Icon({icon_name: 'nvidia-thermo-symbolic', style_class: 'system-status-icon'});
+        let logoTemp = new St.Icon({icon_name: 'nvidia-temp-symbolic', style_class: 'system-status-icon'});
         let labelText = get_info();
 
-        box.add_actor(logoTemp);
+        box.add_actor(logo);
         box.add_actor(labelText);
+        box.add_actor(logoTemp);
 
         button.set_child(box);
         return true;
