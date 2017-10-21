@@ -62,15 +62,14 @@ function enable() {
 
     timeout_id = GLib.timeout_add_seconds(0, 2, Lang.bind(this, function () {
         //box = new St.BoxLayout({name: 'tempBox'});
-        box = new St.BoxLayout({name: 'tempBox'});
 
-        let logo = new St.Icon({icon_name: 'nvidia-card-symbolic', style_class: 'system-status-icon'});
-        let logoTemp = new St.Icon({icon_name: 'nvidia-temp-symbolic', style_class: 'system-status-icon'});
-        let labelText = get_info();
+        box.remove_child(labelText)
+        labelText = get_info();
 
-        box.add_actor(logo);
+        box.remove_child(logoTemp);
         box.add_actor(labelText);
         box.add_actor(logoTemp);
+
 
         button.set_child(box);
         return true;
