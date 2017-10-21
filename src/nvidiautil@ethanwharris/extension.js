@@ -23,13 +23,7 @@ function get_info() {
   temp = GLib.spawn_command_line_sync("nvidia-settings -q GPUCoreTemp -t")[1].toString();
   temp = temp.split('\n')[0];
 
-  //let logo = new St.Icon({icon_name: 'nvidia-card-symbolic', style_class: 'system-status-icon'});
-  //let box = new St.BoxLayout();
-  //box.add_actor(logo);
-
   res = util + "%, " + temp + "\xB0" + "C";
-  //box.add_actor(new St.Label(text: res));
-  //return logo;
   return new St.Label({text: res});
 }
 
