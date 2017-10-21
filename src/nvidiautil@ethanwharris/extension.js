@@ -13,7 +13,6 @@ function open_settings() {
 
 function init() {
   Gtk.IconTheme.get_default().append_search_path(Me.dir.get_child('icons').get_path());
-  global.log(Me.dir.get_child('icons').get_path())
 }
 
 function get_info() {
