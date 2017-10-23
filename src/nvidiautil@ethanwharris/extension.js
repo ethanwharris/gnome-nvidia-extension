@@ -2,6 +2,8 @@ const St = imports.gi.St;
 const Lang = imports.lang;
 const Main = imports.ui.main;
 const GLib = imports.gi.GLib;
+const Gtk = imports.gi.Gtk;
+const Me = imports.misc.extensionUtils.getCurrentExtension();
 
 let text, button, timeout_id;
 
@@ -10,6 +12,7 @@ function open_settings() {
 }
 
 function init() {
+  Gtk.IconTheme.get_default().append_search_path(Me.dir.get_child('icons').get_path());
 }
 
 function get_info() {
@@ -20,7 +23,7 @@ function get_info() {
   temp = GLib.spawn_command_line_sync("nvidia-settings -q GPUCoreTemp -t")[1].toString();
   temp = temp.split('\n')[0];
 
-  res = "GPU: " + util + "%, " + temp + "\xB0" + "C";
+  res = util + "%, " + temp + "\xB0" + "C";
   return new St.Label({text: res});
 }
 
@@ -37,11 +40,31 @@ function enable() {
   settings = GLib.find_program_in_path("nvidia-settings");
 
   if (settings) {
-    button.set_child(get_info());
+    box = new St.BoxLayout({name: 'tempBox'});
+
+    let logo = new St.Icon({icon_name: 'nvidia-card-symbolic', style_class: 'system-status-icon'});
+    let logoTemp = new St.Icon({icon_name: 'nvidia-temp-symbolic', style_class: 'system-status-icon'});
+    let labelText = get_info();
+
+    box.add_actor(logo);
+    box.add_actor(labelText);
+    box.add_actor(logoTemp);
+
+    button.set_child(box);
     button.connect('button-press-event', open_settings);
 
     timeout_id = GLib.timeout_add_seconds(0, 2, Lang.bind(this, function () {
-        button.set_child(get_info());
+        //box = new St.BoxLayout({name: 'tempBox'});
+
+        box.remove_child(labelText)
+        labelText = get_info();
+
+        box.remove_child(logoTemp);
+        box.add_actor(labelText);
+        box.add_actor(logoTemp);
+
+
+        button.set_child(box);
         return true;
     }));
   } else {
