@@ -37,8 +37,9 @@ function enable() {
   });
 
   var settings = GLib.find_program_in_path("nvidia-settings");
+  var smi = GLib.find_program_in_path("nvidia-smi");
 
-  if (settings) {
+  if (settings && smi) {
     var info = get_info();
     var box = build_button_box(info);
 
@@ -46,12 +47,12 @@ function enable() {
     button.connect('button-press-event', open_settings);
 
     timeout_id = GLib.timeout_add_seconds(0, 2, Lang.bind(this, function () {
-        var info_string = get_info();
-        update_button_box(info_string);
+        var info = get_info();
+        update_button_box(info);
         return true;
     }));
   } else {
-    button.set_child(new St.Label({text: "Error - nvidia-settings not present!"}))
+    button.set_child(new St.Label({text: "Error - nvidia-settings or -smi not present!"}))
   }
 
 	Main.panel._rightBox.insert_child_at_index(button, 0);
@@ -67,41 +68,48 @@ function open_settings() {
 }
 
 function get_info() {
-  var util = GLib.spawn_command_line_sync("nvidia-settings -q GPUUtilization -t")[1].toString();
-  util = util.substring(9,11);
-  util = util.replace(/\D/g,'');
 
-  var temp = GLib.spawn_command_line_sync("nvidia-settings -q GPUCoreTemp -t")[1].toString();
-  temp = temp.split('\n')[0];
+  var smi = GLib.spawn_command_line_sync("nvidia-smi")[1].toString().split('\n');
 
-  var used_memory = GLib.spawn_command_line_sync("nvidia-settings -q UsedDedicatedGPUMemory -t")[1];
-  var total_memory = GLib.spawn_command_line_sync("nvidia-settings -q TotalDedicatedGPUMemory -t")[1];
+  var values_line = smi[8];
+  var buffer_state = false;
+
+  buffer = [];
+  values = [];
+  var buffer_index = 0;
+  var values_index = 0;
+
+  for (var i = 0; i < values_line.length; i++) {
+      var c = values_line.charAt(i);
+
+      if (c >= '0' && c <= '9') {
+        buffer_state = true;
+        buffer[buffer_index] = c;
+        buffer_index = buffer_index + 1;
+      } else if (buffer_state == true) {
+        buffer_index = 0;
+        values[values_index] = buffer.join("");
+        buffer = [];
+        values_index += 1;
+        buffer_state = false;
+      }
+  }
+
+  var temp = values[1];
+  var used_memory = values[5];
+  var total_memory = values[6];
+  var util = values[7];
 
   var mem_usage = (used_memory / total_memory * 100).toString();
   mem_usage = mem_usage.substring(0,2);
 
-  var info = util + "," + temp + "," + mem_usage;
-
-  return info;
+  return [util, temp, mem_usage];
 }
 
-function build_button_box(info_string) {
+function build_button_box(info) {
   var box = new St.BoxLayout({name: 'DataBox'});
 
-  info = info_string.split(',');
-
-  util_text = info[0] + "%";
-  util_label.text = util_text;
-
-  temp_text = info[1] + "\xB0" + "C";
-  temp_label.text = temp_text;
-
-  mem_text = info[2] + "%";
-  mem_label.text = mem_text;
-
-  util_label.text = info[0] + "%";
-  temp_label.text = info[1] + "\xB0" + "C";
-  mem_label.text = info[2] + "%";
+  update_button_box(info);
 
   box.add_actor(logo_util);
   box.add_actor(util_label);
@@ -113,9 +121,7 @@ function build_button_box(info_string) {
   return box;
 }
 
-function update_button_box(info_string) {
-  info = info_string.split(',');
-
+function update_button_box(info) {
   util_label.text = info[0] + "%";
   temp_label.text = info[1] + "\xB0" + "C";
   mem_label.text = info[2] + "%";
