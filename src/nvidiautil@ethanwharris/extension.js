@@ -12,6 +12,8 @@ function open_settings() {
 }
 
 function init() {
+  log('[EXTENSION_LOG]', "Test");
+
   Gtk.IconTheme.get_default().append_search_path(Me.dir.get_child('icons').get_path());
 }
 
@@ -23,8 +25,37 @@ function get_info() {
   temp = GLib.spawn_command_line_sync("nvidia-settings -q GPUCoreTemp -t")[1].toString();
   temp = temp.split('\n')[0];
 
-  res = util + "%, " + temp + "\xB0" + "C";
-  return new St.Label({text: res});
+  usedMemory = GLib.spawn_command_line_sync("nvidia-settings -q UsedDedicatedGPUMemory -t")[1];
+  totalMemory = GLib.spawn_command_line_sync("nvidia-settings -q TotalDedicatedGPUMemory -t")[1];
+
+  memUsage = (usedMemory / totalMemory * 100).toString();
+  memUsage = memUsage.substring(0,2);
+
+  info = util + "," + temp + "," + memUsage;
+
+  return info;
+}
+
+function buildButtonBox(infoString) {
+  box = new St.BoxLayout({name: 'DataBox'});
+
+  let logoUtil = new St.Icon({icon_name: 'nvidia-card-symbolic', style_class: 'system-status-icon'});
+  let logoTemp = new St.Icon({icon_name: 'nvidia-temp-symbolic', style_class: 'system-status-icon'});
+  let logoRam = new St.Icon({icon_name: 'nvidia-ram-symbolic', style_class: 'system-status-icon'});
+
+  info = infoString.split(',');
+  let utilText = info[0] + "%";
+  let tempText = info[1] + "\xB0" + "C";
+  let memText = info[2] + "%";
+
+  box.add_actor(logoUtil);
+  box.add_actor(new St.Label({text: utilText}));
+  box.add_actor(logoTemp);
+  box.add_actor(new St.Label({text: tempText}));
+  box.add_actor(logoRam)
+  box.add_actor(new St.Label({text: memText}));
+
+  return box;
 }
 
 function enable() {
@@ -40,15 +71,8 @@ function enable() {
   settings = GLib.find_program_in_path("nvidia-settings");
 
   if (settings) {
-    box = new St.BoxLayout({name: 'tempBox'});
-
-    let logo = new St.Icon({icon_name: 'nvidia-card-symbolic', style_class: 'system-status-icon'});
-    let logoTemp = new St.Icon({icon_name: 'nvidia-temp-symbolic', style_class: 'system-status-icon'});
-    let labelText = get_info();
-
-    box.add_actor(logo);
-    box.add_actor(labelText);
-    box.add_actor(logoTemp);
+    info = get_info();
+    box = buildButtonBox(info);
 
     button.set_child(box);
     button.connect('button-press-event', open_settings);
@@ -56,15 +80,15 @@ function enable() {
     timeout_id = GLib.timeout_add_seconds(0, 2, Lang.bind(this, function () {
         //box = new St.BoxLayout({name: 'tempBox'});
 
-        box.remove_child(labelText)
-        labelText = get_info();
-
-        box.remove_child(logoTemp);
-        box.add_actor(labelText);
-        box.add_actor(logoTemp);
-
-
-        button.set_child(box);
+        // box.remove_child(labelText)
+        // labelText = get_info();
+        //
+        // box.remove_child(logoTemp);
+        // box.add_actor(labelText);
+        // box.add_actor(logoTemp);
+        //
+        //
+        // button.set_child(box);
         return true;
     }));
   } else {
