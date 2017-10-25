@@ -5,9 +5,9 @@ const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 
-let logoUtil = new St.Icon({icon_name: 'nvidia-card-symbolic', style_class: 'system-status-icon'});
-let logoTemp = new St.Icon({icon_name: 'nvidia-temp-symbolic', style_class: 'system-status-icon'});
-let logoRam = new St.Icon({icon_name: 'nvidia-ram-symbolic', style_class: 'system-status-icon'});
+let logoUtil = new St.Icon();
+let logoTemp = new St.Icon();
+let logoRam  = new St.Icon();
 
 let utilLabel = new St.Label();
 let tempLabel = new St.Label();
@@ -46,9 +46,13 @@ function buildButtonBox(infoString) {
   box = new St.BoxLayout({name: 'DataBox'});
 
   info = infoString.split(',');
-  let utilText = info[0] + "%"; utilLabel.text = utilText;
-  let tempText = info[1] + "\xB0" + "C"; tempLabel.text = tempText;
-  let memText = info[2] + "%"; memLabel.text = memText;
+  utilText = info[0] + "%"; utilLabel.text = utilText;
+  tempText = info[1] + "\xB0" + "C"; tempLabel.text = tempText;
+  memText = info[2] + "%"; memLabel.text = memText;
+
+  utilLabel = new St.Label({text: info[0]+"%"});
+  tempLabel = new St.Label({text: info[1]+"\xB0" + "C"});
+  memLabel = new St.Label ({text: info[2]+"%"});
 
   box.add_actor(logoUtil);
   box.add_actor(utilLabel);
@@ -56,6 +60,8 @@ function buildButtonBox(infoString) {
   box.add_actor(tempLabel);
   box.add_actor(logoRam);
   box.add_actor(memLabel);
+
+  // updateButtonBox(info)
 
   return box;
 }
@@ -69,6 +75,10 @@ function updateButtonBox(infoString) {
 }
 
 function enable() {
+  logoUtil = new St.Icon({icon_name: 'nvidia-card-symbolic', style_class: 'system-status-icon'});
+  logoTemp = new St.Icon({icon_name: 'nvidia-temp-symbolic', style_class: 'system-status-icon'});
+  logoRam = new St.Icon({icon_name: 'nvidia-ram-symbolic', style_class: 'system-status-icon'});
+
   button = new St.Bin({
     style_class: 'panel-button',
     reactive: true,
