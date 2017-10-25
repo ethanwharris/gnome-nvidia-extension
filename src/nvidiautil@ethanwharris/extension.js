@@ -20,8 +20,6 @@ function open_settings() {
 }
 
 function init() {
-  log('[EXTENSION_LOG]', "Test");
-
   Gtk.IconTheme.get_default().append_search_path(Me.dir.get_child('icons').get_path());
 }
 
