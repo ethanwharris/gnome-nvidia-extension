@@ -5,6 +5,14 @@ const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 
+let logoUtil = new St.Icon({icon_name: 'nvidia-card-symbolic', style_class: 'system-status-icon'});
+let logoTemp = new St.Icon({icon_name: 'nvidia-temp-symbolic', style_class: 'system-status-icon'});
+let logoRam = new St.Icon({icon_name: 'nvidia-ram-symbolic', style_class: 'system-status-icon'});
+
+let utilLabel = new St.Label();
+let tempLabel = new St.Label();
+let memLabel = new St.Label();
+
 let text, button, timeout_id;
 
 function open_settings() {
@@ -39,23 +47,27 @@ function get_info() {
 function buildButtonBox(infoString) {
   box = new St.BoxLayout({name: 'DataBox'});
 
-  let logoUtil = new St.Icon({icon_name: 'nvidia-card-symbolic', style_class: 'system-status-icon'});
-  let logoTemp = new St.Icon({icon_name: 'nvidia-temp-symbolic', style_class: 'system-status-icon'});
-  let logoRam = new St.Icon({icon_name: 'nvidia-ram-symbolic', style_class: 'system-status-icon'});
-
   info = infoString.split(',');
-  let utilText = info[0] + "%";
-  let tempText = info[1] + "\xB0" + "C";
-  let memText = info[2] + "%";
+  let utilText = info[0] + "%"; utilLabel.text = utilText;
+  let tempText = info[1] + "\xB0" + "C"; tempLabel.text = tempText;
+  let memText = info[2] + "%"; memLabel.text = memText;
 
   box.add_actor(logoUtil);
-  box.add_actor(new St.Label({text: utilText}));
+  box.add_actor(utilLabel);
   box.add_actor(logoTemp);
-  box.add_actor(new St.Label({text: tempText}));
-  box.add_actor(logoRam)
-  box.add_actor(new St.Label({text: memText}));
+  box.add_actor(tempLabel);
+  box.add_actor(logoRam);
+  box.add_actor(memLabel);
 
   return box;
+}
+
+function updateButtonBox(infoString) {
+  info = infoString.split(',');
+
+  utilLabel.text = info[0] + "%";
+  tempLabel.text = info[1] + "\xB0" + "C";
+  memLabel.text = info[2] + "%";
 }
 
 function enable() {
@@ -78,17 +90,8 @@ function enable() {
     button.connect('button-press-event', open_settings);
 
     timeout_id = GLib.timeout_add_seconds(0, 2, Lang.bind(this, function () {
-        //box = new St.BoxLayout({name: 'tempBox'});
-
-        // box.remove_child(labelText)
-        // labelText = get_info();
-        //
-        // box.remove_child(logoTemp);
-        // box.add_actor(labelText);
-        // box.add_actor(logoTemp);
-        //
-        //
-        // button.set_child(box);
+        infoString = get_info();
+        updateButtonBox(infoString);
         return true;
     }));
   } else {
