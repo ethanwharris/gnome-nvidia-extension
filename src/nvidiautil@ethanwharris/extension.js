@@ -1,3 +1,18 @@
+/*This file is part of Nvidia Util Gnome Extension.
+
+Nvidia Util Gnome Extension is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Nvidia Util Gnome Extension is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/licenses/>.*/
+
 const St = imports.gi.St;
 const Lang = imports.lang;
 const Main = imports.ui.main;
@@ -16,10 +31,16 @@ var mem_label;
 
 var use_nvidia_settings = false;
 
+/*
+ * Init function, nothing major here, do not edit view
+ */
 function init() {
   Gtk.IconTheme.get_default().append_search_path(Me.dir.get_child('icons').get_path());
 }
 
+/*
+ * Enable handles the main functioning of the extension, editing view and updating
+ */
 function enable() {
   logo_util = new St.Icon({icon_name: 'nvidia-card-symbolic', style_class: 'system-status-icon'});
   logo_temp = new St.Icon({icon_name: 'nvidia-temp-symbolic', style_class: 'system-status-icon'});
@@ -77,15 +98,25 @@ function enable() {
   Main.panel._rightBox.insert_child_at_index(button, 0);
 }
 
+/*
+ * Disable should remove elements from viewwhich where added and de-assign any timeouts etc.
+ */
 function disable() {
   Main.panel._rightBox.remove_child(button);
   GLib.source_remove(timeout_id);
 }
 
+/*
+ * Open the Nvidia Settings tool
+ * Note: This will not check if nvidia-settings exists first
+ */
 function open_settings() {
   GLib.spawn_command_line_async("nvidia-settings");
 }
 
+/*
+ * Root function to get info depending on which options are available
+ */
 function get_info() {
   if (!use_nvidia_settings) {
     return get_info_smi();
@@ -94,6 +125,10 @@ function get_info() {
   }
 }
 
+/*
+ * Get info using nvidia-smi. This uses one call to smi and an efficient
+ * state machine to parse. Use this if possible.
+ */
 function get_info_smi() {
   var smi = GLib.spawn_command_line_sync("nvidia-smi")[1].toString().split('\n');
 
@@ -142,6 +177,10 @@ function get_info_smi() {
   }
 }
 
+/*
+ * Get info using nvidia-settings. Multiple calls to nvidia-settings required.
+ * Use only if there are no available alternatives.
+ */
 function get_info_settings() {
   var util = GLib.spawn_command_line_sync("nvidia-settings -q GPUUtilization -t")[1].toString();
   util = util.substring(9,11);
@@ -158,6 +197,9 @@ function get_info_settings() {
   return [util, temp, mem_usage];
 }
 
+/*
+ * Construct the button box (the box layout which stores the info)
+ */
 function build_button_box(info) {
   var box = new St.BoxLayout({name: 'DataBox'});
 
@@ -173,6 +215,9 @@ function build_button_box(info) {
   return box;
 }
 
+/*
+ * Update the info labels
+ */
 function update_button_box(info) {
   util_label.text = info[0] + "%";
   temp_label.text = info[1] + "\xB0" + "C";
