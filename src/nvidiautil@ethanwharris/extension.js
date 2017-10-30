@@ -23,9 +23,9 @@ function enable() {
   logo_temp = new St.Icon({icon_name: 'nvidia-temp-symbolic', style_class: 'system-status-icon'});
   logo_ram = new St.Icon({icon_name: 'nvidia-ram-symbolic', style_class: 'system-status-icon'});
 
-  util_label = new St.Label({text: "%"});
-  temp_label = new St.Label({text: "\xB0" + "C"});
-  mem_label = new St.Label ({text: "%"});
+  util_label = new St.Label({text: "%", style_class: 'label'});
+  temp_label = new St.Label({text: "\xB0" + "C", style_class: 'label'});
+  mem_label = new St.Label ({text: "%", style_class: 'label'});
 
   button = new St.Bin({
     style_class: 'panel-button',
