@@ -82,7 +82,7 @@ function get_info() {
   for (var i = 0; i < values_line.length; i++) {
       var c = values_line.charAt(i);
 
-      if (c >= '0' && c <= '9') {
+      if ((c != " " && c != "|" && c != "/") || (c == "/" && buffer_index > 0)) {
         buffer_state = true;
         buffer[buffer_index] = c;
         buffer_index = buffer_index + 1;
@@ -95,10 +95,10 @@ function get_info() {
       }
   }
 
-  var temp = values[1];
-  var used_memory = values[5];
-  var total_memory = values[6];
-  var util = values[7];
+  var temp = values[1]; temp = temp.substring(0, temp.length-1);
+  var used_memory = values[5]; used_memory = used_memory.substring(0, used_memory.length-3);
+  var total_memory = values[6];total_memory = total_memory.substring(0, total_memory.length-3);
+  var util = values[7]; util = util.substring(0, util.length-1);
 
   var mem_usage = (used_memory / total_memory * 100).toString();
   mem_usage = mem_usage.substring(0,2);
