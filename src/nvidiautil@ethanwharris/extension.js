@@ -50,17 +50,29 @@ function enable() {
   temp_label = new St.Label({text: "\xB0" + "C", style_class: 'label'});
   mem_label = new St.Label ({text: "%", style_class: 'label'});
 
-  button = new St.Bin({
-    style_class: 'panel-button',
-    reactive: true,
-    can_focus: true,
-    x_fill: true,
-    y_fill: false,
-    track_hover: true
-  });
-
   var settings = GLib.find_program_in_path("nvidia-settings");
   var smi = GLib.find_program_in_path("nvidia-smi");
+
+  if (settings) {
+    button = new St.Bin({
+      style_class: 'panel-button',
+      reactive: true,
+      can_focus: true,
+      x_fill: true,
+      y_fill: false,
+      track_hover: true
+    });
+    button.connect('button-press-event', open_settings);
+  } else {
+    button = new St.Bin({
+      style_class: 'panel-button',
+      reactive: false,
+      can_focus: false,
+      x_fill: true,
+      y_fill: false,
+      track_hover: false
+    });
+  }
 
   if (settings && !smi) {
     use_nvidia_settings = true;
@@ -76,7 +88,6 @@ function enable() {
   var box = build_button_box(info);
 
   button.set_child(box);
-  button.connect('button-press-event', open_settings);
 
   timeout_id = GLib.timeout_add_seconds(0, 2, Lang.bind(this, function () {
     var info = get_info();
