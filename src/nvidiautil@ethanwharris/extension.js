@@ -14,7 +14,7 @@ var util_label;
 var temp_label;
 var mem_label;
 
-var use_nvidia_settings = true;
+var use_nvidia_settings = false;
 
 function init() {
   Gtk.IconTheme.get_default().append_search_path(Me.dir.get_child('icons').get_path());
