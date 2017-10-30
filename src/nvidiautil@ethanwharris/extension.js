@@ -41,27 +41,33 @@ function enable() {
   var settings = GLib.find_program_in_path("nvidia-settings");
   var smi = GLib.find_program_in_path("nvidia-smi");
 
-  if (settings && smi) {
-    var info = get_info();
-    var box = build_button_box(info);
-
-    button.set_child(box);
-    button.connect('button-press-event', open_settings);
-
-    timeout_id = GLib.timeout_add_seconds(0, 2, Lang.bind(this, function () {
-        var info = get_info();
-        update_button_box(info);
-        return true;
-    }));
-  } else {
+  if (settings && !smi) {
+    use_nvidia_settings = true;
+  } else if (smi && !settings) {
+    use_nvidia_settings = false;
+  } else if (!settings && !smi) {
     button.set_child(new St.Label({text: "Error - nvidia-settings or -smi not present!"}))
+    Main.panel._rightBox.insert_child_at_index(button, 0);
+    return;
   }
 
-	Main.panel._rightBox.insert_child_at_index(button, 0);
+  var info = get_info();
+  var box = build_button_box(info);
+
+  button.set_child(box);
+  button.connect('button-press-event', open_settings);
+
+  timeout_id = GLib.timeout_add_seconds(0, 2, Lang.bind(this, function () {
+    var info = get_info();
+    update_button_box(info);
+    return true;
+  }));
+
+  Main.panel._rightBox.insert_child_at_index(button, 0);
 }
 
 function disable() {
-	Main.panel._rightBox.remove_child(button);
+  Main.panel._rightBox.remove_child(button);
   GLib.source_remove(timeout_id);
 }
 
@@ -89,24 +95,29 @@ function get_info_smi() {
   var values_index = 0;
 
   for (var i = 0; i < values_line.length; i++) {
-      var c = values_line.charAt(i);
+    var c = values_line.charAt(i);
 
-      if (c >= '0' && c <= '9') {
-        buffer_state = true;
-        buffer[buffer_index] = c;
-        buffer_index = buffer_index + 1;
-      } else if (buffer_state == true) {
-        buffer_index = 0;
-        values[values_index] = buffer.join("");
-        buffer = [];
-        values_index += 1;
-        buffer_state = false;
-      }
+    if (c >= '0' && c <= '9') {
+      buffer_state = true;
+      buffer[buffer_index] = c;
+      buffer_index = buffer_index + 1;
+    } else if (buffer_state == true) {
+      buffer_index = 0;
+      values[values_index] = buffer.join("");
+      buffer = [];
+      values_index += 1;
+      buffer_state = false;
+    }
   }
 
   if (values.length < 8) {
-    use_nvidia_settings = true;
-
+    var settings = GLib.find_program_in_path("nvidia-settings");
+    if (!settings) {
+      return ["N/A", "N/A", "N/A"];
+    } else {
+      use_nvidia_settings = true;
+      return get_info_settings();
+    }
   } else {
     var temp = values[1];
     var used_memory = values[5];
@@ -121,19 +132,19 @@ function get_info_smi() {
 }
 
 function get_info_settings() {
-   var util = GLib.spawn_command_line_sync("nvidia-settings -q GPUUtilization -t")[1].toString();
-   util = util.substring(9,11);
-   util = util.replace(/\D/g,'');
+  var util = GLib.spawn_command_line_sync("nvidia-settings -q GPUUtilization -t")[1].toString();
+  util = util.substring(9,11);
+  util = util.replace(/\D/g,'');
 
-   var temp = GLib.spawn_command_line_sync("nvidia-settings -q GPUCoreTemp -t")[1].toString();
-   temp = temp.split('\n')[0];
+  var temp = GLib.spawn_command_line_sync("nvidia-settings -q GPUCoreTemp -t")[1].toString();
+  temp = temp.split('\n')[0];
 
-   var used_memory = GLib.spawn_command_line_sync("nvidia-settings -q UsedDedicatedGPUMemory -t")[1];
-   var total_memory = GLib.spawn_command_line_sync("nvidia-settings -q TotalDedicatedGPUMemory -t")[1];
-   var mem_usage = (used_memory / total_memory * 100).toString();
-   mem_usage = mem_usage.substring(0,2);
+  var used_memory = GLib.spawn_command_line_sync("nvidia-settings -q UsedDedicatedGPUMemory -t")[1];
+  var total_memory = GLib.spawn_command_line_sync("nvidia-settings -q TotalDedicatedGPUMemory -t")[1];
+  var mem_usage = (used_memory / total_memory * 100).toString();
+  mem_usage = mem_usage.substring(0,2);
 
-   return [util, temp, mem_usage];
+  return [util, temp, mem_usage];
 }
 
 function build_button_box(info) {
