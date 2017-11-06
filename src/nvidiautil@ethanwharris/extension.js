@@ -21,9 +21,9 @@ const Gtk = imports.gi.Gtk;
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 const Util = Me.imports.util;
 
-const SETTINGS_UTILISATION = "gpuutilisation"
-const SETTINGS_TEMPERATURE = "gputemp"
-const SETTINGS_MEMORY = "gpumemoryutilisation"
+const SETTINGS_UTILISATION = "gpuutilisation";
+const SETTINGS_TEMPERATURE = "gputemp";
+const SETTINGS_MEMORY = "gpumemoryutilisation";
 
 var button;
 
@@ -180,8 +180,8 @@ function get_info_smi() {
   var values_line = smi[8];
   var buffer_state = false;
 
-  buffer = [];
-  values = [];
+  var buffer = [];
+  var values = [];
   var buffer_index = 0;
   var values_index = 0;
 
