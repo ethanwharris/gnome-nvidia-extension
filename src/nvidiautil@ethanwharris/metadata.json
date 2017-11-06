@@ -14,6 +14,7 @@
     "3.24"
   ],
   "name": "NVIDIA GPU Stats Tool",
+  "settings-schema": "org.gnome.shell.extensions.nvidiautil",
   "uuid": "nvidiautil@ethanwharris",
   "url": "https://github.com/ethanwharris/gnome-nvidia-extension",
   "version": 2
