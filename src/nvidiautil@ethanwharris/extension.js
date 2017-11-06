@@ -26,14 +26,10 @@ const SETTINGS_TEMPERATURE = "gputemp"
 const SETTINGS_MEMORY = "gpumemoryutilisation"
 
 var button;
+
 var timeout_id;
 var settings_id;
-// var logo_util;
-// var logo_temp;
-// var logo_ram;
-// var util_label;
-// var temp_label;
-// var mem_label;
+
 var extension_settings;
 
 var labels;
@@ -112,8 +108,12 @@ function enable() {
 function disable() {
   Main.panel._rightBox.remove_child(button);
   GLib.source_remove(timeout_id);
+  extension_settings.disconnect(settings_id);
 }
 
+/*
+ * Re-Load the settings (use as a callback for settings changes)
+ */
 function load_settings() {
   show_utilisation = extension_settings.get_boolean(SETTINGS_UTILISATION);
   show_temperature = extension_settings.get_boolean(SETTINGS_TEMPERATURE);
@@ -225,14 +225,6 @@ function get_info_smi() {
       var mem_usage = (used_memory / total_memory * 100).toString();
       result = result.concat(mem_usage.substring(0,2) + "%");
     }
-    // var temp = values[1];
-    //
-    // var util = values[7];
-    //
-    // var used_memory = values[5];
-    // var total_memory = values[6];
-    // var mem_usage = (used_memory / total_memory * 100).toString();
-    // mem_usage = mem_usage.substring(0,2);
 
     return result;
   }
@@ -243,19 +235,30 @@ function get_info_smi() {
  * Use only if there are no available alternatives.
  */
 function get_info_settings() {
-  var util = GLib.spawn_command_line_sync("nvidia-settings -q GPUUtilization -t")[1].toString();
-  util = util.substring(9,11);
-  util = util.replace(/\D/g,'');
+  var result = [];
 
-  var temp = GLib.spawn_command_line_sync("nvidia-settings -q GPUCoreTemp -t")[1].toString();
-  temp = temp.split('\n')[0];
+  if (show_utilisation) {
+    var util = GLib.spawn_command_line_sync("nvidia-settings -q GPUUtilization -t")[1].toString();
+    util = util.substring(9,11);
+    util = util.replace(/\D/g,'');
+    result = result.concat(util);
+  }
 
-  var used_memory = GLib.spawn_command_line_sync("nvidia-settings -q UsedDedicatedGPUMemory -t")[1];
-  var total_memory = GLib.spawn_command_line_sync("nvidia-settings -q TotalDedicatedGPUMemory -t")[1];
-  var mem_usage = (used_memory / total_memory * 100).toString();
-  mem_usage = mem_usage.substring(0,2);
+  if (show_temperature) {
+    var temp = GLib.spawn_command_line_sync("nvidia-settings -q GPUCoreTemp -t")[1].toString();
+    temp = temp.split('\n')[0];
+    result = result.concat(temp);
+  }
 
-  return [util, temp, mem_usage];
+  if (show_memory) {
+    var used_memory = GLib.spawn_command_line_sync("nvidia-settings -q UsedDedicatedGPUMemory -t")[1];
+    var total_memory = GLib.spawn_command_line_sync("nvidia-settings -q TotalDedicatedGPUMemory -t")[1];
+    var mem_usage = (used_memory / total_memory * 100).toString();
+    mem_usage = mem_usage.substring(0,2);
+    result = result.concat(mem_usage);
+  }
+
+  return result;
 }
 
 /*
@@ -269,15 +272,6 @@ function build_button_box() {
     box.add_actor(labels[i]);
   }
 
-  // update_button_box(info);
-
-  // box.add_actor(logo_util);
-  // box.add_actor(util_label);
-  // box.add_actor(logo_temp);
-  // box.add_actor(temp_label);
-  // box.add_actor(logo_ram);
-  // box.add_actor(mem_label);
-
   return box;
 }
 
@@ -288,7 +282,4 @@ function update_button_box(info) {
   for(var i = 0; i < labels.length; i++) {
     labels[i].text = info[i];
   }
-  // util_label.text = info[0] + "%";
-  // temp_label.text = info[1] + "\xB0" + "C";
-  // mem_label.text = info[2] + "%";
 }
