@@ -1,3 +1,17 @@
+/*This file is part of Nvidia Util Gnome Extension.
+
+Nvidia Util Gnome Extension is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Nvidia Util Gnome Extension is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/licenses/>.*/
 const Gtk = imports.gi.Gtk;
 
 const Gettext = imports.gettext.domain('gnome-shell-extensions-nvidiautil');
@@ -30,10 +44,16 @@ const SETTINGS = {
 
 let settings;
 
+/*
+ * Initialise this
+ */
 function init() {
     settings = Util.getSettings();
 }
 
+/*
+ * Construct the individual widget for an individual setting
+ */
 function buildSettingWidget(setting) {
     let box = new Gtk.Box(({ orientation : Gtk.Orientation.HORIZONTAL }));
 
@@ -55,6 +75,9 @@ function buildSettingWidget(setting) {
     return box;
 }
 
+/*
+ * Construct the entire widget for the settings dialog
+ */
 function buildPrefsWidget() {
 
     let vbox = new Gtk.Box({ orientation : Gtk.Orientation.VERTICAL,
