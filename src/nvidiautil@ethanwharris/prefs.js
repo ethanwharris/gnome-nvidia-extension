@@ -83,7 +83,7 @@ function buildPrefsWidget() {
     let vbox = new Gtk.Box({ orientation : Gtk.Orientation.VERTICAL,
         border_width: 10 });
 
-    for (setting in SETTINGS) {
+    for (var setting in SETTINGS) {
         let setting_box = buildSettingWidget(setting);
         vbox.add(setting_box);
     }

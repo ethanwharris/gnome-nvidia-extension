@@ -56,25 +56,34 @@ function enable() {
   var settings = GLib.find_program_in_path("nvidia-settings");
   var smi = GLib.find_program_in_path("nvidia-smi");
 
+  button = new St.Button({
+    style_class: 'panel-button',
+    x_fill: true,
+    y_fill: false,
+    can_focus: true,
+    reactive: true,
+    button_mask: St.ButtonMask.ONE |
+                St.ButtonMask.THREE });
+
   if (settings) {
-    button = new St.Bin({
-      style_class: 'panel-button',
-      reactive: true,
-      can_focus: true,
-      x_fill: true,
-      y_fill: false,
-      track_hover: true
-    });
-    button.connect('button-press-event', open_settings);
+    button.connect('clicked', Lang.bind(this, function(actor, button) {
+      if (button == 3) {
+        open_prefs();
+      }
+      if (button == 1) {
+        open_settings();
+      }
+
+      return true;
+    }));
   } else {
-    button = new St.Bin({
-      style_class: 'panel-button',
-      reactive: false,
-      can_focus: false,
-      x_fill: true,
-      y_fill: false,
-      track_hover: false
-    });
+    button.connect('button-press-event', Lang.bind(this, function(actor, button) {
+      if (button == 1) {
+        open_prefs();
+      }
+
+      return true;
+    }));
   }
 
   if (settings && !smi) {
@@ -94,10 +103,7 @@ function enable() {
     return true;
   }));
 
-  settings_id = extension_settings.connect('changed', Lang.bind(this, function() {
-    load_settings();
-    return true;
-  }));
+  settings_id = extension_settings.connect('changed', load_settings);
 
   Main.panel._rightBox.insert_child_at_index(button, 0);
 }
@@ -149,6 +155,13 @@ function load_settings() {
   var box = build_button_box();
   update_button_box(get_info());
   button.set_child(box);
+}
+
+/*
+ * Open the preferences for the nvidiautil extension
+ */
+function open_prefs() {
+  GLib.spawn_command_line_async("gnome-shell-extension-prefs " + Me.metadata['uuid']);
 }
 
 /*
