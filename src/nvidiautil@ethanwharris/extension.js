@@ -19,15 +19,29 @@ const Main = imports.ui.main;
 const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 const Me = imports.misc.extensionUtils.getCurrentExtension();
+const Util = Me.imports.util;
+
+const SETTINGS_UTILISATION = "gpuutilisation"
+const SETTINGS_TEMPERATURE = "gputemp"
+const SETTINGS_MEMORY = "gpumemoryutilisation"
 
 var button;
 var timeout_id;
-var logo_util;
-var logo_temp;
-var logo_ram;
-var util_label;
-var temp_label;
-var mem_label;
+var settings_id;
+// var logo_util;
+// var logo_temp;
+// var logo_ram;
+// var util_label;
+// var temp_label;
+// var mem_label;
+var extension_settings;
+
+var labels;
+var icons;
+
+var show_utilisation;
+var show_temperature;
+var show_memory;
 
 var use_nvidia_settings = false;
 
@@ -36,20 +50,13 @@ var use_nvidia_settings = false;
  */
 function init() {
   Gtk.IconTheme.get_default().append_search_path(Me.dir.get_child('icons').get_path());
+  extension_settings = Util.getSettings();
 }
 
 /*
  * Enable handles the main functioning of the extension, editing view and updating
  */
 function enable() {
-  logo_util = new St.Icon({icon_name: 'nvidia-card-symbolic', style_class: 'system-status-icon'});
-  logo_temp = new St.Icon({icon_name: 'nvidia-temp-symbolic', style_class: 'system-status-icon'});
-  logo_ram = new St.Icon({icon_name: 'nvidia-ram-symbolic', style_class: 'system-status-icon'});
-
-  util_label = new St.Label({text: "%", style_class: 'label'});
-  temp_label = new St.Label({text: "\xB0" + "C", style_class: 'label'});
-  mem_label = new St.Label ({text: "%", style_class: 'label'});
-
   var settings = GLib.find_program_in_path("nvidia-settings");
   var smi = GLib.find_program_in_path("nvidia-smi");
 
@@ -84,14 +91,15 @@ function enable() {
     return;
   }
 
-  var info = get_info();
-  var box = build_button_box(info);
+  load_settings();
 
-  button.set_child(box);
+  timeout_id = GLib.timeout_add_seconds(0, 2, Lang.bind(this, function() {
+    update_button_box(get_info());
+    return true;
+  }));
 
-  timeout_id = GLib.timeout_add_seconds(0, 2, Lang.bind(this, function () {
-    var info = get_info();
-    update_button_box(info);
+  settings_id = extension_settings.connect('changed', Lang.bind(this, function() {
+    load_settings();
     return true;
   }));
 
@@ -99,11 +107,48 @@ function enable() {
 }
 
 /*
- * Disable should remove elements from viewwhich where added and de-assign any timeouts etc.
+ * Disable should remove elements from view which where added and de-assign any timeouts etc.
  */
 function disable() {
   Main.panel._rightBox.remove_child(button);
   GLib.source_remove(timeout_id);
+}
+
+function load_settings() {
+  show_utilisation = extension_settings.get_boolean(SETTINGS_UTILISATION);
+  show_temperature = extension_settings.get_boolean(SETTINGS_TEMPERATURE);
+  show_memory = extension_settings.get_boolean(SETTINGS_MEMORY);
+
+  icons = [];
+  labels = [];
+
+  if(show_utilisation) {
+    var logo_util = new St.Icon({icon_name: 'nvidia-card-symbolic', style_class: 'system-status-icon'});
+    var util_label = new St.Label({text: "%", style_class: 'label'});
+
+    icons = icons.concat(logo_util);
+    labels = labels.concat(util_label);
+  }
+
+  if(show_temperature) {
+    var logo_temp = new St.Icon({icon_name: 'nvidia-temp-symbolic', style_class: 'system-status-icon'});
+    var temp_label = new St.Label({text: "\xB0" + "C", style_class: 'label'});
+
+    icons = icons.concat(logo_temp);
+    labels = labels.concat(temp_label);
+  }
+
+  if(show_memory) {
+    var logo_ram = new St.Icon({icon_name: 'nvidia-ram-symbolic', style_class: 'system-status-icon'});
+    var mem_label = new St.Label ({text: "%", style_class: 'label'});
+
+    icons = icons.concat(logo_ram);
+    labels = labels.concat(mem_label);
+  }
+
+  var box = build_button_box();
+  update_button_box(get_info());
+  button.set_child(box);
 }
 
 /*
@@ -165,15 +210,31 @@ function get_info_smi() {
       return get_info_settings();
     }
   } else {
-    var temp = values[1];
-    var used_memory = values[5];
-    var total_memory = values[6];
-    var util = values[7];
+    var result = [];
+    if (show_utilisation) {
+      result = result.concat(values[7] + "%");
+    }
 
-    var mem_usage = (used_memory / total_memory * 100).toString();
-    mem_usage = mem_usage.substring(0,2);
+    if (show_temperature) {
+      result = result.concat(values[1] + "\xB0" + "C");
+    }
 
-    return [util, temp, mem_usage];
+    if (show_memory) {
+      var used_memory = values[5];
+      var total_memory = values[6];
+      var mem_usage = (used_memory / total_memory * 100).toString();
+      result = result.concat(mem_usage.substring(0,2) + "%");
+    }
+    // var temp = values[1];
+    //
+    // var util = values[7];
+    //
+    // var used_memory = values[5];
+    // var total_memory = values[6];
+    // var mem_usage = (used_memory / total_memory * 100).toString();
+    // mem_usage = mem_usage.substring(0,2);
+
+    return result;
   }
 }
 
@@ -200,17 +261,22 @@ function get_info_settings() {
 /*
  * Construct the button box (the box layout which stores the info)
  */
-function build_button_box(info) {
+function build_button_box() {
   var box = new St.BoxLayout({name: 'DataBox'});
 
-  update_button_box(info);
+  for(var i = 0; i < labels.length; i++) {
+    box.add_actor(icons[i]);
+    box.add_actor(labels[i]);
+  }
 
-  box.add_actor(logo_util);
-  box.add_actor(util_label);
-  box.add_actor(logo_temp);
-  box.add_actor(temp_label);
-  box.add_actor(logo_ram);
-  box.add_actor(mem_label);
+  // update_button_box(info);
+
+  // box.add_actor(logo_util);
+  // box.add_actor(util_label);
+  // box.add_actor(logo_temp);
+  // box.add_actor(temp_label);
+  // box.add_actor(logo_ram);
+  // box.add_actor(mem_label);
 
   return box;
 }
@@ -219,7 +285,10 @@ function build_button_box(info) {
  * Update the info labels
  */
 function update_button_box(info) {
-  util_label.text = info[0] + "%";
-  temp_label.text = info[1] + "\xB0" + "C";
-  mem_label.text = info[2] + "%";
+  for(var i = 0; i < labels.length; i++) {
+    labels[i].text = info[i];
+  }
+  // util_label.text = info[0] + "%";
+  // temp_label.text = info[1] + "\xB0" + "C";
+  // mem_label.text = info[2] + "%";
 }

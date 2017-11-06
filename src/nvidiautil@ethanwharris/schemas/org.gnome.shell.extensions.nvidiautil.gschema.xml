@@ -1,0 +1,25 @@
+<schemalist gettext-domain="gnome-shell-extensions-nvidiautil">
+   <schema id="org.gnome.shell.extensions.nvidiautil" path="/org/gnome/shell/extensions/nvidiautil/">
+     <key name="gpuutilisation" type="b">
+       <default>true</default>
+       <summary>GPU Utilisation</summary>
+       <description>
+         Displays the GPU utilisation in the toolbar
+       </description>
+     </key>
+     <key name="gputemp" type="b">
+       <default>true</default>
+       <summary>GPU Temperature</summary>
+       <description>
+         Displays the GPU temperature in the toolbar
+       </description>
+     </key>
+     <key name="gpumemoryutilisation" type="b">
+       <default>true</default>
+       <summary>GPU Memory Utilisation</summary>
+       <description>
+         Displays the GPU memory utilisation in the toolbar
+       </description>
+     </key>
+  </schema>
+</schemalist>
