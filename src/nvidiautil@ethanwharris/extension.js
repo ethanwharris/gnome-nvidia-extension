@@ -254,13 +254,13 @@ function get_info_settings() {
     var util = GLib.spawn_command_line_sync("nvidia-settings -q GPUUtilization -t")[1].toString();
     util = util.substring(9,11);
     util = util.replace(/\D/g,'');
-    result = result.concat(util);
+    result = result.concat(util + '%');
   }
 
   if (show_temperature) {
     var temp = GLib.spawn_command_line_sync("nvidia-settings -q GPUCoreTemp -t")[1].toString();
     temp = temp.split('\n')[0];
-    result = result.concat(temp);
+    result = result.concat(temp + "\xB0" + "C");
   }
 
   if (show_memory) {
@@ -268,7 +268,8 @@ function get_info_settings() {
     var total_memory = GLib.spawn_command_line_sync("nvidia-settings -q TotalDedicatedGPUMemory -t")[1];
     var mem_usage = (used_memory / total_memory * 100).toString();
     mem_usage = mem_usage.substring(0,2);
-    result = result.concat(mem_usage);
+    mem_usage = mem_usage.replace(/\D/g,'');
+    result = result.concat(mem_usage + '%');
   }
 
   return result;
