@@ -44,6 +44,9 @@ var smi;
 var smi_call;
 var smi_parse_function;
 
+var has_smi;
+var has_settings;
+
 /*
  * Init function, nothing major here, do not edit view
  */
@@ -172,6 +175,9 @@ function load_settings() {
   var show_power = extension_settings.get_boolean(SETTINGS_POWER);
   var show_fan = extension_settings.get_boolean(SETTINGS_FAN);
 
+  has_smi = false;
+  has_settings = false;
+
   settings_call = 'nvidia-settings ';
   settings_parse_function = function(lines, values) {
     return values;
@@ -186,6 +192,7 @@ function load_settings() {
   labels = [];
 
   if(show_utilisation) {
+    has_settings = true;
     build_settings_property('nvidia-card-symbolic', '-q GPUUtilization ', function(lines, values) {
       var line = lines.shift();
       var util = line.substring(9,11);
@@ -195,6 +202,7 @@ function load_settings() {
   }
 
   if(show_temperature) {
+    has_settings = true;
     build_settings_property('nvidia-temp-symbolic', '-q GPUCoreTemp ', function(lines, values) {
       var temp = lines.shift();
       lines.shift();
@@ -203,6 +211,7 @@ function load_settings() {
   }
 
   if(show_memory) {
+    has_settings = true;
     build_settings_property('nvidia-ram-symbolic', '-q UsedDedicatedGPUMemory -q TotalDedicatedGPUMemory ', function(lines, values) {
       var used_memory = lines.shift();
       var total_memory = lines.shift();
@@ -214,6 +223,7 @@ function load_settings() {
   }
 
   if(show_fan) {
+    has_settings = true;
     build_settings_property('fan-symbolic', '-q GPUCurrentFanSpeed ', function(lines, values) {
       var fan = lines.shift();
       return values.concat(fan + "%");
@@ -221,6 +231,7 @@ function load_settings() {
   }
 
   if(show_power) {
+    has_smi = true;
     build_smi_property('power-symbolic', 'power.draw,', function(lines, values) {
       var power = lines.shift();
       return values.concat(power.split('.')[0] + "W");
@@ -263,9 +274,14 @@ function open_settings() {
  * Obtain and parse the output of the settings call
  */
 function get_info() {
-  var output = GLib.spawn_command_line_sync(settings_call)[1].toString();
-  var res = settings_parse_function(output.split('\n'), []);
-  if (smi) {
+  var output = '';
+  var res = [];
+
+  if (has_settings) {
+    var output = GLib.spawn_command_line_sync(settings_call)[1].toString();
+    var res = settings_parse_function(output.split('\n'), []);
+  }
+  if (smi && has_smi) {
     output = GLib.spawn_command_line_sync(smi_call)[1].toString();
     res = res.concat(smi_parse_function(output.split(','), []));
   }
