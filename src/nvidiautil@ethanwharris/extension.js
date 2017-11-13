@@ -87,11 +87,34 @@ function enable() {
 }
 
 /*
+ * Create and add the timeout which updates values every t seconds
+ */
+function add_timeout(t) {
+  if (timeout_id != -1) {
+    GLib.source_remove(timeout_id);
+  }
+  timeout_id = GLib.timeout_add_seconds(0, t, Lang.bind(this, function() {
+    update_button_box(get_info());
+    return true;
+  }));
+}
+
+/*
+ * Remove current timeout
+ */
+function remove_timeout() {
+  if (timeout_id != -1) {
+    GLib.source_remove(timeout_id);
+    timeout_id = -1;
+  }
+}
+
+/*
  * Disable should remove elements from view which where added and de-assign any timeouts etc.
  */
 function disable() {
   Main.panel._rightBox.remove_child(button);
-  GLib.source_remove(timeout_id);
+  remove_timeout();
   extension_settings.disconnect(settings_id);
 }
 
@@ -166,14 +189,10 @@ function load_settings() {
 
   if (labels.length == 0) {
     Main.panel._rightBox.remove_child(button);
-    GLib.source_remove(timeout_id);
+    remove_timeout();
     settings_call = '';
   } else {
-    timeout_id = GLib.timeout_add_seconds(0, 2, Lang.bind(this, function() {
-      update_button_box(get_info());
-      return true;
-    }));
-
+    add_timeout(2);
     var box = build_button_box();
     update_button_box(get_info());
     button.set_child(box);
