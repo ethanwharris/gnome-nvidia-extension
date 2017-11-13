@@ -33,6 +33,7 @@ var settings_id;
 var extension_settings;
 
 var labels;
+var formatters;
 var icons;
 
 var show_utilisation;
@@ -127,29 +128,39 @@ function load_settings() {
 
   icons = [];
   labels = [];
+  formatters = [];
 
   if(show_utilisation) {
     var logo_util = new St.Icon({icon_name: 'nvidia-card-symbolic', style_class: 'system-status-icon'});
-    var util_label = new St.Label({text: "%", style_class: 'label'});
+    var util_label = new St.Label({text: "", style_class: 'label'});
 
     icons = icons.concat(logo_util);
     labels = labels.concat(util_label);
+    formatters = formatters.concat(function(val) {
+      return val + "%";
+    });
   }
 
   if(show_temperature) {
     var logo_temp = new St.Icon({icon_name: 'nvidia-temp-symbolic', style_class: 'system-status-icon'});
-    var temp_label = new St.Label({text: "\xB0" + "C", style_class: 'label'});
+    var temp_label = new St.Label({text: "", style_class: 'label'});
 
     icons = icons.concat(logo_temp);
     labels = labels.concat(temp_label);
+    formatters = formatters.concat(function(val) {
+      return val + "\xB0" + "C";
+    });
   }
 
   if(show_memory) {
     var logo_ram = new St.Icon({icon_name: 'nvidia-ram-symbolic', style_class: 'system-status-icon'});
-    var mem_label = new St.Label ({text: "%", style_class: 'label'});
+    var mem_label = new St.Label ({text: "", style_class: 'label'});
 
     icons = icons.concat(logo_ram);
     labels = labels.concat(mem_label);
+    formatters = formatters.concat(function(val) {
+      return val + "%";
+    });
   }
 
   var box = build_button_box();
@@ -225,18 +236,18 @@ function get_info_smi() {
   } else {
     var result = [];
     if (show_utilisation) {
-      result = result.concat(values[7] + "%");
+      result = result.concat(values[7]);
     }
 
     if (show_temperature) {
-      result = result.concat(values[1] + "\xB0" + "C");
+      result = result.concat(values[1]);
     }
 
     if (show_memory) {
       var used_memory = values[5];
       var total_memory = values[6];
       var mem_usage = (used_memory / total_memory * 100).toString();
-      result = result.concat(mem_usage.substring(0,2) + "%");
+      result = result.concat(mem_usage.substring(0,2));
     }
 
     return result;
@@ -254,13 +265,13 @@ function get_info_settings() {
     var util = GLib.spawn_command_line_sync("nvidia-settings -q GPUUtilization -t")[1].toString();
     util = util.substring(9,11);
     util = util.replace(/\D/g,'');
-    result = result.concat(util + '%');
+    result = result.concat(util);
   }
 
   if (show_temperature) {
     var temp = GLib.spawn_command_line_sync("nvidia-settings -q GPUCoreTemp -t")[1].toString();
     temp = temp.split('\n')[0];
-    result = result.concat(temp + "\xB0" + "C");
+    result = result.concat(temp);
   }
 
   if (show_memory) {
@@ -269,7 +280,7 @@ function get_info_settings() {
     var mem_usage = (used_memory / total_memory * 100).toString();
     mem_usage = mem_usage.substring(0,2);
     mem_usage = mem_usage.replace(/\D/g,'');
-    result = result.concat(mem_usage + '%');
+    result = result.concat(mem_usage);
   }
 
   return result;
@@ -294,6 +305,6 @@ function build_button_box() {
  */
 function update_button_box(info) {
   for(var i = 0; i < labels.length; i++) {
-    labels[i].text = info[i];
+    labels[i].text = formatters[i](info[i]);
   }
 }
