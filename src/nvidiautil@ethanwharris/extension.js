@@ -33,14 +33,9 @@ var settings_id;
 var extension_settings;
 
 var labels;
-var formatters;
 var icons;
-
-var show_utilisation;
-var show_temperature;
-var show_memory;
-
-var use_nvidia_settings = false;
+var settings_call;
+var parse_function;
 
 /*
  * Init function, nothing major here, do not edit view
@@ -55,7 +50,6 @@ function init() {
  */
 function enable() {
   var settings = GLib.find_program_in_path("nvidia-settings");
-  var smi = GLib.find_program_in_path("nvidia-smi");
 
   button = new St.Button({
     style_class: 'panel-button',
@@ -77,6 +71,14 @@ function enable() {
 
       return true;
     }));
+    load_settings();
+
+    timeout_id = GLib.timeout_add_seconds(0, 2, Lang.bind(this, function() {
+      update_button_box(get_info());
+      return true;
+    }));
+
+    settings_id = extension_settings.connect('changed', load_settings);
   } else {
     button.connect('button-press-event', Lang.bind(this, function(actor, button) {
       if (button == 1) {
@@ -85,26 +87,8 @@ function enable() {
 
       return true;
     }));
-  }
-
-  if (settings && !smi) {
-    use_nvidia_settings = true;
-  } else if (smi && !settings) {
-    use_nvidia_settings = false;
-  } else if (!settings && !smi) {
     button.set_child(new St.Label({text: "Error - nvidia-settings or -smi not present!"}))
-    Main.panel._rightBox.insert_child_at_index(button, 0);
-    return;
   }
-
-  load_settings();
-
-  timeout_id = GLib.timeout_add_seconds(0, 2, Lang.bind(this, function() {
-    update_button_box(get_info());
-    return true;
-  }));
-
-  settings_id = extension_settings.connect('changed', load_settings);
 
   Main.panel._rightBox.insert_child_at_index(button, 0);
 }
@@ -119,48 +103,76 @@ function disable() {
 }
 
 /*
+ * Utility function to perform one function and then another
+ */
+function and_then(first, second) {
+  return function(lines, values) {
+    values = first(lines, values);
+    return second(lines, values);
+  };
+}
+
+/*
+ * Set-up a new property with the given icon, settings call and parse function
+ */
+function build_property(icon, setting, parse) {
+  var logo = new St.Icon({icon_name: icon, style_class: 'system-status-icon'});
+  var label = new St.Label({text: "", style_class: 'label'});
+
+  icons = icons.concat(logo);
+  labels = labels.concat(label);
+  settings_call += setting;
+  parse_function = and_then(parse_function, parse);
+}
+
+/*
  * Re-Load the settings (use as a callback for settings changes)
  */
 function load_settings() {
-  show_utilisation = extension_settings.get_boolean(SETTINGS_UTILISATION);
-  show_temperature = extension_settings.get_boolean(SETTINGS_TEMPERATURE);
-  show_memory = extension_settings.get_boolean(SETTINGS_MEMORY);
+  var show_utilisation = extension_settings.get_boolean(SETTINGS_UTILISATION);
+  var show_temperature = extension_settings.get_boolean(SETTINGS_TEMPERATURE);
+  var show_memory = extension_settings.get_boolean(SETTINGS_MEMORY);
+
+  settings_call = 'nvidia-settings ';
+  parse_function = function(lines, values) {
+    return values;
+  };
 
   icons = [];
   labels = [];
-  formatters = [];
 
   if(show_utilisation) {
-    var logo_util = new St.Icon({icon_name: 'nvidia-card-symbolic', style_class: 'system-status-icon'});
-    var util_label = new St.Label({text: "", style_class: 'label'});
-
-    icons = icons.concat(logo_util);
-    labels = labels.concat(util_label);
-    formatters = formatters.concat(function(val) {
-      return val + "%";
+    build_property('nvidia-card-symbolic', '-q GPUUtilization ', function(lines, values) {
+      var line = lines.shift();
+      var util = line.substring(9,11);
+      util = util.replace(/\D/g,'');
+      return values.concat(util + "%");
     });
   }
 
   if(show_temperature) {
-    var logo_temp = new St.Icon({icon_name: 'nvidia-temp-symbolic', style_class: 'system-status-icon'});
-    var temp_label = new St.Label({text: "", style_class: 'label'});
-
-    icons = icons.concat(logo_temp);
-    labels = labels.concat(temp_label);
-    formatters = formatters.concat(function(val) {
-      return val + "\xB0" + "C";
+    build_property('nvidia-temp-symbolic', '-q GPUCoreTemp ', function(lines, values) {
+      var temp = lines.shift();
+      lines.shift();
+      return values.concat(temp + "\xB0" + "C");
     });
   }
 
   if(show_memory) {
-    var logo_ram = new St.Icon({icon_name: 'nvidia-ram-symbolic', style_class: 'system-status-icon'});
-    var mem_label = new St.Label ({text: "", style_class: 'label'});
-
-    icons = icons.concat(logo_ram);
-    labels = labels.concat(mem_label);
-    formatters = formatters.concat(function(val) {
-      return val + "%";
+    build_property('nvidia-ram-symbolic', '-q UsedDedicatedGPUMemory -q TotalDedicatedGPUMemory ', function(lines, values) {
+      var used_memory = lines.shift();
+      var total_memory = lines.shift();
+      var mem_usage = ((used_memory / total_memory) * 100).toString();
+      mem_usage = mem_usage.substring(0,2);
+      mem_usage = mem_usage.replace(/\D/g,'');
+      return values.concat(mem_usage + "%");
     });
+  }
+
+  settings_call += '-t';
+
+  if (!show_utilisation && !show_temperature && !show_memory) {
+    settings_call = 'echo N/A';
   }
 
   var box = build_button_box();
@@ -184,106 +196,11 @@ function open_settings() {
 }
 
 /*
- * Root function to get info depending on which options are available
+ * Obtain and parse the output of the settings call
  */
 function get_info() {
-  if (!use_nvidia_settings) {
-    return get_info_smi();
-  } else {
-    return get_info_settings();
-  }
-}
-
-/*
- * Get info using nvidia-smi. This uses one call to smi and an efficient
- * state machine to parse. Use this if possible.
- */
-function get_info_smi() {
-  var smi = GLib.spawn_command_line_sync("nvidia-smi")[1].toString().split('\n');
-
-  var values_line = smi[8];
-  var buffer_state = false;
-
-  var buffer = [];
-  var values = [];
-  var buffer_index = 0;
-  var values_index = 0;
-
-  for (var i = 0; i < values_line.length; i++) {
-    var c = values_line.charAt(i);
-
-    if (c >= '0' && c <= '9') {
-      buffer_state = true;
-      buffer[buffer_index] = c;
-      buffer_index = buffer_index + 1;
-    } else if (buffer_state == true) {
-      buffer_index = 0;
-      values[values_index] = buffer.join("");
-      buffer = [];
-      values_index += 1;
-      buffer_state = false;
-    }
-  }
-
-  if (values.length < 8) {
-    var settings = GLib.find_program_in_path("nvidia-settings");
-    if (!settings) {
-      return ["N/A", "N/A", "N/A"];
-    } else {
-      use_nvidia_settings = true;
-      return get_info_settings();
-    }
-  } else {
-    var result = [];
-    if (show_utilisation) {
-      result = result.concat(values[7]);
-    }
-
-    if (show_temperature) {
-      result = result.concat(values[1]);
-    }
-
-    if (show_memory) {
-      var used_memory = values[5];
-      var total_memory = values[6];
-      var mem_usage = (used_memory / total_memory * 100).toString();
-      result = result.concat(mem_usage.substring(0,2));
-    }
-
-    return result;
-  }
-}
-
-/*
- * Get info using nvidia-settings. Multiple calls to nvidia-settings required.
- * Use only if there are no available alternatives.
- */
-function get_info_settings() {
-  var result = [];
-
-  if (show_utilisation) {
-    var util = GLib.spawn_command_line_sync("nvidia-settings -q GPUUtilization -t")[1].toString();
-    util = util.substring(9,11);
-    util = util.replace(/\D/g,'');
-    result = result.concat(util);
-  }
-
-  if (show_temperature) {
-    var temp = GLib.spawn_command_line_sync("nvidia-settings -q GPUCoreTemp -t")[1].toString();
-    temp = temp.split('\n')[0];
-    result = result.concat(temp);
-  }
-
-  if (show_memory) {
-    var used_memory = GLib.spawn_command_line_sync("nvidia-settings -q UsedDedicatedGPUMemory -t")[1];
-    var total_memory = GLib.spawn_command_line_sync("nvidia-settings -q TotalDedicatedGPUMemory -t")[1];
-    var mem_usage = (used_memory / total_memory * 100).toString();
-    mem_usage = mem_usage.substring(0,2);
-    mem_usage = mem_usage.replace(/\D/g,'');
-    result = result.concat(mem_usage);
-  }
-
-  return result;
+  var output = GLib.spawn_command_line_sync(settings_call)[1].toString();
+  return parse_function(output.split('\n'), []);
 }
 
 /*
@@ -305,6 +222,6 @@ function build_button_box() {
  */
 function update_button_box(info) {
   for(var i = 0; i < labels.length; i++) {
-    labels[i].text = formatters[i](info[i]);
+    labels[i].text = info[i];
   }
 }

@@ -1,6 +1,6 @@
 {
   "description":
-    "Shows NVIDIA GPU stats (utilisation, temperature and memory) in the toolbar. \n Requires one of: nvidia-settings, nvidia-smi. \n Find us on GitHub: https://github.com/ethanwharris/gnome-nvidia-extension",
+    "Shows NVIDIA GPU stats (utilisation, temperature and memory) in the toolbar. Requires nvidia-settings.",
   "shell-version": [
     "3.6",
     "3.8",
