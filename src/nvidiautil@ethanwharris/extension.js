@@ -72,12 +72,6 @@ function enable() {
       return true;
     }));
     load_settings();
-
-    timeout_id = GLib.timeout_add_seconds(0, 2, Lang.bind(this, function() {
-      update_button_box(get_info());
-      return true;
-    }));
-
     settings_id = extension_settings.connect('changed', load_settings);
   } else {
     button.connect('button-press-event', Lang.bind(this, function(actor, button) {
@@ -87,10 +81,9 @@ function enable() {
 
       return true;
     }));
-    button.set_child(new St.Label({text: "Error - nvidia-settings or -smi not present!"}))
+    button.set_child(new St.Label({text: "Error - nvidia-settings or -smi not present!"}));
+    Main.panel._rightBox.insert_child_at_index(button, 0);
   }
-
-  Main.panel._rightBox.insert_child_at_index(button, 0);
 }
 
 /*
@@ -171,13 +164,21 @@ function load_settings() {
 
   settings_call += '-t';
 
-  if (!show_utilisation && !show_temperature && !show_memory) {
-    settings_call = 'echo N/A';
-  }
+  if (labels.length == 0) {
+    Main.panel._rightBox.remove_child(button);
+    GLib.source_remove(timeout_id);
+    settings_call = '';
+  } else {
+    timeout_id = GLib.timeout_add_seconds(0, 2, Lang.bind(this, function() {
+      update_button_box(get_info());
+      return true;
+    }));
 
-  var box = build_button_box();
-  update_button_box(get_info());
-  button.set_child(box);
+    var box = build_button_box();
+    update_button_box(get_info());
+    button.set_child(box);
+    Main.panel._rightBox.insert_child_at_index(button, 0);
+  }
 }
 
 /*
