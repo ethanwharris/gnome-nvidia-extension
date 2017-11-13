@@ -39,6 +39,18 @@ const SETTINGS = {
         key : 'gpumemoryutilisation',
         label : _("GPU Memory Utilisation"),
         tooltip : _("Displays the GPU memory utilisation in the toolbar")
+    },
+    gpupowerusage : {
+        type : 'bool',
+        key : 'gpupowerusage',
+        label : _("GPU Power Usage (Requires: nvidia-smi)"),
+        tooltip : _("Displays the GPU power usage (W) in the toolbar")
+    },
+    gpufanspeed : {
+        type : 'bool',
+        key : 'gpufanspeed',
+        label : _("GPU Fan Speed"),
+        tooltip : _("Displays the GPU fan speed (%) in the toolbar")
     }
 };
 

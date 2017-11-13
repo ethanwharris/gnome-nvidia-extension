@@ -8,7 +8,7 @@
        </description>
      </key>
      <key name="gputemp" type="b">
-       <default>true</default>
+       <default>false</default>
        <summary>GPU Temperature</summary>
        <description>
          Displays the GPU temperature in the toolbar
@@ -19,6 +19,20 @@
        <summary>GPU Memory Utilisation</summary>
        <description>
          Displays the GPU memory utilisation in the toolbar
+       </description>
+     </key>
+     <key name="gpupowerusage" type="b">
+       <default>false</default>
+       <summary>GPU Power Usage (Requires: nvidia-smi)</summary>
+       <description>
+         Displays the GPU power usage (W) in the toolbar
+       </description>
+     </key>
+     <key name="gpufanspeed" type="b">
+       <default>true</default>
+       <summary>GPU Fan Speed</summary>
+       <description>
+         Displays the GPU fan speed (%) in the toolbar
        </description>
      </key>
   </schema>

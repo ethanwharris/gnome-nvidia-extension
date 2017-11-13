@@ -1,6 +1,6 @@
 {
   "description":
-    "Shows NVIDIA GPU stats (utilisation, temperature and memory) in the toolbar. Requires nvidia-settings.",
+    "Shows NVIDIA GPU stats (utilisation, temperature and memory) in the toolbar. Requires nvidia-settings and nvidia-smi for some features.",
   "shell-version": [
     "3.6",
     "3.8",
