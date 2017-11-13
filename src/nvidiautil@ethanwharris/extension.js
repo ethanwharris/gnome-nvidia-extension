@@ -24,6 +24,8 @@ const Util = Me.imports.util;
 const SETTINGS_UTILISATION = "gpuutilisation";
 const SETTINGS_TEMPERATURE = "gputemp";
 const SETTINGS_MEMORY = "gpumemoryutilisation";
+const SETTINGS_POWER = "gpupowerusage";
+const SETTINGS_FAN = "gpufanspeed";
 
 var button;
 
@@ -34,8 +36,16 @@ var extension_settings;
 
 var labels;
 var icons;
+
 var settings_call;
-var parse_function;
+var settings_parse_function;
+
+var smi;
+var smi_call;
+var smi_parse_function;
+
+var has_smi;
+var has_settings;
 
 /*
  * Init function, nothing major here, do not edit view
@@ -50,6 +60,7 @@ function init() {
  */
 function enable() {
   var settings = GLib.find_program_in_path("nvidia-settings");
+  smi = GLib.find_program_in_path("nvidia-smi");
 
   button = new St.Button({
     style_class: 'panel-button',
@@ -129,16 +140,29 @@ function and_then(first, second) {
 }
 
 /*
- * Set-up a new property with the given icon, settings call and parse function
+ * Set-up a new property with the given icon, nvidia-settings call and parse function
  */
-function build_property(icon, setting, parse) {
+function build_settings_property(icon, setting, parse) {
   var logo = new St.Icon({icon_name: icon, style_class: 'system-status-icon'});
   var label = new St.Label({text: "", style_class: 'label'});
 
   icons = icons.concat(logo);
   labels = labels.concat(label);
   settings_call += setting;
-  parse_function = and_then(parse_function, parse);
+  settings_parse_function = and_then(settings_parse_function, parse);
+}
+
+/*
+ * Set-up a new property with the given icon, nvidia-smi call and parse function
+ */
+function build_smi_property(icon, smi, parse) {
+  var logo = new St.Icon({icon_name: icon, style_class: 'system-status-icon'});
+  var label = new St.Label({text: "", style_class: 'label'});
+
+  icons = icons.concat(logo);
+  labels = labels.concat(label);
+  smi_call += smi;
+  smi_parse_function = and_then(smi_parse_function, parse);
 }
 
 /*
@@ -148,9 +172,19 @@ function load_settings() {
   var show_utilisation = extension_settings.get_boolean(SETTINGS_UTILISATION);
   var show_temperature = extension_settings.get_boolean(SETTINGS_TEMPERATURE);
   var show_memory = extension_settings.get_boolean(SETTINGS_MEMORY);
+  var show_power = extension_settings.get_boolean(SETTINGS_POWER);
+  var show_fan = extension_settings.get_boolean(SETTINGS_FAN);
+
+  has_smi = false;
+  has_settings = false;
 
   settings_call = 'nvidia-settings ';
-  parse_function = function(lines, values) {
+  settings_parse_function = function(lines, values) {
+    return values;
+  };
+
+  smi_call = 'nvidia-smi --query-gpu=';
+  smi_parse_function = function(lines, values) {
     return values;
   };
 
@@ -158,7 +192,8 @@ function load_settings() {
   labels = [];
 
   if(show_utilisation) {
-    build_property('nvidia-card-symbolic', '-q GPUUtilization ', function(lines, values) {
+    has_settings = true;
+    build_settings_property('nvidia-card-symbolic', '-q GPUUtilization ', function(lines, values) {
       var line = lines.shift();
       var util = line.substring(9,11);
       util = util.replace(/\D/g,'');
@@ -167,7 +202,8 @@ function load_settings() {
   }
 
   if(show_temperature) {
-    build_property('nvidia-temp-symbolic', '-q GPUCoreTemp ', function(lines, values) {
+    has_settings = true;
+    build_settings_property('nvidia-temp-symbolic', '-q GPUCoreTemp ', function(lines, values) {
       var temp = lines.shift();
       lines.shift();
       return values.concat(temp + "\xB0" + "C");
@@ -175,7 +211,8 @@ function load_settings() {
   }
 
   if(show_memory) {
-    build_property('nvidia-ram-symbolic', '-q UsedDedicatedGPUMemory -q TotalDedicatedGPUMemory ', function(lines, values) {
+    has_settings = true;
+    build_settings_property('nvidia-ram-symbolic', '-q UsedDedicatedGPUMemory -q TotalDedicatedGPUMemory ', function(lines, values) {
       var used_memory = lines.shift();
       var total_memory = lines.shift();
       var mem_usage = ((used_memory / total_memory) * 100).toString();
@@ -185,6 +222,23 @@ function load_settings() {
     });
   }
 
+  if(show_fan) {
+    has_settings = true;
+    build_settings_property('fan-symbolic', '-q GPUCurrentFanSpeed ', function(lines, values) {
+      var fan = lines.shift();
+      return values.concat(fan + "%");
+    });
+  }
+
+  if(show_power) {
+    has_smi = true;
+    build_smi_property('power-symbolic', 'power.draw,', function(lines, values) {
+      var power = lines.shift();
+      return values.concat(power.split('.')[0] + "W");
+    });
+  }
+
+  smi_call += ' --format=csv,noheader,nounits';
   settings_call += '-t';
 
   if (labels.length == 0) {
@@ -196,6 +250,7 @@ function load_settings() {
     var box = build_button_box();
     update_button_box(get_info());
     button.set_child(box);
+    Main.panel._rightBox.remove_child(button);
     Main.panel._rightBox.insert_child_at_index(button, 0);
   }
 }
@@ -219,8 +274,18 @@ function open_settings() {
  * Obtain and parse the output of the settings call
  */
 function get_info() {
-  var output = GLib.spawn_command_line_sync(settings_call)[1].toString();
-  return parse_function(output.split('\n'), []);
+  var output = '';
+  var res = [];
+
+  if (has_settings) {
+    var output = GLib.spawn_command_line_sync(settings_call)[1].toString();
+    var res = settings_parse_function(output.split('\n'), []);
+  }
+  if (smi && has_smi) {
+    output = GLib.spawn_command_line_sync(smi_call)[1].toString();
+    res = res.concat(smi_parse_function(output.split(','), []));
+  }
+  return res;
 }
 
 /*
