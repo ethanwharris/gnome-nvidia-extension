@@ -193,7 +193,7 @@ function load_settings() {
 
   if(show_utilisation) {
     has_settings = true;
-    build_settings_property('nvidia-card-symbolic', '-q GPUUtilization ', function(lines, values) {
+    build_settings_property('card-symbolic', '-q GPUUtilization ', function(lines, values) {
       var line = lines.shift();
       var util = line.substring(9,11);
       util = util.replace(/\D/g,'');
@@ -203,7 +203,7 @@ function load_settings() {
 
   if(show_temperature) {
     has_settings = true;
-    build_settings_property('nvidia-temp-symbolic', '-q GPUCoreTemp ', function(lines, values) {
+    build_settings_property('temp-symbolic', '-q GPUCoreTemp ', function(lines, values) {
       var temp = lines.shift();
       lines.shift();
       return values.concat(temp + "\xB0" + "C");
@@ -212,7 +212,7 @@ function load_settings() {
 
   if(show_memory) {
     has_settings = true;
-    build_settings_property('nvidia-ram-symbolic', '-q UsedDedicatedGPUMemory -q TotalDedicatedGPUMemory ', function(lines, values) {
+    build_settings_property('ram-symbolic', '-q UsedDedicatedGPUMemory -q TotalDedicatedGPUMemory ', function(lines, values) {
       var used_memory = lines.shift();
       var total_memory = lines.shift();
       var mem_usage = ((used_memory / total_memory) * 100).toString();
