@@ -26,6 +26,7 @@ const SETTINGS_TEMPERATURE = "gputemp";
 const SETTINGS_MEMORY = "gpumemoryutilisation";
 const SETTINGS_POWER = "gpupowerusage";
 const SETTINGS_FAN = "gpufanspeed";
+const SETTINGS_REFRESH = "refreshrate";
 
 var button;
 
@@ -175,6 +176,8 @@ function load_settings() {
   var show_power = extension_settings.get_boolean(SETTINGS_POWER);
   var show_fan = extension_settings.get_boolean(SETTINGS_FAN);
 
+  var refresh_rate = extension_settings.get_int(SETTINGS_REFRESH);
+
   has_smi = false;
   has_settings = false;
 
@@ -246,7 +249,7 @@ function load_settings() {
     remove_timeout();
     settings_call = '';
   } else {
-    add_timeout(2);
+    add_timeout(refresh_rate);
     var box = build_button_box();
     update_button_box(get_info());
     button.set_child(box);

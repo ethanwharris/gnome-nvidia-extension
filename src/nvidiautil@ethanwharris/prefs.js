@@ -51,6 +51,12 @@ const SETTINGS = {
         key : 'gpufanspeed',
         label : _("GPU Fan Speed"),
         tooltip : _("Displays the GPU fan speed (%) in the toolbar")
+    },
+    refreshrate : {
+        type : 'int',
+        key : 'refreshrate',
+        label : _("Refresh Rate (s)"),
+        tooltip : _("The time between refreshes in seconds")
     }
 };
 
@@ -75,6 +81,23 @@ function buildSettingWidget(setting) {
 
         control.connect('notify::active', function(button) {
             settings.set_boolean(setting, button.get_active());
+        });
+
+        label.set_tooltip_text(_(SETTINGS[setting].tooltip));
+        control.set_tooltip_text(_(SETTINGS[setting].tooltip));
+
+        box.pack_start(label, true, true, 0);
+        box.add(control);
+    } else if (SETTINGS[setting].type == 'int') {
+        let label = new Gtk.Label(({ label : _(SETTINGS[setting].label), xalign: 0}));
+        let control = Gtk.SpinButton.new_with_range (1, 20, 1);
+        control.set_value(settings.get_int(setting));
+        // control.connect('notify::active', function(button) {
+        //     settings.set_boolean(setting, button.get_active());
+        // });
+
+        control.connect ("value-changed", function() {
+          settings.set_int(setting, control.get_value());
         });
 
         label.set_tooltip_text(_(SETTINGS[setting].tooltip));
