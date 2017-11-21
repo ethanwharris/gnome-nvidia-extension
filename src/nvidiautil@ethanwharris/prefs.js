@@ -92,9 +92,6 @@ function buildSettingWidget(setting) {
         let label = new Gtk.Label(({ label : _(SETTINGS[setting].label), xalign: 0}));
         let control = Gtk.SpinButton.new_with_range (1, 20, 1);
         control.set_value(settings.get_int(setting));
-        // control.connect('notify::active', function(button) {
-        //     settings.set_boolean(setting, button.get_active());
-        // });
 
         control.connect ("value-changed", function() {
           settings.set_int(setting, control.get_value());
