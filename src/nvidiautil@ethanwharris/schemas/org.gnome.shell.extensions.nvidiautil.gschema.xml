@@ -35,5 +35,12 @@
          Displays the GPU fan speed (%) in the toolbar
        </description>
      </key>
+     <key name="refreshrate" type="i">
+       <default>5</default>
+       <summary>Refresh Rate (s)</summary>
+       <description>
+         The time between refreshes in seconds
+       </description>
+     </key>
   </schema>
 </schemalist>
