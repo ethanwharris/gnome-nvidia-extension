@@ -42,5 +42,12 @@
          The time between refreshes in seconds
        </description>
      </key>
+     <key name="currentgpu" type="i">
+       <default>0</default>
+       <summary>Currently tracked GPU</summary>
+       <description>
+         The GPU for which stats are to be shown
+       </description>
+     </key>
   </schema>
 </schemalist>
