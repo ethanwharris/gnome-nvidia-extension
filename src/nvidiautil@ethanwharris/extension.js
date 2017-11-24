@@ -28,6 +28,8 @@ const SETTINGS_POWER = "gpupowerusage";
 const SETTINGS_FAN = "gpufanspeed";
 const SETTINGS_REFRESH = "refreshrate";
 
+const SETTINGS_UTILISATION_LINE_PER_GPU = 1
+
 var button;
 
 var timeout_id;
@@ -47,6 +49,9 @@ var smi_parse_function;
 
 var has_smi;
 var has_settings;
+
+var current_gpu = 1
+var num_gpu = 2
 
 /*
  * Init function, nothing major here, do not edit view
@@ -197,9 +202,17 @@ function load_settings() {
   if(show_utilisation) {
     has_settings = true;
     build_settings_property('card-symbolic', '-q GPUUtilization ', function(lines, values) {
-      var line = lines.shift();
-      var util = line.substring(9,11);
-      util = util.replace(/\D/g,'');
+      var line = '';
+      var util = '';
+
+      for (i = 0; i < num_gpu; i++) {
+        line = lines.shift();
+        if (i == current_gpu) {
+          util = line.substring(9,11);
+          util = util.replace(/\D/g,'');
+        }
+      }
+
       return values.concat(util + "%");
     });
   }
@@ -207,8 +220,17 @@ function load_settings() {
   if(show_temperature) {
     has_settings = true;
     build_settings_property('temp-symbolic', '-q GPUCoreTemp ', function(lines, values) {
-      var temp = lines.shift();
+      var temp = '';
       lines.shift();
+
+      for (i = 0; i < num_gpu; i++) {
+        if (i == current_gpu) {
+          temp = lines.shift();
+        } else {
+          lines.shift();
+        }
+      }
+
       return values.concat(temp + "\xB0" + "C");
     });
   }
@@ -216,8 +238,24 @@ function load_settings() {
   if(show_memory) {
     has_settings = true;
     build_settings_property('ram-symbolic', '-q UsedDedicatedGPUMemory -q TotalDedicatedGPUMemory ', function(lines, values) {
-      var used_memory = lines.shift();
-      var total_memory = lines.shift();
+      var used_memory = '';
+      for (i = 0; i < num_gpu; i++) {
+        if (i == current_gpu) {
+          used_memory = lines.shift();
+        } else {
+          lines.shift();
+        }
+      }
+
+      var total_memory = ''
+      for (i = 0; i < num_gpu; i++) {
+        if (i == current_gpu) {
+          total_memory = lines.shift();
+        } else {
+          lines.shift();
+        }
+      }
+
       var mem_usage = ((used_memory / total_memory) * 100).toString();
       mem_usage = mem_usage.substring(0,2);
       mem_usage = mem_usage.replace(/\D/g,'');
@@ -228,7 +266,15 @@ function load_settings() {
   if(show_fan) {
     has_settings = true;
     build_settings_property('fan-symbolic', '-q GPUCurrentFanSpeed ', function(lines, values) {
-      var fan = lines.shift();
+      var fan = ''
+      for (i = 0; i < num_gpu; i++) {
+        if (i == current_gpu) {
+          fan = lines.shift()
+        } else {
+          lines.shift()
+        }
+      }
+
       return values.concat(fan + "%");
     });
   }
