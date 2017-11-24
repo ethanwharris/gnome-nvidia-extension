@@ -27,8 +27,7 @@ const SETTINGS_MEMORY = "gpumemoryutilisation";
 const SETTINGS_POWER = "gpupowerusage";
 const SETTINGS_FAN = "gpufanspeed";
 const SETTINGS_REFRESH = "refreshrate";
-
-const SETTINGS_UTILISATION_LINE_PER_GPU = 1
+const SETTINGS_CURRENT_GPU = 'currentgpu';
 
 var button;
 
@@ -50,7 +49,7 @@ var smi_parse_function;
 var has_smi;
 var has_settings;
 
-var current_gpu = 1;
+var current_gpu = 0;
 var num_gpu;
 
 /*
@@ -190,6 +189,7 @@ function load_settings() {
   var show_power = extension_settings.get_boolean(SETTINGS_POWER);
   var show_fan = extension_settings.get_boolean(SETTINGS_FAN);
 
+  current_gpu = extension_settings.get_int(SETTINGS_CURRENT_GPU);
   var refresh_rate = extension_settings.get_int(SETTINGS_REFRESH);
 
   has_smi = false;

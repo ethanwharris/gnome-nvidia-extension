@@ -13,6 +13,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/licenses/>.*/
 const Gtk = imports.gi.Gtk;
+const GLib = imports.gi.GLib;
 
 const Gettext = imports.gettext.domain('gnome-shell-extensions-nvidiautil');
 const _ = Gettext.gettext;
@@ -121,6 +122,11 @@ function buildSettingWidget(setting) {
  * Construct the entire widget for the settings dialog
  */
 function buildPrefsWidget() {
+    var has_settings = GLib.find_program_in_path("nvidia-settings");
+
+    if (has_settings) {
+      SETTINGS['currentgpu'].max = get_num_gpu()-1;
+    }
 
     let vbox = new Gtk.Box({ orientation : Gtk.Orientation.VERTICAL,
         border_width: 10, spacing: 10 });
@@ -133,4 +139,11 @@ function buildPrefsWidget() {
     vbox.show_all();
 
     return vbox;
+}
+
+function get_num_gpu() {
+  var output = GLib.spawn_command_line_sync("nvidia-settings -t -q gpus")[1].toString();
+  var lines = output.split('\n');
+  var line = lines.shift();
+  return parseInt(line.substring(0,1));
 }
