@@ -27,6 +27,7 @@ const SETTINGS_MEMORY = "gpumemoryutilisation";
 const SETTINGS_POWER = "gpupowerusage";
 const SETTINGS_FAN = "gpufanspeed";
 const SETTINGS_REFRESH = "refreshrate";
+const SETTINGS_CURRENT_GPU = 'currentgpu';
 
 var button;
 
@@ -47,6 +48,9 @@ var smi_parse_function;
 
 var has_smi;
 var has_settings;
+
+var current_gpu = 0;
+var num_gpu;
 
 /*
  * Init function, nothing major here, do not edit view
@@ -73,6 +77,8 @@ function enable() {
                 St.ButtonMask.THREE });
 
   if (settings) {
+    get_num_gpu();
+
     button.connect('clicked', Lang.bind(this, function(actor, button) {
       if (button == 3) {
         open_prefs();
@@ -96,6 +102,13 @@ function enable() {
     button.set_child(new St.Label({text: "Error - nvidia-settings or -smi not present!"}));
     Main.panel._rightBox.insert_child_at_index(button, 0);
   }
+}
+
+function get_num_gpu() {
+  var output = GLib.spawn_command_line_sync("nvidia-settings -t -q gpus")[1].toString();
+  var lines = output.split('\n');
+  var line = lines.shift();
+  num_gpu = parseInt(line.substring(0,1));
 }
 
 /*
@@ -176,6 +189,7 @@ function load_settings() {
   var show_power = extension_settings.get_boolean(SETTINGS_POWER);
   var show_fan = extension_settings.get_boolean(SETTINGS_FAN);
 
+  current_gpu = extension_settings.get_int(SETTINGS_CURRENT_GPU);
   var refresh_rate = extension_settings.get_int(SETTINGS_REFRESH);
 
   has_smi = false;
@@ -197,9 +211,17 @@ function load_settings() {
   if(show_utilisation) {
     has_settings = true;
     build_settings_property('card-symbolic', '-q GPUUtilization ', function(lines, values) {
-      var line = lines.shift();
-      var util = line.substring(9,11);
-      util = util.replace(/\D/g,'');
+      var line = '';
+      var util = '';
+
+      for (i = 0; i < num_gpu; i++) {
+        line = lines.shift();
+        if (i == current_gpu) {
+          util = line.substring(9,11);
+          util = util.replace(/\D/g,'');
+        }
+      }
+
       return values.concat(util + "%");
     });
   }
@@ -207,8 +229,17 @@ function load_settings() {
   if(show_temperature) {
     has_settings = true;
     build_settings_property('temp-symbolic', '-q GPUCoreTemp ', function(lines, values) {
-      var temp = lines.shift();
+      var temp = '';
       lines.shift();
+
+      for (i = 0; i < num_gpu; i++) {
+        if (i == current_gpu) {
+          temp = lines.shift();
+        } else {
+          lines.shift();
+        }
+      }
+
       return values.concat(temp + "\xB0" + "C");
     });
   }
@@ -216,8 +247,24 @@ function load_settings() {
   if(show_memory) {
     has_settings = true;
     build_settings_property('ram-symbolic', '-q UsedDedicatedGPUMemory -q TotalDedicatedGPUMemory ', function(lines, values) {
-      var used_memory = lines.shift();
-      var total_memory = lines.shift();
+      var used_memory = '';
+      for (i = 0; i < num_gpu; i++) {
+        if (i == current_gpu) {
+          used_memory = lines.shift();
+        } else {
+          lines.shift();
+        }
+      }
+
+      var total_memory = ''
+      for (i = 0; i < num_gpu; i++) {
+        if (i == current_gpu) {
+          total_memory = lines.shift();
+        } else {
+          lines.shift();
+        }
+      }
+
       var mem_usage = ((used_memory / total_memory) * 100).toString();
       mem_usage = mem_usage.substring(0,2);
       mem_usage = mem_usage.replace(/\D/g,'');
@@ -228,7 +275,15 @@ function load_settings() {
   if(show_fan) {
     has_settings = true;
     build_settings_property('fan-symbolic', '-q GPUCurrentFanSpeed ', function(lines, values) {
-      var fan = lines.shift();
+      var fan = ''
+      for (i = 0; i < num_gpu; i++) {
+        if (i == current_gpu) {
+          fan = lines.shift()
+        } else {
+          lines.shift()
+        }
+      }
+
       return values.concat(fan + "%");
     });
   }
