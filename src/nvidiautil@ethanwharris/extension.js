@@ -50,8 +50,8 @@ var smi_parse_function;
 var has_smi;
 var has_settings;
 
-var current_gpu = 1
-var num_gpu = 2
+var current_gpu = 1;
+var num_gpu;
 
 /*
  * Init function, nothing major here, do not edit view
@@ -78,6 +78,8 @@ function enable() {
                 St.ButtonMask.THREE });
 
   if (settings) {
+    get_num_gpu();
+
     button.connect('clicked', Lang.bind(this, function(actor, button) {
       if (button == 3) {
         open_prefs();
@@ -101,6 +103,13 @@ function enable() {
     button.set_child(new St.Label({text: "Error - nvidia-settings or -smi not present!"}));
     Main.panel._rightBox.insert_child_at_index(button, 0);
   }
+}
+
+function get_num_gpu() {
+  var output = GLib.spawn_command_line_sync("nvidia-settings -t -q gpus")[1].toString();
+  var lines = output.split('\n');
+  var line = lines.shift();
+  num_gpu = parseInt(line.substring(0,1));
 }
 
 /*
