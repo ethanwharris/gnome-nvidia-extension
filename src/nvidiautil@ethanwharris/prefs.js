@@ -13,6 +13,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/licenses/>.*/
 const Gtk = imports.gi.Gtk;
+const GLib = imports.gi.GLib;
 
 const Gettext = imports.gettext.domain('gnome-shell-extensions-nvidiautil');
 const _ = Gettext.gettext;
@@ -56,7 +57,17 @@ const SETTINGS = {
         type : 'int',
         key : 'refreshrate',
         label : _("Refresh Rate (s)"),
-        tooltip : _("The time between refreshes in seconds")
+        tooltip : _("The time between refreshes in seconds"),
+        min : 1,
+        max : 20
+    },
+    currentgpu : {
+        type : 'int',
+        key : 'currentgpu',
+        label : _("Currently tracked GPU"),
+        tooltip : _("The GPU for which stats are to be shown"),
+        max : 0,
+        min : 0
     }
 };
 
@@ -90,7 +101,7 @@ function buildSettingWidget(setting) {
         box.add(control);
     } else if (SETTINGS[setting].type == 'int') {
         let label = new Gtk.Label(({ label : _(SETTINGS[setting].label), xalign: 0}));
-        let control = Gtk.SpinButton.new_with_range (1, 20, 1);
+        let control = Gtk.SpinButton.new_with_range (SETTINGS[setting].min, SETTINGS[setting].max, 1);
         control.set_value(settings.get_int(setting));
 
         control.connect ("value-changed", function() {
@@ -111,6 +122,11 @@ function buildSettingWidget(setting) {
  * Construct the entire widget for the settings dialog
  */
 function buildPrefsWidget() {
+    var has_settings = GLib.find_program_in_path("nvidia-settings");
+
+    if (has_settings) {
+      SETTINGS['currentgpu'].max = get_num_gpu()-1;
+    }
 
     let vbox = new Gtk.Box({ orientation : Gtk.Orientation.VERTICAL,
         border_width: 10, spacing: 10 });
@@ -123,4 +139,11 @@ function buildPrefsWidget() {
     vbox.show_all();
 
     return vbox;
+}
+
+function get_num_gpu() {
+  var output = GLib.spawn_command_line_sync("nvidia-settings -t -q gpus")[1].toString();
+  var lines = output.split('\n');
+  var line = lines.shift();
+  return parseInt(line.substring(0,1));
 }
