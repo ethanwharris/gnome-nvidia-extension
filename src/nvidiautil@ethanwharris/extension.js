@@ -299,7 +299,6 @@ function load_settings() {
         return values.concat('ERR')
       }
 
-
       return values.concat(power.split('.')[0] + "W");
     });
   }
@@ -333,15 +332,7 @@ function open_prefs() {
  * Note: This will not check if nvidia-settings exists first
  */
 function open_settings() {
-  var id = GLib.spawn_command_line_sync('pgrep nvidia-settings')
-
-  if (id[3] == 256) {
-    GLib.spawn_command_line_async("nvidia-settings");
-  } else{
-    GLib.spawn_command_line_sync("kill " + id[1])
-    GLib.spawn_command_line_async("nvidia-settings");
-  }
-
+  GLib.spawn_command_line_async("nvidia-settings");
 }
 
 /*
