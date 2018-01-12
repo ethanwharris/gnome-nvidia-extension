@@ -292,6 +292,13 @@ function load_settings() {
     has_smi = true;
     build_smi_property('power-symbolic', 'power.draw,', function(lines, values) {
       var power = lines.shift();
+      power = power.split('\n');
+      power = power[current_gpu];
+
+      if (isNaN(parseFloat(power)) || !isFinite(power)) {
+        return values.concat('ERR')
+      }
+
       return values.concat(power.split('.')[0] + "W");
     });
   }
