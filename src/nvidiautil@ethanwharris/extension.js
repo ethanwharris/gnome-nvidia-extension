@@ -332,16 +332,16 @@ function open_prefs() {
  * Note: This will not check if nvidia-settings exists first
  */
  function open_settings() {
-   var id = GLib.spawn_command_line_sync('pgrep nvidia-settings')
+   const Shell = imports.gi.Shell;
+   let defaultAppSystem = Shell.AppSystem.get_default();
+   let nvidiaSettingsApp = defaultAppSystem.lookup_app('nvidia-settings.desktop');
 
-   if (id[3] == 256) {
-     GLib.spawn_command_line_async("nvidia-settings");
-   } else{
-     GLib.spawn_command_line_sync("kill " + id[1])
-     GLib.spawn_command_line_async("nvidia-settings");
+   if (nvidiaSettingsApp.get_n_windows()) {
+     nvidiaSettingsApp.activate();
+   } else {
+     GLib.spawn_command_line_async('nvidia-settings');
    }
-
- }
+}
 
 /*
  * Obtain and parse the output of the settings call
