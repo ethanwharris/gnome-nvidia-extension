@@ -204,7 +204,7 @@ const PropertyMenuItem = new Lang.Class({
 
     // super.destroy();
   },
-  activate(event) {
+  activate : function(event) {
     this._box.add_child(this._icon);
     this._box.add_child(this._statisticLabel);
 
@@ -323,20 +323,44 @@ const MainMenu = new Lang.Class({
       return power.split('.')[0] + "W";
     }, 'power.draw,', 'power-symbolic');
 
-    this.menu.addMenuItem(new PropertyMenuItem(this.settingsProcessor, utilisationProperty, properties));
-    this.menu.addMenuItem(new PropertyMenuItem(this.settingsProcessor, tempProperty, properties));
-    this.menu.addMenuItem(new PropertyMenuItem(this.settingsProcessor, memoryProperty, properties));
-    this.menu.addMenuItem(new PropertyMenuItem(this.settingsProcessor, fanProperty, properties));
-    this.menu.addMenuItem(new PropertyMenuItem(this.smiProcessor, powerProperty, properties));
+    let submenu = new PopupMenu.PopupSubMenuMenuItem('GPU 1');
+
+    this.menu.addMenuItem(submenu);
+
+    submenu.menu.addMenuItem(new PropertyMenuItem(this.settingsProcessor, utilisationProperty, properties));
+    submenu.menu.addMenuItem(new PropertyMenuItem(this.settingsProcessor, tempProperty, properties));
+    submenu.menu.addMenuItem(new PropertyMenuItem(this.settingsProcessor, memoryProperty, properties));
+    submenu.menu.addMenuItem(new PropertyMenuItem(this.settingsProcessor, fanProperty, properties));
+    submenu.menu.addMenuItem(new PropertyMenuItem(this.smiProcessor, powerProperty, properties));
 
     this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-    this.menu.addAction(_("Open Preferences"), event => {
-      openPreferences();
-    });
 
-    this.menu.addAction(_("Open Settings"), event => {
-      openSettings();
+    item = new PopupMenu.PopupBaseMenuItem({ reactive: false,
+                                         can_focus: false });
+
+    let wrench = new St.Button({
+      reactive: true,
+      can_focus: true,
+      track_hover: true,
+      accessible_name: 'Open Preferences',
+      style_class: 'system-menu-action'
     });
+    wrench.child = new St.Icon({ icon_name: 'wrench-symbolic' });
+    wrench.connect('clicked', () => { openPreferences(); });
+    item.actor.add(wrench, { expand: true, x_fill: false });
+
+    let cog = new St.Button({
+      reactive: true,
+      can_focus: true,
+      track_hover: true,
+      accessible_name: 'Open Nvidia Settings',
+      style_class: 'system-menu-action'
+    });
+    cog.child = new St.Icon({ icon_name: 'cog-symbolic' });
+    cog.connect('clicked', () => { openSettings(); });
+    item.actor.add(cog, { expand: true, x_fill: false });
+
+    this.menu.addMenuItem(item);
 
     this.settingsProcessor.process();
     this.smiProcessor.process();
@@ -389,6 +413,12 @@ function enable() {
 function disable() {
     _indicator.destroy();
 }
+
+// TODO: Persistent choices / arrangement
+// TODO: Configurable refresh rate / Settings clean-up
+// TODO: multi gpus
+// TODO: leave drop down open when selecting properties
+// TODO: Settings / preferences buttons
 
 // /*
 //  * Enable handles the main functioning of the extension, editing view and updating
