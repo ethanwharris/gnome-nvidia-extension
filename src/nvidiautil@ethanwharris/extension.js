@@ -272,8 +272,34 @@ const MainMenu = new Lang.Class({
       return temp + "\xB0" + "C";
     }, '-q GPUCoreTemp ', 'temp-symbolic');
 
+    let memoryProperty = new Property('Memory (RAM)', function(lines, values) {
+      var used_memory = '';
+      for (i = 0; i < num_gpu; i++) {
+        if (i == current_gpu) {
+          used_memory = lines.shift();
+        } else {
+          lines.shift();
+        }
+      }
+
+      var total_memory = ''
+      for (i = 0; i < num_gpu; i++) {
+        if (i == current_gpu) {
+          total_memory = lines.shift();
+        } else {
+          lines.shift();
+        }
+      }
+
+      var mem_usage = ((used_memory / total_memory) * 100).toString();
+      mem_usage = mem_usage.substring(0,2);
+      mem_usage = mem_usage.replace(/\D/g,'');
+      return mem_usage + "%";
+    }, '-q UsedDedicatedGPUMemory -q TotalDedicatedGPUMemory ', 'ram-symbolic');
+
     this.menu.addMenuItem(new PropertyMenuItem(settingsProcessor, utilisationProperty, properties));
     this.menu.addMenuItem(new PropertyMenuItem(settingsProcessor, tempProperty, properties));
+    this.menu.addMenuItem(new PropertyMenuItem(settingsProcessor, memoryProperty, properties));
 
     this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
     this.menu.addAction(_("Open Preferences"), event => {
@@ -288,25 +314,6 @@ const MainMenu = new Lang.Class({
   }
 });
 
-
-//   if(show_temperature) {
-//     has_settings = true;
-//     build_settings_property('temp-symbolic', '-q GPUCoreTemp ', function(lines, values) {
-//       var temp = '';
-//       lines.shift();
-//
-//       for (i = 0; i < num_gpu; i++) {
-//         if (i == current_gpu) {
-//           temp = lines.shift();
-//         } else {
-//           lines.shift();
-//         }
-//       }
-//
-//       return values.concat(temp + "\xB0" + "C");
-//     });
-//   }
-//
 //   if(show_memory) {
 //     has_settings = true;
 //     build_settings_property('ram-symbolic', '-q UsedDedicatedGPUMemory -q TotalDedicatedGPUMemory ', function(lines, values) {
