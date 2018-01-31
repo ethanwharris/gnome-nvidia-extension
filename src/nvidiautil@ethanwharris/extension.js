@@ -192,18 +192,6 @@ const PropertyMenuItem = new Lang.Class({
       statisticLabelVisible.text = value;
     }, property.getCallExtension());
 
-    // let button = new St.Button({ child: this._icon });
-
-    // button.connect('clicked', Lang.bind(this, function(actor, button) {
-    //   box.add_child(icon);
-    // }));
-    //
-    // button.connect('clicked', this._box.add_child(icon).bind(this));
-
-    // this._changedId = mount.connect('changed', this._syncVisibility.bind(this));
-    // this._syncVisibility();
-
-
     // Construct the menu item etc
     // register with the processor
     // Place icon in panel
@@ -254,7 +242,7 @@ const MainMenu = new Lang.Class({
 
   // _init : function(name, parseFunction, callExtension, icon) {
 
-    let utilisationProperty = new Property('GPU Utilisation', function(lines) {
+    let utilisationProperty = new Property('Utilisation', function(lines) {
       var line = '';
       var util = '';
 
@@ -269,9 +257,23 @@ const MainMenu = new Lang.Class({
       return util + "%";
     }, '-q GPUUtilization ', 'card-symbolic');
 
-    let tmp = new PropertyMenuItem(settingsProcessor, utilisationProperty, properties);
+    let tempProperty = new Property('Temperature', function(lines) {
+      var temp = '';
+      lines.shift();
 
-    this.menu.addMenuItem(tmp);
+      for (i = 0; i < num_gpu; i++) {
+        if (i == current_gpu) {
+          temp = lines.shift();
+        } else {
+          lines.shift();
+        }
+      }
+
+      return temp + "\xB0" + "C";
+    }, '-q GPUCoreTemp ', 'temp-symbolic');
+
+    this.menu.addMenuItem(new PropertyMenuItem(settingsProcessor, utilisationProperty, properties));
+    this.menu.addMenuItem(new PropertyMenuItem(settingsProcessor, tempProperty, properties));
 
     this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
     this.menu.addAction(_("Open Preferences"), event => {
@@ -283,29 +285,10 @@ const MainMenu = new Lang.Class({
     });
 
     settingsProcessor.process();
-
-    // this._updateMenuVisibility();
   }
 });
 
-//   if(show_utilisation) {
-//     has_settings = true;
-//     build_settings_property('card-symbolic', '-q GPUUtilization ', function(lines, values) {
-//       var line = '';
-//       var util = '';
-//
-//       for (i = 0; i < num_gpu; i++) {
-//         line = lines.shift();
-//         if (i == current_gpu) {
-//           util = line.substring(9,11);
-//           util = util.replace(/\D/g,'');
-//         }
-//       }
-//
-//       return values.concat(util + "%");
-//     });
-//   }
-//
+
 //   if(show_temperature) {
 //     has_settings = true;
 //     build_settings_property('temp-symbolic', '-q GPUCoreTemp ', function(lines, values) {
