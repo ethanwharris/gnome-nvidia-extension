@@ -15,6 +15,7 @@ along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/license
 
 .label {
   min-width: 27px;
-  margin-right: 10px;
+  margin-right: 5px;
+  margin-top: 3px;
   text-align: left;
 }
