@@ -217,6 +217,7 @@ const MainMenu = new Lang.Class({
   Extends: PanelMenu.Button,
   _init : function() {
     this.parent(0.0, _("GPU Statistics"));
+    this.timeoutId = -1;
     // super(0.0, _("GPU Statistics"));
 
     let hbox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
@@ -237,8 +238,8 @@ const MainMenu = new Lang.Class({
     // this.actor.add_child(properties);
     this.actor.add_child(hbox);
 
-    let settingsProcessor = new Processor('nvidia-settings ', '-t', '\n');
-    let smiProcessor = new Processor('nvidia-smi --query-gpu=', ' --format=csv,noheader,nounits', ',');
+    this.settingsProcessor = new Processor('nvidia-settings ', '-t', '\n');
+    this.smiProcessor = new Processor('nvidia-smi --query-gpu=', ' --format=csv,noheader,nounits', ',');
 
   // _init : function(name, parseFunction, callExtension, icon) {
 
@@ -322,11 +323,11 @@ const MainMenu = new Lang.Class({
       return power.split('.')[0] + "W";
     }, 'power.draw,', 'power-symbolic');
 
-    this.menu.addMenuItem(new PropertyMenuItem(settingsProcessor, utilisationProperty, properties));
-    this.menu.addMenuItem(new PropertyMenuItem(settingsProcessor, tempProperty, properties));
-    this.menu.addMenuItem(new PropertyMenuItem(settingsProcessor, memoryProperty, properties));
-    this.menu.addMenuItem(new PropertyMenuItem(settingsProcessor, fanProperty, properties));
-    this.menu.addMenuItem(new PropertyMenuItem(smiProcessor, powerProperty, properties));
+    this.menu.addMenuItem(new PropertyMenuItem(this.settingsProcessor, utilisationProperty, properties));
+    this.menu.addMenuItem(new PropertyMenuItem(this.settingsProcessor, tempProperty, properties));
+    this.menu.addMenuItem(new PropertyMenuItem(this.settingsProcessor, memoryProperty, properties));
+    this.menu.addMenuItem(new PropertyMenuItem(this.settingsProcessor, fanProperty, properties));
+    this.menu.addMenuItem(new PropertyMenuItem(this.smiProcessor, powerProperty, properties));
 
     this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
     this.menu.addAction(_("Open Preferences"), event => {
@@ -337,8 +338,36 @@ const MainMenu = new Lang.Class({
       openSettings();
     });
 
-    settingsProcessor.process();
-    smiProcessor.process();
+    this.settingsProcessor.process();
+    this.smiProcessor.process();
+    this._addTimeout(2);
+  },
+  /*
+   * Create and add the timeout which updates values every t seconds
+   */
+  _addTimeout : function(t) {
+    if (this.timeoutId != -1) {
+      GLib.source_remove(this.timeoutId);
+    }
+    this.timeoutId = GLib.timeout_add_seconds(0, t, Lang.bind(this, function() {
+      this.settingsProcessor.process();
+      this.smiProcessor.process();
+      return true;
+    }));
+  },
+  /*
+   * Remove current timeout
+   */
+  _removeTimeout : function() {
+    if (this.timeoutId != -1) {
+      GLib.source_remove(this.timeoutId);
+      this.timeoutId = -1;
+    }
+  },
+  destroy : function() {
+    this._removeTimeout();
+
+    this.parent();
   }
 });
 
