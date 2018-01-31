@@ -310,10 +310,23 @@ const MainMenu = new Lang.Class({
       return fan + "%";
     }, '-q GPUCurrentFanSpeed ', 'fan-symbolic');
 
+    let powerProperty = new Property('Power Usage (W)', function(lines) {
+      var power = lines.shift();
+      power = power.split('\n');
+      power = power[current_gpu];
+
+      if (isNaN(parseFloat(power)) || !isFinite(power)) {
+        return 'ERR'
+      }
+
+      return power.split('.')[0] + "W";
+    }, 'power.draw,', 'power-symbolic');
+
     this.menu.addMenuItem(new PropertyMenuItem(settingsProcessor, utilisationProperty, properties));
     this.menu.addMenuItem(new PropertyMenuItem(settingsProcessor, tempProperty, properties));
     this.menu.addMenuItem(new PropertyMenuItem(settingsProcessor, memoryProperty, properties));
     this.menu.addMenuItem(new PropertyMenuItem(settingsProcessor, fanProperty, properties));
+    this.menu.addMenuItem(new PropertyMenuItem(smiProcessor, powerProperty, properties));
 
     this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
     this.menu.addAction(_("Open Preferences"), event => {
@@ -325,40 +338,9 @@ const MainMenu = new Lang.Class({
     });
 
     settingsProcessor.process();
+    smiProcessor.process();
   }
 });
-
-//
-//   if(show_fan) {
-//     has_settings = true;
-//     build_settings_property('fan-symbolic', '-q GPUCurrentFanSpeed ', function(lines, values) {
-//       var fan = ''
-//       for (i = 0; i < num_gpu; i++) {
-//         if (i == current_gpu) {
-//           fan = lines.shift()
-//         } else {
-//           lines.shift()
-//         }
-//       }
-//
-//       return values.concat(fan + "%");
-//     });
-//   }
-//
-//   if(show_power) {
-//     has_smi = true;
-//     build_smi_property('power-symbolic', 'power.draw,', function(lines, values) {
-//       var power = lines.shift();
-//       power = power.split('\n');
-//       power = power[current_gpu];
-//
-//       if (isNaN(parseFloat(power)) || !isFinite(power)) {
-//         return values.concat('ERR')
-//       }
-//
-//       return values.concat(power.split('.')[0] + "W");
-//     });
-//   }
 
 /*
  * Init function, nothing major here, do not edit view
