@@ -53,6 +53,140 @@ var current_gpu = 0;
 var num_gpu;
 
 /*
+ * Utility function to perform one function and then another
+ */
+function andThen(first, second) {
+  return function(lines) {
+    first(lines);
+    return second(lines);
+  };
+}
+
+// three classes : Main (StatsMenu), Statistic and Processor
+// Main creates all statistics (based on smi / settings availability)
+// Statistics are given a Processor where they can declare the processing function / call properties
+
+class Processor {
+  constructor(baseCall, delimiter) {
+    // Initialise lists / functions etc.
+    this._baseCall = baseCall;
+    this._delimiter = delimiter;
+
+    this._init();
+  }
+
+  _init() {
+    // Reset the processor
+    this._call = this._baseCall;
+
+    this._parseFunction = function(lines) {
+      return;
+    };
+  }
+
+  _process() {
+    // Perform the action
+    var output = GLib.spawn_command_line_sync(this._call)[1].toString();
+    this._parseFunction(output.split(this._delimiter));
+  }
+
+  _addProperty(parseFunction, callExtension) {
+    // Add the new property
+    this._call += callExtension;
+    this._parseFunction = andThen(this._parseFunction, parseFunction);
+  }
+}
+
+class PropertyMenuItem extends PopupMenu.PopupBaseMenuItem {
+  constructor(processor) {
+    // Construct the menu item etc
+    // register with the processor
+    // Place icon in panel
+  }
+}
+
+class MainMenu extends PanelMenu.Button {
+  constructor() {
+
+  }
+}
+
+class StatsMenu extends PanelMenu.Button {
+    constructor() {
+        super(0.0, _("GPU Statistics"));
+
+        // Add icons
+
+        let hbox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
+        let icon = new St.Icon({ icon_name: 'media-eject-symbolic',
+                                 style_class: 'system-status-icon' });
+
+        hbox.add_child(icon);
+        hbox.add_child(PopupMenu.arrowIcon(St.Side.BOTTOM));
+        this.actor.add_child(hbox);
+
+        this._monitor = Gio.VolumeMonitor.get();
+        this._addedId = this._monitor.connect('mount-added', (monitor, mount) => {
+            this._addMount(mount);
+            this._updateMenuVisibility();
+        });
+        this._removedId = this._monitor.connect('mount-removed', (monitor, mount) => {
+            this._removeMount(mount);
+            this._updateMenuVisibility();
+        });
+
+        this._mounts = [ ];
+
+        this._monitor.get_mounts().forEach(this._addMount.bind(this));
+
+        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+        this.menu.addAction(_("Open Files"), event => {
+            let appSystem = Shell.AppSystem.get_default();
+            let app = appSystem.lookup_app('org.gnome.Nautilus.desktop');
+            app.activate_full(-1, event.get_time());
+        });
+
+        this._updateMenuVisibility();
+    }
+
+    _updateMenuVisibility() {
+        if (this._mounts.filter(i => i.actor.visible).length > 0)
+            this.actor.show();
+        else
+            this.actor.hide();
+    }
+
+    _addMount(mount) {
+        let item = new MountMenuItem(mount);
+        this._mounts.unshift(item);
+        this.menu.addMenuItem(item, 0);
+    }
+
+    _removeMount(mount) {
+        for (let i = 0; i < this._mounts.length; i++) {
+            let item = this._mounts[i];
+            if (item.mount == mount) {
+                item.destroy();
+                this._mounts.splice(i, 1);
+                return;
+            }
+        }
+        log ('Removing a mount that was never added to the menu');
+    }
+
+    destroy() {
+        if (this._connectedId) {
+            this._monitor.disconnect(this._connectedId);
+            this._monitor.disconnect(this._disconnectedId);
+            this._connectedId = 0;
+            this._disconnectedId = 0;
+        }
+
+        super.destroy();
+    }
+};
+
+/*
  * Init function, nothing major here, do not edit view
  */
 function init() {
@@ -196,13 +330,13 @@ function load_settings() {
   has_settings = false;
 
   settings_call = 'nvidia-settings ';
-  settings_parse_function = function(lines, values) {
+  settings_parse_function = function(lines) {
     return values;
   };
 
   smi_call = 'nvidia-smi --query-gpu=';
-  smi_parse_function = function(lines, values) {
-    return values;
+  smi_parse_function = function(lines) {
+    return;
   };
 
   icons = [];
