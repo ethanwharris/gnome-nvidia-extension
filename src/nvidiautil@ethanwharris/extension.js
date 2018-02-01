@@ -89,24 +89,31 @@ const PropertyMenuItem = new Lang.Class({
     this._statisticLabelVisible = new St.Label({ text: '0', style_class: 'label' });
 
     this.actor.add(this._statisticLabelHidden);
-
     this._visible = false;
   },
   destroy : function() {
     parent();
   },
   activate : function(event) {
+    this.parent();
+
     if (this._visible) {
+      this.actor.remove_style_pseudo_class('active');
       this._box.remove_child(this._icon);
       this._box.remove_child(this._statisticLabelVisible);
       this._visible = false;
     } else {
+      this.actor.add_style_pseudo_class('active');
       this._box.add_child(this._icon);
       this._box.add_child(this._statisticLabelVisible);
       this._visible = true;
     }
-
-    this.parent();
+  },
+  setActive : function(active) {
+    this.parent(active);
+    if (this._visible) {
+      this.actor.add_style_pseudo_class('active');
+    }
   },
   handle : function(value) {
     this._statisticLabelHidden.text = value;
