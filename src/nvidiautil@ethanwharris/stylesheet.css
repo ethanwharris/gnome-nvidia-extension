@@ -19,3 +19,10 @@ along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/license
   margin-top: 3px;
   text-align: left;
 }
+
+.gpulabel {
+  min-width: 27px;
+  margin-right: 5px;
+  margin-top: 3px;
+  text-align: right
+}

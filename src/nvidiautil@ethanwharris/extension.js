@@ -70,10 +70,11 @@ function getGpuNames() {
 const PropertyMenuItem = new Lang.Class({
   Name : 'PropertyMenuItem',
   Extends: PopupMenu.PopupBaseMenuItem,
-  _init : function(property, box) {
+  _init : function(property, box, labelManager) {
     this.parent();
 
     this._box = box;
+    this.labelManager = labelManager
 
     this.actor.add(new St.Icon({ icon_name: property.getIcon(),
                                       style_class: 'popup-menu-icon' }));
@@ -100,11 +101,13 @@ const PropertyMenuItem = new Lang.Class({
       this._box.remove_child(this._icon);
       this._box.remove_child(this._statisticLabelVisible);
       this._visible = false;
+      this.labelManager.decrement()
     } else {
       this.actor.add_style_pseudo_class('active');
       this._box.add_child(this._icon);
       this._box.add_child(this._statisticLabelVisible);
       this._visible = true;
+      this.labelManager.increment()
     }
   },
   setActive : function(active) {
@@ -139,6 +142,29 @@ const PersistentPopupMenu = new Lang.Class({
   },
   _setOpenedSubMenu: function(submenu) {
       this._openedSubMenu = submenu;
+  }
+});
+
+const GpuLabelDisplayManager = new Lang.Class({
+  Name : 'gpuLabelDisplayManager',
+  _init : function(gpuLabel) {
+    this.gpuLabel = gpuLabel
+    this.count = 0
+    this.gpuLabel.visible = false
+  },
+  increment : function() {
+    this.count = this.count + 1
+
+    if (this.gpuLabel.visible == false) {
+      this.gpuLabel.visible = true
+    }
+  },
+  decrement : function() {
+    this.count = this.count - 1
+
+    if (this.count == 0 && this.gpuLabel.visible == true) {
+      this.gpuLabel.visible = false
+    }
   }
 });
 
@@ -184,33 +210,36 @@ const MainMenu = new Lang.Class({
 
       let submenu = new PopupMenu.PopupSubMenuMenuItem(names[n]);
 
+      var gpuLabel = new St.Label({ text : n + ':', style_class : 'gpulabel'})
+      labelManager = new GpuLabelDisplayManager(gpuLabel)
       this.menu.addMenuItem(submenu);
 
       var utilisationBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' })
-      var tmp = new PropertyMenuItem(utilisationProperty, utilisationBox);
+      var tmp = new PropertyMenuItem(utilisationProperty, utilisationBox, labelManager);
       utilisationListeners[n] = tmp;
       submenu.menu.addMenuItem(tmp);
 
       var temperatureBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' })
-      tmp = new PropertyMenuItem(temperatureProperty, temperatureBox);
+      tmp = new PropertyMenuItem(temperatureProperty, temperatureBox, labelManager);
       temperatureListeners[n] = tmp;
       submenu.menu.addMenuItem(tmp);
 
       var memoryBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' })
-      tmp = new PropertyMenuItem(memoryProperty, memoryBox);
+      tmp = new PropertyMenuItem(memoryProperty, memoryBox, labelManager);
       memoryListeners[n] = tmp;
       submenu.menu.addMenuItem(tmp);
 
       var fanBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' })
-      tmp = new PropertyMenuItem(fanProperty, fanBox);
+      tmp = new PropertyMenuItem(fanProperty, fanBox, labelManager);
       fanListeners[n] = tmp;
       submenu.menu.addMenuItem(tmp);
 
       var powerBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' })
-      tmp = new PropertyMenuItem(powerProperty, powerBox);
+      tmp = new PropertyMenuItem(powerProperty, powerBox, labelManager);
       powerListeners[n] = tmp;
       submenu.menu.addMenuItem(tmp);
 
+      properties.add_child(gpuLabel)
       properties.add_child(utilisationBox)
       properties.add_child(temperatureBox)
       properties.add_child(memoryBox)
