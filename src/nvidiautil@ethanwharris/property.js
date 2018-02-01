@@ -108,7 +108,7 @@ const MemoryProperty = new Lang.Class({
   Name : 'MemoryProperty',
   Extends : Property,
   _init : function(gpuCount) {
-    this.parent('Memory (RAM)', '-q UsedDedicatedGPUMemory -q TotalDedicatedGPUMemory ', 'ram-symbolic');
+    this.parent('Memory Usage', '-q UsedDedicatedGPUMemory -q TotalDedicatedGPUMemory ', 'ram-symbolic');
 
     this._gpuCount = gpuCount;
   },
@@ -133,7 +133,7 @@ const FanProperty = new Lang.Class({
   Name : 'FanProperty',
   Extends : Property,
   _init : function(gpuCount) {
-    this.parent('Fan Speed (RPM)', '-q GPUCurrentFanSpeed ', 'fan-symbolic');
+    this.parent('Fan Speed', '-q GPUCurrentFanSpeed ', 'fan-symbolic');
 
     this._gpuCount = gpuCount;
   },
