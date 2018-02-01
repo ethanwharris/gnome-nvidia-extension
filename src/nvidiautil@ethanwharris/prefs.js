@@ -24,31 +24,31 @@ const Util = Me.imports.util;
 
 const SETTINGS = {
     gpuutilisation : {
-        type : 'bool',
+        type : 'noshow',
         key : 'gpuutilisation',
         label : _("GPU Utilisation"),
         tooltip : _("Displays the GPU utilisation in the toolbar")
     },
     gputemp : {
-        type : 'bool',
+        type : 'noshow',
         key : 'gputemp',
         label : _("GPU Temperature"),
         tooltip : _("Displays the GPU temperature in the toolbar")
     },
     gpumemoryutilisation : {
-        type : 'bool',
+        type : 'noshow',
         key : 'gpumemoryutilisation',
         label : _("GPU Memory Utilisation"),
         tooltip : _("Displays the GPU memory utilisation in the toolbar")
     },
     gpupowerusage : {
-        type : 'bool',
+        type : 'noshow',
         key : 'gpupowerusage',
         label : _("GPU Power Usage (Requires: nvidia-smi)"),
         tooltip : _("Displays the GPU power usage (W) in the toolbar")
     },
     gpufanspeed : {
-        type : 'bool',
+        type : 'noshow',
         key : 'gpufanspeed',
         label : _("GPU Fan Speed"),
         tooltip : _("Displays the GPU fan speed (%) in the toolbar")
@@ -56,18 +56,10 @@ const SETTINGS = {
     refreshrate : {
         type : 'int',
         key : 'refreshrate',
-        label : _("Refresh Rate (s)"),
+        label : _("Refresh Interval (s)"),
         tooltip : _("The time between refreshes in seconds"),
         min : 1,
         max : 20
-    },
-    currentgpu : {
-        type : 'int',
-        key : 'currentgpu',
-        label : _("Currently tracked GPU"),
-        tooltip : _("The GPU for which stats are to be shown"),
-        max : 0,
-        min : 0
     }
 };
 
@@ -84,6 +76,9 @@ function init() {
  * Construct the individual widget for an individual setting
  */
 function buildSettingWidget(setting) {
+    if (SETTINGS[setting].type == 'noshow') {
+      return false;
+    }
     let box = new Gtk.Box(({ orientation : Gtk.Orientation.HORIZONTAL }));
 
     if (SETTINGS[setting].type == 'bool') {
@@ -122,28 +117,17 @@ function buildSettingWidget(setting) {
  * Construct the entire widget for the settings dialog
  */
 function buildPrefsWidget() {
-    var has_settings = GLib.find_program_in_path("nvidia-settings");
-
-    if (has_settings) {
-      SETTINGS['currentgpu'].max = get_num_gpu()-1;
-    }
-
     let vbox = new Gtk.Box({ orientation : Gtk.Orientation.VERTICAL,
         border_width: 10, spacing: 10 });
 
     for (var setting in SETTINGS) {
         let setting_box = buildSettingWidget(setting);
-        vbox.add(setting_box);
+        if (setting_box) {
+          vbox.add(setting_box);
+        }
     }
 
     vbox.show_all();
 
     return vbox;
-}
-
-function get_num_gpu() {
-  var output = GLib.spawn_command_line_sync("nvidia-settings -t -q gpus")[1].toString();
-  var lines = output.split('\n');
-  var line = lines.shift();
-  return parseInt(line.substring(0,1));
 }
