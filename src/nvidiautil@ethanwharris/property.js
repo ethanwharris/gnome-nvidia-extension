@@ -141,11 +141,8 @@ const FanProperty = new Lang.Class({
     var line = '';
     var values = [];
 
-    lines.shift();
-
     for (let i = 0; i < this._gpuCount; i++) {
       line = lines.shift();
-
       values = values.concat(line + "%");
     }
 
@@ -165,8 +162,6 @@ const PowerProperty = new Lang.Class({
     var line = '';
     var values = [];
 
-    lines.shift();
-
     for (let i = 0; i < this._gpuCount; i++) {
       line = lines.shift();
 
@@ -175,7 +170,7 @@ const PowerProperty = new Lang.Class({
       if (isNaN(pow) || !isFinite(line)) {
         values = values.concat('ERR');
       } else {
-        values = values.concat(round(pow) + "W");
+        values = values.concat(line.split('.')[0] + "W");
       }
     }
 

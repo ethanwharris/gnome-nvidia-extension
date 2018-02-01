@@ -30,6 +30,8 @@ const ShellMountOperation = imports.ui.shellMountOperation;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
+const MUtil = imports.misc.util;
+
 // const St = imports.gi.St;
 const Lang = imports.lang;
 // const Main = imports.ui.main;
@@ -38,47 +40,38 @@ const Gtk = imports.gi.Gtk;
 // const Me = imports.misc.extensionUtils.getCurrentExtension();
 const Util = Me.imports.util;
 const Property = Me.imports.property;
+const Processor = Me.imports.processor;
 
-const SETTINGS_UTILISATION = "gpuutilisation";
-const SETTINGS_TEMPERATURE = "gputemp";
-const SETTINGS_MEMORY = "gpumemoryutilisation";
-const SETTINGS_POWER = "gpupowerusage";
-const SETTINGS_FAN = "gpufanspeed";
-const SETTINGS_REFRESH = "refreshrate";
-const SETTINGS_CURRENT_GPU = 'currentgpu';
-
-var button;
-
-var timeout_id;
-var settings_id;
-
-var extension_settings;
-
-var labels;
-var icons;
-
-var settings_call;
-var settings_parse_function;
-
-var smi;
-var smi_call;
-var smi_parse_function;
-
-var has_smi;
-var has_settings;
-
-var current_gpu = 0;
-var num_gpu = 2;
-
-/*
- * Utility function to perform one function and then another
- */
-function andThen(first, second) {
-  return function(lines) {
-    first(lines);
-    return second(lines);
-  };
-}
+// const SETTINGS_UTILISATION = "gpuutilisation";
+// const SETTINGS_TEMPERATURE = "gputemp";
+// const SETTINGS_MEMORY = "gpumemoryutilisation";
+// const SETTINGS_POWER = "gpupowerusage";
+// const SETTINGS_FAN = "gpufanspeed";
+// const SETTINGS_REFRESH = "refreshrate";
+// const SETTINGS_CURRENT_GPU = 'currentgpu';
+//
+// var button;
+//
+// var timeout_id;
+// var settings_id;
+//
+// var extension_settings;
+//
+// var labels;
+// var icons;
+//
+// var settings_call;
+// var settings_parse_function;
+//
+// var smi;
+// var smi_call;
+// var smi_parse_function;
+//
+// var has_smi;
+// var has_settings;
+//
+// var current_gpu = 0;
+// var num_gpu = 2;
 
 /*
  * Open the preferences for the nvidiautil extension
@@ -99,40 +92,13 @@ function openSettings() {
   if (nvidiaSettingsApp.get_n_windows()) {
     nvidiaSettingsApp.activate();
   } else {
-    GLib.spawn_command_line_async('nvidia-settings');
+    MUtil.spawnCommandLine('nvidia-settings');
   }
 }
 
 // three classes : Main (StatsMenu), Statistic and Processor
 // Main creates all statistics (based on smi / settings availability)
 // Statistics are given a Processor where they can declare the processing function / call properties
-
-const Processor = new Lang.Class({
-  Name : 'Processor',
-  _init : function(baseCall, tailCall, delimiter) {
-    // Initialise lists / functions etc.
-    this._baseCall = baseCall;
-    this._tailCall = tailCall;
-    this._delimiter = delimiter;
-
-    // Reset the processor
-    this._call = this._baseCall;
-
-    this._parseFunction = function(lines) {
-      return;
-    };
-  },
-  process : function() {
-    // Perform the action
-    var output = GLib.spawn_command_line_sync(this._call + this._tailCall)[1].toString();
-    this._parseFunction(output.split(this._delimiter));
-  },
-  addProperty : function(parseFunction, callExtension) {
-    // Add the new property
-    this._call += callExtension;
-    this._parseFunction = andThen(this._parseFunction, parseFunction);
-  }
-});
 
 const PropertyMenuItem = new Lang.Class({
   Name : 'PropertyMenuItem',
@@ -236,8 +202,8 @@ const MainMenu = new Lang.Class({
     // this.actor.add_child(properties);
     this.actor.add_child(hbox);
 
-    this.settingsProcessor = new Processor('nvidia-settings ', '-t', '\n');
-    this.smiProcessor = new Processor('nvidia-smi --query-gpu=', ' --format=csv,noheader,nounits', ',');
+    this.settingsProcessor = new Processor.NvidiaSettingsProcessor();
+    this.smiProcessor = new Processor.NvidiaSmiProcessor();
 
   // _init : function(name, parseFunction, callExtension, icon) {
 
@@ -274,6 +240,13 @@ const MainMenu = new Lang.Class({
     util1 = new PropertyMenuItem(utilp, properties);
     util2 = new PropertyMenuItem(utilp, properties);
     utilh = new PropertyHandler(this.settingsProcessor, [util1, util2], utilp);
+    submenu1.menu.addMenuItem(util1);
+    submenu2.menu.addMenuItem(util2);
+
+    utilp = new Property.PowerProperty(2);
+    util1 = new PropertyMenuItem(utilp, properties);
+    util2 = new PropertyMenuItem(utilp, properties);
+    utilh = new PropertyHandler(this.smiProcessor, [util1, util2], utilp);
     submenu1.menu.addMenuItem(util1);
     submenu2.menu.addMenuItem(util2);
 
