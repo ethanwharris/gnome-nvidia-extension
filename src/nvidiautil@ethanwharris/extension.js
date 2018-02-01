@@ -92,7 +92,7 @@ const PropertyMenuItem = new Lang.Class({
     this._visible = false;
   },
   destroy : function() {
-    parent();
+    this.parent();
   },
   activate : function(event) {
     this.parent();
