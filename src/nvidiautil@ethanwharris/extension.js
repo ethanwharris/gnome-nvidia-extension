@@ -186,25 +186,36 @@ const MainMenu = new Lang.Class({
 
       this.menu.addMenuItem(submenu);
 
-      var tmp = new PropertyMenuItem(utilisationProperty, properties);
+      var utilisationBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' })
+      var tmp = new PropertyMenuItem(utilisationProperty, utilisationBox);
       utilisationListeners[n] = tmp;
       submenu.menu.addMenuItem(tmp);
 
-      tmp = new PropertyMenuItem(temperatureProperty, properties);
+      var temperatureBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' })
+      tmp = new PropertyMenuItem(temperatureProperty, temperatureBox);
       temperatureListeners[n] = tmp;
       submenu.menu.addMenuItem(tmp);
 
-      tmp = new PropertyMenuItem(memoryProperty, properties);
+      var memoryBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' })
+      tmp = new PropertyMenuItem(memoryProperty, memoryBox);
       memoryListeners[n] = tmp;
       submenu.menu.addMenuItem(tmp);
 
-      tmp = new PropertyMenuItem(fanProperty, properties);
+      var fanBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' })
+      tmp = new PropertyMenuItem(fanProperty, fanBox);
       fanListeners[n] = tmp;
       submenu.menu.addMenuItem(tmp);
 
-      tmp = new PropertyMenuItem(powerProperty, properties);
+      var powerBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' })
+      tmp = new PropertyMenuItem(powerProperty, powerBox);
       powerListeners[n] = tmp;
       submenu.menu.addMenuItem(tmp);
+
+      properties.add_child(utilisationBox)
+      properties.add_child(temperatureBox)
+      properties.add_child(memoryBox)
+      properties.add_child(fanBox)
+      properties.add_child(powerBox)
     }
 
     var utilisationHandler = new PropertyHandler(this.settingsProcessor, utilisationListeners, utilisationProperty);
