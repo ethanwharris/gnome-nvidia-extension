@@ -44,7 +44,7 @@ const Spawn = Me.imports.spawn;
  * Open the preferences for the nvidiautil extension
  */
 function openPreferences() {
-  Spawn.spawnAsync("gnome-shell-extension-prefs " + Me.metadata['uuid'], spawn.defaultErrorHandler);
+  Spawn.spawnAsync("gnome-shell-extension-prefs " + Me.metadata['uuid'], Spawn.defaultErrorHandler);
 }
 
 /*
@@ -56,15 +56,20 @@ function openSettings() {
   let defaultAppSystem = Shell.AppSystem.get_default();
   let nvidiaSettingsApp = defaultAppSystem.lookup_app('nvidia-settings.desktop');
 
+  if (!nvidiaSettingsApp) {
+    Main.notifyError("Couldn't find nvidia-settings on your device", "Check you have it installed correctly");
+    return;
+  }
+
   if (nvidiaSettingsApp.get_n_windows()) {
     nvidiaSettingsApp.activate();
   } else {
-    Spawn.spawnAsync('nvidia-settings', spawn.defaultErrorHandler);
+    Spawn.spawnAsync('nvidia-settings', Spawn.defaultErrorHandler);
   }
 }
 
 function getGpuNames() {
-  var output = spawn.spawnSync("nvidia-smi --query-gpu=gpu_name --format=csv,noheader", function(command, err) {
+  var output = Spawn.spawnSync("nvidia-smi --query-gpu=gpu_name --format=csv,noheader", function(command, err) {
     // Do Nothing
   });
   return output.split('\n');
@@ -195,7 +200,7 @@ const MainMenu = new Lang.Class({
 
     var names = getGpuNames();
 
-    if (names != spawn.ERROR) {
+    if (names != Spawn.ERROR) {
 
       var utilisationProperty = new Property.UtilisationProperty(names.length - 1);
       var utilisationListeners = [];

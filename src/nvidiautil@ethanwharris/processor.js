@@ -62,8 +62,8 @@ const Processor = new Lang.Class({
     // Do Nothing
   },
   process : function() {
-    var output = Spawn.spawnSync(this._call + this._tailCall, spawn.defaultErrorHandler);
-    if (output != spawn.ERROR) {
+    var output = Spawn.spawnSync(this._call + this._tailCall, Spawn.defaultErrorHandler);
+    if (output != Spawn.ERROR) {
       this.parse(output);
     }
   },

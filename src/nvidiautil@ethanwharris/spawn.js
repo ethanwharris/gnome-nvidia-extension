@@ -54,7 +54,7 @@ function spawnSync(command, callback) {
   }
 }
 
-var defaultErrorHandler(command, err) {
-  let title = _("Execution of "%s" failed:").format(command);
+var defaultErrorHandler = function(command, err) {
+  let title = "Execution of " + command + " failed:";
   Main.notifyError(title, err.message);
-}
+};
