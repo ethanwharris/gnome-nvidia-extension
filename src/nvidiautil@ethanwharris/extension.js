@@ -174,6 +174,8 @@ const MainMenu = new Lang.Class({
   _init : function() {
     this.parent(0.0, _("GPU Statistics"));
     this.timeoutId = -1;
+    this._settings = Util.getSettings();
+    this._settingsPointer = this._settings.connect('changed', Lang.bind(this, this.loadSettings));
 
     this.setMenu(new PersistentPopupMenu(this.actor, 0.0));
 
@@ -282,17 +284,20 @@ const MainMenu = new Lang.Class({
 
     this.menu.addMenuItem(item);
 
-    this.settingsProcessor.process();
-    this.smiProcessor.process();
-    this._addTimeout(2);
+    this.loadSettings();
+  },
+  loadSettings : function() {
+    this._addTimeout(this._settings.get_int(Util.SETTINGS_REFRESH));
   },
   /*
    * Create and add the timeout which updates values every t seconds
    */
   _addTimeout : function(t) {
-    if (this.timeoutId != -1) {
-      GLib.source_remove(this.timeoutId);
-    }
+    this._removeTimeout();
+
+    this.settingsProcessor.process();
+    this.smiProcessor.process();
+
     this.timeoutId = GLib.timeout_add_seconds(0, t, Lang.bind(this, function() {
       this.settingsProcessor.process();
       this.smiProcessor.process();
@@ -310,10 +315,12 @@ const MainMenu = new Lang.Class({
   },
   destroy : function() {
     this._removeTimeout();
-
+    this._settings.disconnect(this._settingsPointer);
     this.parent();
   }
 });
+
+let _menu;
 
 /*
  * Init function, nothing major here, do not edit view
@@ -323,13 +330,11 @@ function init() {
   // extension_settings = Util.getSettings();
 }
 
-let _indicator;
-
 function enable() {
-    _indicator = new MainMenu;
-    Main.panel.addToStatusArea('main-menu', _indicator);
+    _menu = new MainMenu();
+    Main.panel.addToStatusArea('main-menu', _menu);
 }
 
 function disable() {
-    _indicator.destroy();
+    _menu.destroy();
 }

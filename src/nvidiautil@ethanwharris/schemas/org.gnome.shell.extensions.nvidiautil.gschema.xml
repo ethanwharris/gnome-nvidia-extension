@@ -1,4 +1,4 @@
-<schemalist gettext-domain="gnome-shell-extensions-nvidiautil">
+<schemalist gettext-domain="gse-nvidiautil">
    <schema id="org.gnome.shell.extensions.nvidiautil" path="/org/gnome/shell/extensions/nvidiautil/">
      <key name="gpuutilisation" type="b">
        <default>true</default>
@@ -37,16 +37,9 @@
      </key>
      <key name="refreshrate" type="i">
        <default>5</default>
-       <summary>Refresh Rate (s)</summary>
+       <summary>Refresh Interval (s)</summary>
        <description>
          The time between refreshes in seconds
-       </description>
-     </key>
-     <key name="currentgpu" type="i">
-       <default>0</default>
-       <summary>Currently tracked GPU</summary>
-       <description>
-         The GPU for which stats are to be shown
        </description>
      </key>
   </schema>
