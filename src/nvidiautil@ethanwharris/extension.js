@@ -37,6 +37,7 @@ const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 // const Me = imports.misc.extensionUtils.getCurrentExtension();
 const Util = Me.imports.util;
+const Property = Me.imports.property;
 
 const SETTINGS_UTILISATION = "gpuutilisation";
 const SETTINGS_TEMPERATURE = "gputemp";
@@ -133,32 +134,10 @@ const Processor = new Lang.Class({
   }
 });
 
-const Property = new Lang.Class({
-  Name : 'Property',
-  _init : function(name, parseFunction, callExtension, icon) {
-    this._name = name;
-    this._parseFunction = parseFunction;
-    this._callExtension = callExtension;
-    this._icon = icon;
-  },
-  getName : function() {
-    return this._name;
-  },
-  getParseFunction : function() {
-    return this._parseFunction;
-  },
-  getCallExtension : function() {
-    return this._callExtension;
-  },
-  getIcon : function() {
-    return this._icon;
-  }
-});
-
 const PropertyMenuItem = new Lang.Class({
   Name : 'PropertyMenuItem',
   Extends: PopupMenu.PopupBaseMenuItem,
-  _init : function(processor, property, box) {
+  _init : function(property, box) {
     // super();
     this.parent();
 
@@ -177,26 +156,27 @@ const PropertyMenuItem = new Lang.Class({
     this._icon = new St.Icon({ icon_name: property.getIcon(),
                                       style_class: 'system-status-icon' });
 
-    let statisticLabelHidden = new St.Label({ text: '0' });
-    let statisticLabelVisible = new St.Label({ text: '0', style_class: 'label' });
-    this._statisticLabel = statisticLabelVisible;
+    this._statisticLabelHidden = new St.Label({ text: '0' });
+    this._statisticLabelVisible = new St.Label({ text: '0', style_class: 'label' });
+    // this._statisticLabel = statisticLabelVisible;
 
-    this.actor.add(statisticLabelHidden);
+    this.actor.add(this._statisticLabelHidden);
 
     // addProperty : function(parseFunction, callExtension) {
 
-    processor.addProperty(function(lines) {
-      let value = property.getParseFunction()(lines);
-
-      statisticLabelHidden.text = value;
-      statisticLabelVisible.text = value;
-    }, property.getCallExtension());
+    // processor.addProperty(function(lines) {
+    //   let value = property.getParseFunction()(lines);
+    //
+    //   statisticLabelHidden.text = value;
+    //   statisticLabelVisible.text = value;
+    // }, property.getCallExtension());
 
     // Construct the menu item etc
     // register with the processor
     // Place icon in panel
   },
   destroy : function() {
+    parent();
     // if (this._changedId) {
     //     this.mount.disconnect(this._changedId);
     //     this._changedId = 0;
@@ -206,9 +186,27 @@ const PropertyMenuItem = new Lang.Class({
   },
   activate : function(event) {
     this._box.add_child(this._icon);
-    this._box.add_child(this._statisticLabel);
+    this._box.add_child(this._statisticLabelVisible);
 
     this.parent();
+  },
+  handle : function(value) {
+    this._statisticLabelHidden.text = value;
+    this._statisticLabelVisible.text = value;
+  }
+});
+
+const PropertyHandler = new Lang.Class({
+  Name : 'PropertyHandler',
+  _init : function(processor, listeners, property) {
+    // take a list of listeners and the function, not the icons
+
+    processor.addProperty(function(lines) {
+      let values = property.parse(lines);
+      for(var i = 0; i < values.length; i++) {
+        listeners[i].handle(values[i]);
+      }
+    }, property.getCallExtension());
   }
 });
 
@@ -243,99 +241,47 @@ const MainMenu = new Lang.Class({
 
   // _init : function(name, parseFunction, callExtension, icon) {
 
-    let utilisationProperty = new Property('Utilisation', function(lines) {
-      var line = '';
-      var util = '';
 
-      for (let i = 0; i < num_gpu; i++) {
-        line = lines.shift();
-        if (i == 0) {
-          util = line.substring(9,11);
-          util = util.replace(/\D/g,'');
-        }
-      }
+    let submenu1 = new PopupMenu.PopupSubMenuMenuItem('1050');
+    let submenu2 = new PopupMenu.PopupSubMenuMenuItem('1070ti');
 
-      return util + "%";
-    }, '-q GPUUtilization ', 'card-symbolic');
+    this.menu.addMenuItem(submenu1);
+    this.menu.addMenuItem(submenu2);
 
-    let tempProperty = new Property('Temperature', function(lines) {
-      var temp = '';
-      lines.shift();
+    // Hard Code 2 GPUs
+    var utilp = new Property.UtilisationProperty(2);
+    var util1 = new PropertyMenuItem(utilp, properties);
+    var util2 = new PropertyMenuItem(utilp, properties);
+    var utilh = new PropertyHandler(this.settingsProcessor, [util1, util2], utilp);
+    submenu1.menu.addMenuItem(util1);
+    submenu2.menu.addMenuItem(util2);
 
-      for (i = 0; i < num_gpu; i++) {
-        if (i == current_gpu) {
-          temp = lines.shift();
-        } else {
-          lines.shift();
-        }
-      }
+    utilp = new Property.TemperatureProperty(2);
+    util1 = new PropertyMenuItem(utilp, properties);
+    util2 = new PropertyMenuItem(utilp, properties);
+    utilh = new PropertyHandler(this.settingsProcessor, [util1, util2], utilp);
+    submenu1.menu.addMenuItem(util1);
+    submenu2.menu.addMenuItem(util2);
 
-      return temp + "\xB0" + "C";
-    }, '-q GPUCoreTemp ', 'temp-symbolic');
+    utilp = new Property.MemoryProperty(2);
+    util1 = new PropertyMenuItem(utilp, properties);
+    util2 = new PropertyMenuItem(utilp, properties);
+    utilh = new PropertyHandler(this.settingsProcessor, [util1, util2], utilp);
+    submenu1.menu.addMenuItem(util1);
+    submenu2.menu.addMenuItem(util2);
 
-    let memoryProperty = new Property('Memory (RAM)', function(lines) {
-      var used_memory = '';
-      for (i = 0; i < num_gpu; i++) {
-        if (i == current_gpu) {
-          used_memory = lines.shift();
-        } else {
-          lines.shift();
-        }
-      }
+    utilp = new Property.FanProperty(2);
+    util1 = new PropertyMenuItem(utilp, properties);
+    util2 = new PropertyMenuItem(utilp, properties);
+    utilh = new PropertyHandler(this.settingsProcessor, [util1, util2], utilp);
+    submenu1.menu.addMenuItem(util1);
+    submenu2.menu.addMenuItem(util2);
 
-      var total_memory = ''
-      for (i = 0; i < num_gpu; i++) {
-        if (i == current_gpu) {
-          total_memory = lines.shift();
-        } else {
-          lines.shift();
-        }
-      }
-
-      var mem_usage = ((used_memory / total_memory) * 100).toString();
-      mem_usage = mem_usage.substring(0,2);
-      mem_usage = mem_usage.replace(/\D/g,'');
-      return mem_usage + "%";
-    }, '-q UsedDedicatedGPUMemory -q TotalDedicatedGPUMemory ', 'ram-symbolic');
-
-    let fanProperty = new Property('Fan Speed (RPM)', function(lines) {
-      var fan = ''
-      for (i = 0; i < num_gpu; i++) {
-        if (i == current_gpu) {
-          fan = lines.shift()
-        } else {
-          lines.shift()
-        }
-      }
-
-      return fan + "%";
-    }, '-q GPUCurrentFanSpeed ', 'fan-symbolic');
-
-    let powerProperty = new Property('Power Usage (W)', function(lines) {
-      var power = lines.shift();
-      power = power.split('\n');
-      power = power[current_gpu];
-
-      if (isNaN(parseFloat(power)) || !isFinite(power)) {
-        return 'ERR'
-      }
-
-      return power.split('.')[0] + "W";
-    }, 'power.draw,', 'power-symbolic');
-
-    let submenu = new PopupMenu.PopupSubMenuMenuItem('GPU 1');
-
-    this.menu.addMenuItem(submenu);
-
-    submenu.menu.addMenuItem(new PropertyMenuItem(this.settingsProcessor, utilisationProperty, properties));
-    submenu.menu.addMenuItem(new PropertyMenuItem(this.settingsProcessor, tempProperty, properties));
-    submenu.menu.addMenuItem(new PropertyMenuItem(this.settingsProcessor, memoryProperty, properties));
-    submenu.menu.addMenuItem(new PropertyMenuItem(this.settingsProcessor, fanProperty, properties));
-    submenu.menu.addMenuItem(new PropertyMenuItem(this.smiProcessor, powerProperty, properties));
+    // TODO: submenu.menu.addMenuItem(new PropertyMenuItem(this.smiProcessor, powerProperty, properties));
 
     this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
-    item = new PopupMenu.PopupBaseMenuItem({ reactive: false,
+    var item = new PopupMenu.PopupBaseMenuItem({ reactive: false,
                                          can_focus: false });
 
     let wrench = new St.Button({
@@ -418,7 +364,6 @@ function disable() {
 // TODO: Configurable refresh rate / Settings clean-up
 // TODO: multi gpus
 // TODO: leave drop down open when selecting properties
-// TODO: Settings / preferences buttons
 
 // /*
 //  * Enable handles the main functioning of the extension, editing view and updating
