@@ -95,8 +95,6 @@ const PropertyMenuItem = new Lang.Class({
     this.parent();
   },
   activate : function(event) {
-    this.parent();
-
     if (this._visible) {
       this.actor.remove_style_pseudo_class('active');
       this._box.remove_child(this._icon);
@@ -133,12 +131,25 @@ const PropertyHandler = new Lang.Class({
   }
 });
 
+const PersistentPopupMenu = new Lang.Class({
+  Name : 'PersistentPopupMenu',
+  Extends : PopupMenu.PopupMenu,
+  _init : function(actor, menuAlignment) {
+    this.parent(actor, menuAlignment, St.Side.TOP, 0);
+  },
+  _setOpenedSubMenu: function(submenu) {
+      this._openedSubMenu = submenu;
+  }
+});
+
 const MainMenu = new Lang.Class({
   Name : 'MainMenu',
-  Extends: PanelMenu.Button,
+  Extends : PanelMenu.Button,
   _init : function() {
     this.parent(0.0, _("GPU Statistics"));
     this.timeoutId = -1;
+
+    this.setMenu(new PersistentPopupMenu(this.actor, 0.0));
 
     let hbox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
 
