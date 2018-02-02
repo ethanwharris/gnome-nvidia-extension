@@ -42,5 +42,12 @@
          The time between refreshes in seconds
        </description>
      </key>
+     <key name="tempformat" type="s">
+       <default>'C '</default>
+       <summary>Temperature Unit</summary>
+       <description>
+         Set the temperature to be displated in either Centigrade (C) or Fahrenheit (F)
+       </description>
+     </key>
   </schema>
 </schemalist>

@@ -22,6 +22,11 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Util = Me.imports.util;
 
+const GObject = imports.gi.GObject;
+const Lang = imports.lang;
+
+
+
 const SETTINGS = {
     gpuutilisation : {
         type : 'noshow',
@@ -60,6 +65,12 @@ const SETTINGS = {
         tooltip : _("The time between refreshes in seconds"),
         min : 1,
         max : 20
+    },
+    tempformat : {
+        type : 'temp_enum',
+        key : 'tempformat',
+        label : ('Temperature Units'),
+        tooltip : _('Set the temperature to be displated in either Centigrade (C) or Fahrenheit (F)')
     }
 };
 
@@ -108,10 +119,35 @@ function buildSettingWidget(setting) {
 
         box.pack_start(label, true, true, 0);
         box.add(control);
+    } else if (SETTINGS[setting].type == 'temp_enum') {
+      let model = new Gtk.ListStore();
+      model.set_column_types([GObject.TYPE_STRING, GObject.TYPE_STRING]);
+      let combobox = new Gtk.ComboBox({model: model});
+
+      let renderer = new Gtk.CellRendererText();
+      combobox.pack_start(renderer, true);
+      combobox.add_attribute(renderer, 'text', 1);
+
+      model.set(model.append(), [0, 1], [1, "\u00b0C"]);
+      model.set(model.append(), [0, 1], [0, "\u00b0F"]);
+
+      combobox.set_active(settings.get_string(setting));
+
+      combobox.connect('changed', Lang.bind(this, function(entry) {
+          let [success, iter] = combobox.get_active_iter();
+          if (!success)
+              return;
+          settings.set_string(setting, model.get_value(iter, 0))
+      }));
+
+      let label = new Gtk.Label({ label: _('Temperature Unit'), xalign : 0})
+      box.pack_start(label, true, true, 0);
+      box.add(combobox);
     }
 
     return box;
 }
+
 
 /*
  * Construct the entire widget for the settings dialog

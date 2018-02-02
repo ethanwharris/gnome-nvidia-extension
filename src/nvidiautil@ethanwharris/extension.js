@@ -226,7 +226,7 @@ const MainMenu = new Lang.Class({
         let submenu = new PopupMenu.PopupSubMenuMenuItem(names[n]);
 
         var gpuLabel = new St.Label({ text : n + ':', style_class : 'gpulabel'});
-        labelManager = new GpuLabelDisplayManager(gpuLabel);
+        var labelManager = new GpuLabelDisplayManager(gpuLabel);
         this.menu.addMenuItem(submenu);
 
         var utilisationBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
