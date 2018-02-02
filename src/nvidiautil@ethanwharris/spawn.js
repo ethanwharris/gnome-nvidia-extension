@@ -34,7 +34,7 @@ const Lang = imports.lang;
 const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 
-const ERROR = "ERROR";
+var ERROR = "ERROR";
 
 function spawnAsync(command, callback) {
   try {
