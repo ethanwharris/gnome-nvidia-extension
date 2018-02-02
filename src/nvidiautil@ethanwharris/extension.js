@@ -99,6 +99,7 @@ const PropertyMenuItem = new Lang.Class({
 
     this.actor.add(this._statisticLabelHidden);
     this._visible = false;
+    this._box.visible = false;
   },
   destroy : function() {
     this.parent();
@@ -109,12 +110,14 @@ const PropertyMenuItem = new Lang.Class({
       this._box.remove_child(this._icon);
       this._box.remove_child(this._statisticLabelVisible);
       this._visible = false;
+      this._box.visible = false;
       this.labelManager.decrement();
     } else {
       this.actor.add_style_pseudo_class('active');
       this._box.add_child(this._icon);
       this._box.add_child(this._statisticLabelVisible);
       this._visible = true;
+      this._box.visible = true;
       this.labelManager.increment();
     }
   },
