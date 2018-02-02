@@ -56,7 +56,7 @@ const Property = new Lang.Class({
   }
 });
 
-const UtilisationProperty = new Lang.Class({
+var UtilisationProperty = new Lang.Class({
   Name : 'UtilisationProperty',
   Extends : Property,
   _init : function(gpuCount) {
@@ -80,7 +80,7 @@ const UtilisationProperty = new Lang.Class({
   }
 });
 
-const TemperatureProperty = new Lang.Class({
+var TemperatureProperty = new Lang.Class({
   Name : 'TemperatureProperty',
   Extends : Property,
   _init : function(gpuCount) {
@@ -104,7 +104,7 @@ const TemperatureProperty = new Lang.Class({
   }
 });
 
-const MemoryProperty = new Lang.Class({
+var MemoryProperty = new Lang.Class({
   Name : 'MemoryProperty',
   Extends : Property,
   _init : function(gpuCount) {
@@ -129,7 +129,7 @@ const MemoryProperty = new Lang.Class({
   }
 });
 
-const FanProperty = new Lang.Class({
+var FanProperty = new Lang.Class({
   Name : 'FanProperty',
   Extends : Property,
   _init : function(gpuCount) {
@@ -150,7 +150,7 @@ const FanProperty = new Lang.Class({
   }
 });
 
-const PowerProperty = new Lang.Class({
+var PowerProperty = new Lang.Class({
   Name : 'PowerProperty',
   Extends : Property,
   _init : function(gpuCount) {
