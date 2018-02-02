@@ -1,15 +1,14 @@
 # gnome-nvidia-extension
 A Gnome extension to show Nvidia GPU information
 
-## Requirements
-nvidia-settings - to test this open a terminal and run nvidia-settings (it should open)
+# Requirements
+nvidia-settings and nvidia-smi
 
-## Building
-- Clone repo
-- Open terminal in root directory
-- Run make
-- Use tweak tool --> extensions --> install shell extension
-- Load zip file
+# Installation from git
+    git clone https://github.com/ethanwharris/gnome-nvidia-extension.git
+    cd gnome-nvidia-extension
+    mkdir -p ~/.local/share/gnome-shell/extensions
+    cp -r src/nvidiautil@ethanwharris ~/.local/share/gnome-shell/extensions/
 
 # Icons
 For icons we use font-awesome:
