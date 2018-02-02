@@ -34,6 +34,8 @@ const Lang = imports.lang;
 const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 
+const Spawn = Me.imports.spawn;
+
 /*
  * Utility function to perform one function and then another
  */
@@ -60,8 +62,10 @@ const Processor = new Lang.Class({
     // Do Nothing
   },
   process : function() {
-    var output = GLib.spawn_command_line_sync(this._call + this._tailCall)[1].toString();
-    this.parse(output);
+    var output = Spawn.spawnSync(this._call + this._tailCall, Spawn.defaultErrorHandler);
+    if (output != Spawn.ERROR) {
+      this.parse(output);
+    }
   },
   addProperty : function(parseFunction, callExtension) {
     this._call += callExtension;
@@ -69,7 +73,7 @@ const Processor = new Lang.Class({
   }
 });
 
-const NvidiaSettingsProcessor = new Lang.Class({
+var NvidiaSettingsProcessor = new Lang.Class({
   Name : 'NvidiaSettingsProcessor',
   Extends : Processor,
   _init : function() {
@@ -80,7 +84,7 @@ const NvidiaSettingsProcessor = new Lang.Class({
   }
 });
 
-const NvidiaSmiProcessor = new Lang.Class({
+var NvidiaSmiProcessor = new Lang.Class({
   Name : 'NvidiaSmiProcessor',
   Extends : Processor,
   _init : function() {
