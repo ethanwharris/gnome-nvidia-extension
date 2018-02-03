@@ -34,7 +34,7 @@ const Lang = imports.lang;
 const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 
-const Property = new Lang.Class({
+var Property = new Lang.Class({
   Name : 'Property',
   Abstract : true,
   _init : function(processor, name, callExtension, icon) {

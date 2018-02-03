@@ -65,5 +65,8 @@ var ProcessorHandler = new Lang.Class({
         listeners[i].handle(values[i]);
       }
     }, property.getCallExtension());
+  },
+  reset : function() {
+    this._processors = [false, false];
   }
 });

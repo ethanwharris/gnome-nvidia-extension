@@ -40,6 +40,8 @@ const Property = Me.imports.property;
 const Processor = Me.imports.processor;
 const ProcessorHandler = Me.imports.processorHandler;
 const SettingsProvider = Me.imports.settingsProvider;
+const SmiProvider = Me.imports.smiProvider;
+const SettingsAndSmiProvider = Me.imports.settingsAndSmiProvider;
 const Spawn = Me.imports.spawn;
 
 /*
@@ -150,57 +152,24 @@ const MainMenu = new Lang.Class({
     this._settings = Util.getSettings();
     this._settingsPointer = this._settings.connect('changed', Lang.bind(this, this.loadSettings));
 
+    this.processor = new ProcessorHandler.ProcessorHandler();
+
     this.setMenu(new PersistentPopupMenu(this.actor, 0.0));
 
     let hbox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
 
-    let properties = new St.BoxLayout({style_class: 'panel-status-menu-box'});
+    this.properties = new St.BoxLayout({style_class: 'panel-status-menu-box'});
 
-    hbox.add_actor(properties);
+    hbox.add_actor(this.properties);
     hbox.add_actor(PopupMenu.arrowIcon(St.Side.BOTTOM));
     this.actor.add_child(hbox);
 
-    this.processor = new ProcessorHandler.ProcessorHandler();
+    this._propertiesMenu = new PopupMenu.PopupMenuSection();
+    this.menu.addMenuItem(this._propertiesMenu);
 
-    this.provider = new SettingsProvider.SettingsProvider();
+    this.loadSettings();
 
-    var names = this.provider.getGpuNames();
-
-    if (names != Spawn.ERROR) {
-
-      var menus = [];
-      var managers = [];
-
-      for (var n = 0; n < names.length - 1; n++) {
-        menus[n] = new PopupMenu.PopupSubMenuMenuItem(names[n]);
-        var label = new St.Label({ text : n + ':', style_class : 'gpulabel'});
-        managers[n] = new GpuLabelDisplayManager(label);
-        this.menu.addMenuItem(menus[n]);
-      }
-
-      var props = this.provider.getProperties();
-
-      for (var i = 0; i < props.length; i++) {
-        var property = new props[i](names.length - 1);
-        var listeners = [];
-
-        for (var n = 0; n < names.length - 1; n++) {
-          var box = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
-
-          var item = new PropertyMenuItem(property, box, managers[n]);
-
-          listeners[n] = item;
-          menus[n].menu.addMenuItem(item);
-          properties.add_child(box);
-        }
-
-        this.processor.addProperty(property, listeners);
-      }
-
-      this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-
-      this.loadSettings();
-    }
+    this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
     var item = new PopupMenu.PopupBaseMenuItem({ reactive: false,
                                          can_focus: false });
@@ -230,7 +199,54 @@ const MainMenu = new Lang.Class({
     this.menu.addMenuItem(item);
   },
   loadSettings : function() {
-    this._addTimeout(this._settings.get_int(Util.SETTINGS_REFRESH));
+
+    this.properties.destroy_all_children();
+    this._propertiesMenu.removeAll();
+
+    this.processor.reset();
+
+    this.provider = new SettingsAndSmiProvider.SettingsAndSmiProvider();
+
+    var names = this.provider.getGpuNames();
+
+    if (names != Spawn.ERROR) {
+
+      var properties = [];
+      var listeners = [];
+
+      var props = this.provider.getProperties();
+
+      for (var i = 0; i < props.length; i++) {
+        listeners[i] = [];
+      }
+
+      for (var n = 0; n < names.length - 1; n++) {
+        let submenu = new PopupMenu.PopupSubMenuMenuItem(names[n]);
+        let label = new St.Label({ text : n + ':', style_class : 'gpulabel'});
+        let manager = new GpuLabelDisplayManager(label);
+        this._propertiesMenu.addMenuItem(submenu);
+
+        this.properties.add_child(label);
+
+        for (var i = 0; i < props.length; i++) {
+          properties[i] = new props[i](names.length - 1);
+
+          var box = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
+
+          var item = new PropertyMenuItem(properties[i], box, manager);
+
+          listeners[i][n] = item;
+          submenu.menu.addMenuItem(item);
+          this.properties.add_child(box);
+        }
+      }
+
+      for (var i = 0; i < props.length; i++) {
+        this.processor.addProperty(properties[i], listeners[i]);
+      }
+
+      this._addTimeout(this._settings.get_int(Util.SETTINGS_REFRESH));
+    }
   },
   /*
    * Create and add the timeout which updates values every t seconds
