@@ -40,11 +40,6 @@ var NVIDIA_SETTINGS = 0;
 var NVIDIA_SMI = 1;
 var OPTIMUS = 2;
 
-var LIST = [
-  () => { return new NvidiaSettingsProcessor() },
-  () => { return new NvidiaSmiProcessor() }
-];
-
 /*
  * Utility function to perform one function and then another
  */
@@ -115,3 +110,8 @@ var NvidiaSmiProcessor = new Lang.Class({
     this._parseFunction(items);
   }
 });
+
+var LIST = [
+  NvidiaSettingsProcessor,
+  NvidiaSmiProcessor
+];

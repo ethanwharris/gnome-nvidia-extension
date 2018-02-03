@@ -56,7 +56,7 @@ var ProcessorHandler = new Lang.Class({
   addProperty : function(property, listeners) {
     var processor = property.declare();
     if (!this._processors[processor]) {
-      this._processors[processor] = Processor.LIST[processor]();
+      this._processors[processor] = new Processor.LIST[processor]();
     }
 
     this._processors[processor].addProperty(function(lines) {

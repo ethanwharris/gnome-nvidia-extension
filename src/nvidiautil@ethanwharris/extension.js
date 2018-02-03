@@ -49,34 +49,6 @@ function openPreferences() {
   Spawn.spawnAsync("gnome-shell-extension-prefs " + Me.metadata['uuid'], Spawn.defaultErrorHandler);
 }
 
-/*
- * Open the Nvidia Settings tool
- * Note: This will not check if nvidia-settings exists first
- */
-// function openSettings() {
-//   const Shell = imports.gi.Shell;
-//   let defaultAppSystem = Shell.AppSystem.get_default();
-//   let nvidiaSettingsApp = defaultAppSystem.lookup_app('nvidia-settings.desktop');
-//
-//   if (!nvidiaSettingsApp) {
-//     Main.notifyError("Couldn't find nvidia-settings on your device", "Check you have it installed correctly");
-//     return;
-//   }
-//
-//   if (nvidiaSettingsApp.get_n_windows()) {
-//     nvidiaSettingsApp.activate();
-//   } else {
-//     Spawn.spawnAsync('nvidia-settings', Spawn.defaultErrorHandler);
-//   }
-// }
-//
-// function getGpuNames() {
-//   var output = Spawn.spawnSync("nvidia-smi --query-gpu=gpu_name --format=csv,noheader", function(command, err) {
-//     // Do Nothing
-//   });
-//   return output.split('\n');
-// }
-
 const PropertyMenuItem = new Lang.Class({
   Name : 'PropertyMenuItem',
   Extends: PopupMenu.PopupBaseMenuItem,
@@ -135,18 +107,6 @@ const PropertyMenuItem = new Lang.Class({
   }
 });
 
-// const PropertyHandler = new Lang.Class({
-//   Name : 'PropertyHandler',
-//   _init : function(processor, listeners, property) {
-//     processor.addProperty(function(lines) {
-//       let values = property.parse(lines);
-//       for(var i = 0; i < values.length; i++) {
-//         listeners[i].handle(values[i]);
-//       }
-//     }, property.getCallExtension());
-//   }
-// });
-
 const PersistentPopupMenu = new Lang.Class({
   Name : 'PersistentPopupMenu',
   Extends : PopupMenu.PopupMenu,
@@ -200,14 +160,9 @@ const MainMenu = new Lang.Class({
     hbox.add_actor(PopupMenu.arrowIcon(St.Side.BOTTOM));
     this.actor.add_child(hbox);
 
-    // this.settingsProcessor = new Processor.NvidiaSettingsProcessor();
-    // this.smiProcessor = new Processor.NvidiaSmiProcessor();
-
     this.processor = new ProcessorHandler.ProcessorHandler();
 
     this.provider = new SettingsProvider.SettingsProvider();
-
-    global.log('[myAppId]', 'Test');
 
     var names = this.provider.getGpuNames();
 
@@ -223,98 +178,24 @@ const MainMenu = new Lang.Class({
         this.menu.addMenuItem(menus[n]);
       }
 
-      global.log('[myAppId]', 'Test3');
-
       var props = this.provider.getProperties();
 
       for (var i = 0; i < props.length; i++) {
         var property = new props[i](names.length - 1);
         var listeners = [];
 
-        global.log('[myAppId]', 'Test5');
-
         for (var n = 0; n < names.length - 1; n++) {
           var box = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
 
-          global.log('[myAppId]', 'Test7');
-
           var item = new PropertyMenuItem(property, box, managers[n]);
-
-          global.log('[myAppId]', 'Test6');
 
           listeners[n] = item;
           menus[n].menu.addMenuItem(item);
           properties.add_child(box);
         }
 
-        global.log('[myAppId]', 'Test4');
-
         this.processor.addProperty(property, listeners);
       }
-
-      global.log('[myAppId]', 'Test2');
-      // var utilisationProperty = new Property.UtilisationProperty(names.length - 1);
-      // var utilisationListeners = [];
-      //
-      // var temperatureProperty = new Property.TemperatureProperty(names.length - 1);
-      // var temperatureListeners = [];
-      //
-      // var memoryProperty = new Property.MemoryProperty(names.length - 1);
-      // var memoryListeners = [];
-      //
-      // var fanProperty = new Property.FanProperty(names.length - 1);
-      // var fanListeners = [];
-      //
-      // var powerProperty = new Property.PowerProperty(names.length - 1);
-      // var powerListeners = [];
-      //
-      // for(var n = 0; n < names.length - 1; n++) {
-      //   var name = names[n];
-      //
-      //   let submenu = new PopupMenu.PopupSubMenuMenuItem(names[n]);
-      //
-      //   var gpuLabel = new St.Label({ text : n + ':', style_class : 'gpulabel'});
-      //   var labelManager = new GpuLabelDisplayManager(gpuLabel);
-      //   this.menu.addMenuItem(submenu);
-      //
-      //   var utilisationBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
-      //   var tmp = new PropertyMenuItem(utilisationProperty, utilisationBox, labelManager);
-      //   utilisationListeners[n] = tmp;
-      //   submenu.menu.addMenuItem(tmp);
-      //
-      //   var temperatureBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
-      //   tmp = new PropertyMenuItem(temperatureProperty, temperatureBox, labelManager);
-      //   temperatureListeners[n] = tmp;
-      //   submenu.menu.addMenuItem(tmp);
-      //
-      //   var memoryBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
-      //   tmp = new PropertyMenuItem(memoryProperty, memoryBox, labelManager);
-      //   memoryListeners[n] = tmp;
-      //   submenu.menu.addMenuItem(tmp);
-      //
-      //   var fanBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
-      //   tmp = new PropertyMenuItem(fanProperty, fanBox, labelManager);
-      //   fanListeners[n] = tmp;
-      //   submenu.menu.addMenuItem(tmp);
-      //
-      //   var powerBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
-      //   tmp = new PropertyMenuItem(powerProperty, powerBox, labelManager);
-      //   powerListeners[n] = tmp;
-      //   submenu.menu.addMenuItem(tmp);
-      //
-      //   properties.add_child(gpuLabel);
-      //   properties.add_child(utilisationBox);
-      //   properties.add_child(temperatureBox);
-      //   properties.add_child(memoryBox);
-      //   properties.add_child(fanBox);
-      //   properties.add_child(powerBox);
-      // }
-
-      // var utilisationHandler = new PropertyHandler(this.settingsProcessor, utilisationListeners, utilisationProperty);
-      // var temperatureHandler = new PropertyHandler(this.settingsProcessor, temperatureListeners, temperatureProperty);
-      // var memoryHandler = new PropertyHandler(this.settingsProcessor, memoryListeners, memoryProperty);
-      // var fanHandler = new PropertyHandler(this.settingsProcessor, fanListeners, fanProperty);
-      // var powerHandler = new PropertyHandler(this.smiProcessor, powerListeners, powerProperty);
 
       this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
