@@ -30,32 +30,56 @@ const ShellMountOperation = imports.ui.shellMountOperation;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
+// const Processor = Me.imports.processor;
+
 const Lang = imports.lang;
 const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 
-const Property = new Lang.Class({
-  Name : 'Property',
-  Abstract : true,
-  _init : function(name, callExtension, icon, processor) {
-    this._name = name;
-    this._callExtension = callExtension;
-    this._icon = icon;
-    this._processor = processor;
+const Shell = imports.gi.Shell;
+
+const Spawn = Me.imports.spawn;
+
+const SettingsProperties = Me.imports.settingsProperties;
+
+var SettingsProvider = new Lang.Class({
+  Name : 'SettingsProvider',
+  _init : function() {
   },
-  getName : function() {
-    return this._name;
+  getGpuNames() {
+    var output = Spawn.spawnSync("nvidia-settings -q GpuUUID -t", function(command, err) {
+      // Do Nothing
+    });
+
+    result = output.split('\n');
+
+    for (var i = 0; i < result.length; i++) {
+      result[i] = "GPU " + i;
+    }
+
+    return result;
   },
-  getCallExtension : function() {
-    return this._callExtension;
+  getProperties() {
+    return [
+      new SettingsProperties.UtilisationProperty(),
+      new SettingsProperties.TemperatureProperty(),
+      new SettingsProperties.MemoryProperty(),
+      new SettingsProperties.FanProperty()
+    ];
   },
-  getIcon : function() {
-    return this._icon;
-  },
-  parse : function(lines) {
-    return '';
-  },
-  declare : function() {
-    return this._processor;
+  openSettings() {
+    let defaultAppSystem = Shell.AppSystem.get_default();
+    let nvidiaSettingsApp = defaultAppSystem.lookup_app('nvidia-settings.desktop');
+
+    if (!nvidiaSettingsApp) {
+      Main.notifyError("Couldn't find nvidia-settings on your device", "Check you have it installed correctly");
+      return;
+    }
+
+    if (nvidiaSettingsApp.get_n_windows()) {
+      nvidiaSettingsApp.activate();
+    } else {
+      Spawn.spawnAsync('nvidia-settings', Spawn.defaultErrorHandler);
+    }
   }
 });

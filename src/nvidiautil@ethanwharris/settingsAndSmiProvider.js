@@ -30,32 +30,51 @@ const ShellMountOperation = imports.ui.shellMountOperation;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
+// const Processor = Me.imports.processor;
+
 const Lang = imports.lang;
 const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 
-const Property = new Lang.Class({
-  Name : 'Property',
-  Abstract : true,
-  _init : function(name, callExtension, icon, processor) {
-    this._name = name;
-    this._callExtension = callExtension;
-    this._icon = icon;
-    this._processor = processor;
+const Shell = imports.gi.Shell;
+
+const Spawn = Me.imports.spawn;
+
+const SettingsProperties = Me.imports.settingsProperties;
+const SmiProperties = Me.imports.smiProperties;
+
+var SettingsAndSmiProvider = new Lang.Class({
+  Name : 'SettingsAndSmiProvider',
+  _init : function() {
   },
-  getName : function() {
-    return this._name;
+  getGpuNames() {
+    var output = Spawn.spawnSync("nvidia-smi --query-gpu=gpu_name --format=csv,noheader", function(command, err) {
+      // Do Nothing
+    });
+    return output.split('\n');
   },
-  getCallExtension : function() {
-    return this._callExtension;
+  getProperties() {
+    return [
+      new SettingsProperties.UtilisationProperty(),
+      new SettingsProperties.TemperatureProperty(),
+      new SettingsProperties.MemoryProperty(),
+      new SettingsProperties.FanProperty(),
+      new SmiProperties.PowerProperty()
+    ];
   },
-  getIcon : function() {
-    return this._icon;
-  },
-  parse : function(lines) {
-    return '';
-  },
-  declare : function() {
-    return this._processor;
+  openSettings() {
+    let defaultAppSystem = Shell.AppSystem.get_default();
+    let nvidiaSettingsApp = defaultAppSystem.lookup_app('nvidia-settings.desktop');
+
+    if (!nvidiaSettingsApp) {
+      Main.notifyError("Couldn't find nvidia-settings on your device", "Check you have it installed correctly");
+      return;
+    }
+
+    if (nvidiaSettingsApp.get_n_windows()) {
+      nvidiaSettingsApp.activate();
+    } else {
+      Spawn.spawnAsync('nvidia-settings', Spawn.defaultErrorHandler);
+    }
   }
 });

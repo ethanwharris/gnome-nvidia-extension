@@ -34,28 +34,33 @@ const Lang = imports.lang;
 const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 
-const Property = new Lang.Class({
-  Name : 'Property',
-  Abstract : true,
-  _init : function(name, callExtension, icon, processor) {
-    this._name = name;
-    this._callExtension = callExtension;
-    this._icon = icon;
-    this._processor = processor;
-  },
-  getName : function() {
-    return this._name;
-  },
-  getCallExtension : function() {
-    return this._callExtension;
-  },
-  getIcon : function() {
-    return this._icon;
+const Property = Me.imports.property;
+const Processor = Me.imports.processor;
+
+var PowerProperty = new Lang.Class({
+  Name : 'PowerProperty',
+  Extends : Property.Property,
+  _init : function(gpuCount) {
+    this.parent(Processor.NVIDIA_SMI, 'Power Usage (W)', 'power.draw,', 'power-symbolic');
+
+    this._gpuCount = gpuCount;
   },
   parse : function(lines) {
-    return '';
-  },
-  declare : function() {
-    return this._processor;
+    var line = '';
+    var values = [];
+
+    for (let i = 0; i < this._gpuCount; i++) {
+      line = lines.shift();
+
+      var pow = parseFloat(line);
+
+      if (isNaN(pow) || !isFinite(line)) {
+        values = values.concat('ERR');
+      } else {
+        values = values.concat(line.split('.')[0] + "W");
+      }
+    }
+
+    return values;
   }
 });
