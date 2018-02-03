@@ -36,6 +36,15 @@ const Gtk = imports.gi.Gtk;
 
 const Spawn = Me.imports.spawn;
 
+var NVIDIA_SETTINGS = 0;
+var NVIDIA_SMI = 1;
+var OPTIMUS = 2;
+
+var LIST = [
+  NvidiaSettingsProcessor,
+  NvidiaSmiProcessor
+];
+
 /*
  * Utility function to perform one function and then another
  */
@@ -49,7 +58,8 @@ function andThen(first, second) {
 const Processor = new Lang.Class({
   Name : 'Processor',
   Abstract : true,
-  _init : function(baseCall, tailCall) {
+  _init : function(name, baseCall, tailCall) {
+    this._name = name;
     this._baseCall = baseCall;
     this._tailCall = tailCall;
     this._call = this._baseCall;
@@ -70,6 +80,9 @@ const Processor = new Lang.Class({
   addProperty : function(parseFunction, callExtension) {
     this._call += callExtension;
     this._parseFunction = andThen(this._parseFunction, parseFunction);
+  },
+  getName : function() {
+    return this._name;
   }
 });
 

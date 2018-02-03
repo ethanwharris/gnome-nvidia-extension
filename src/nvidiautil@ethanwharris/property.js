@@ -37,10 +37,11 @@ const Gtk = imports.gi.Gtk;
 const Property = new Lang.Class({
   Name : 'Property',
   Abstract : true,
-  _init : function(name, callExtension, icon) {
+  _init : function(name, callExtension, icon, processor) {
     this._name = name;
     this._callExtension = callExtension;
     this._icon = icon;
+    this._processor = processor;
   },
   getName : function() {
     return this._name;
@@ -53,6 +54,9 @@ const Property = new Lang.Class({
   },
   parse : function(lines) {
     return '';
+  },
+  declare : function() {
+    return this._processor;
   }
 });
 
