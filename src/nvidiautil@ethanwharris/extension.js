@@ -44,6 +44,12 @@ const SmiProvider = Me.imports.smiProvider;
 const SettingsAndSmiProvider = Me.imports.settingsAndSmiProvider;
 const Spawn = Me.imports.spawn;
 
+var PROVIDERS = [
+  SettingsAndSmiProvider.SettingsAndSmiProvider,
+  SettingsProvider.SettingsProvider,
+  SmiProvider.SmiProvider
+];
+
 /*
  * Open the preferences for the nvidiautil extension
  */
@@ -205,7 +211,7 @@ const MainMenu = new Lang.Class({
 
     this.processor.reset();
 
-    this.provider = new SettingsAndSmiProvider.SettingsAndSmiProvider();
+    this.provider = new PROVIDERS[this._settings.get_int(Util.SETTINGS_PROVIDER)]();
 
     var names = this.provider.getGpuNames();
 

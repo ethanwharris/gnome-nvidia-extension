@@ -76,7 +76,7 @@ const SETTINGS = {
       key : 'provider',
       label : 'Properties Provider',
       tooltip : 'Select the properties provider to use',
-      options : ['Nvidia Settings', 'Nvidia SMI', 'Nvidia Settings and SMI']
+      options : ['Nvidia Settings and SMI', 'Nvidia Settings', 'Nvidia SMI']
     }
 };
 
