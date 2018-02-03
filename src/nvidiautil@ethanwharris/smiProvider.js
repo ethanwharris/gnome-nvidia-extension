@@ -36,8 +36,6 @@ const Lang = imports.lang;
 const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 
-const Shell = imports.gi.Shell;
-
 const Spawn = Me.imports.spawn;
 
 const SmiProperties = Me.imports.smiProperties;
@@ -54,7 +52,7 @@ var SmiProvider = new Lang.Class({
   },
   getProperties() {
     return [
-      new SmiProperties.PowerProperty()
+      SmiProperties.PowerProperty
     ];
   },
   openSettings() {

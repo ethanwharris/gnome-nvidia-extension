@@ -36,8 +36,6 @@ const Lang = imports.lang;
 const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 
-const Shell = imports.gi.Shell;
-
 const Spawn = Me.imports.spawn;
 
 const SettingsProperties = Me.imports.settingsProperties;
@@ -51,9 +49,14 @@ var SettingsProvider = new Lang.Class({
       // Do Nothing
     });
 
-    result = output.split('\n');
+    if (output == Spawn.ERROR) {
+      return Spawn.ERROR;
+    }
 
-    for (var i = 0; i < result.length; i++) {
+    output = output.split('\n');
+    var result = [];
+
+    for (var i = 0; i < output.length; i++) {
       result[i] = "GPU " + i;
     }
 
@@ -61,10 +64,10 @@ var SettingsProvider = new Lang.Class({
   },
   getProperties() {
     return [
-      new SettingsProperties.UtilisationProperty(),
-      new SettingsProperties.TemperatureProperty(),
-      new SettingsProperties.MemoryProperty(),
-      new SettingsProperties.FanProperty()
+      SettingsProperties.UtilisationProperty,
+      SettingsProperties.TemperatureProperty,
+      SettingsProperties.MemoryProperty,
+      SettingsProperties.FanProperty
     ];
   },
   openSettings() {

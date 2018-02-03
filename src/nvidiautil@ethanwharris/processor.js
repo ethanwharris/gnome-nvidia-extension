@@ -41,8 +41,8 @@ var NVIDIA_SMI = 1;
 var OPTIMUS = 2;
 
 var LIST = [
-  NvidiaSettingsProcessor,
-  NvidiaSmiProcessor
+  () => { return new NvidiaSettingsProcessor() },
+  () => { return new NvidiaSmiProcessor() }
 ];
 
 /*
@@ -90,7 +90,7 @@ var NvidiaSettingsProcessor = new Lang.Class({
   Name : 'NvidiaSettingsProcessor',
   Extends : Processor,
   _init : function() {
-    this.parent('nvidia-settings ', '-t');
+    this.parent('nvidia-settings', 'nvidia-settings ', '-t');
   },
   parse : function(output) {
     this._parseFunction(output.split('\n'));
@@ -101,7 +101,7 @@ var NvidiaSmiProcessor = new Lang.Class({
   Name : 'NvidiaSmiProcessor',
   Extends : Processor,
   _init : function() {
-    this.parent('nvidia-smi --query-gpu=', ' --format=csv,noheader,nounits');
+    this.parent('nvidia-smi', 'nvidia-smi --query-gpu=', ' --format=csv,noheader,nounits');
   },
   parse : function(output) {
     var lines = output.split('\n');

@@ -37,11 +37,11 @@ const Gtk = imports.gi.Gtk;
 const Property = new Lang.Class({
   Name : 'Property',
   Abstract : true,
-  _init : function(name, callExtension, icon, processor) {
+  _init : function(processor, name, callExtension, icon) {
+    this._processor = processor;
     this._name = name;
     this._callExtension = callExtension;
     this._icon = icon;
-    this._processor = processor;
   },
   getName : function() {
     return this._name;

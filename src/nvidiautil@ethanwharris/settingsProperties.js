@@ -63,7 +63,7 @@ var UtilisationProperty = new Lang.Class({
 
 var TemperatureProperty = new Lang.Class({
   Name : 'TemperatureProperty',
-  Extends : Property,
+  Extends : Property.Property,
   _init : function(gpuCount) {
     this.parent(Processor.NVIDIA_SETTINGS, 'Temperature (' + "\xB0" + "C" + ')', '-q GPUCoreTemp ', 'temp-symbolic');
 
@@ -87,7 +87,7 @@ var TemperatureProperty = new Lang.Class({
 
 var MemoryProperty = new Lang.Class({
   Name : 'MemoryProperty',
-  Extends : Property,
+  Extends : Property.Property,
   _init : function(gpuCount) {
     this.parent(Processor.NVIDIA_SETTINGS, 'Memory Usage', '-q UsedDedicatedGPUMemory -q TotalDedicatedGPUMemory ', 'ram-symbolic');
 
@@ -112,7 +112,7 @@ var MemoryProperty = new Lang.Class({
 
 var FanProperty = new Lang.Class({
   Name : 'FanProperty',
-  Extends : Property,
+  Extends : Property.Property,
   _init : function(gpuCount) {
     this.parent(Processor.NVIDIA_SETTINGS, 'Fan Speed', '-q GPUCurrentFanSpeed ', 'fan-symbolic');
 
