@@ -30,8 +30,6 @@ const ShellMountOperation = imports.ui.shellMountOperation;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
-// const Processor = Me.imports.processor;
-
 const Lang = imports.lang;
 const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
@@ -50,9 +48,9 @@ var SmiProvider = new Lang.Class({
     });
     return output.split('\n');
   },
-  getProperties() {
+  getProperties(gpuCount) {
     return [
-      SmiProperties.PowerProperty
+      new SmiProperties.PowerProperty(gpuCount)
     ];
   },
   openSettings() {

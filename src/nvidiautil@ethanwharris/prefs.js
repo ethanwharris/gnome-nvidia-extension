@@ -76,7 +76,7 @@ const SETTINGS = {
       key : 'provider',
       label : 'Properties Provider',
       tooltip : 'Select the properties provider to use',
-      options : ['Nvidia Settings and SMI', 'Nvidia Settings', 'Nvidia SMI']
+      options : ['Nvidia Settings and SMI', 'Nvidia Settings', 'Nvidia SMI', 'Optimus with Bumblebee (beta)']
     }
 };
 
@@ -144,7 +144,6 @@ function buildSettingWidget(setting) {
 
     combobox.connect('changed', Lang.bind(this, function(entry) {
       let [success, iter] = combobox.get_active_iter();
-      global.log('t',iter);
       if (!success)
         return;
       settings.set_int(setting, model.get_value(iter, 0))

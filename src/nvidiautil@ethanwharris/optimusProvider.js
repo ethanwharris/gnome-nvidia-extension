@@ -30,35 +30,43 @@ const ShellMountOperation = imports.ui.shellMountOperation;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
-// const Processor = Me.imports.processor;
-
 const Lang = imports.lang;
 const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 
 const Spawn = Me.imports.spawn;
-
-const SettingsProperties = Me.imports.settingsProperties;
-const SmiProperties = Me.imports.smiProperties;
 const Processor = Me.imports.processor;
 
-var SettingsAndSmiProvider = new Lang.Class({
-  Name : 'SettingsAndSmiProvider',
+const SettingsProperties = Me.imports.settingsProperties;
+
+var OptimusProvider = new Lang.Class({
+  Name : 'OptimusProvider',
   _init : function() {
   },
   getGpuNames() {
-    var output = Spawn.spawnSync("nvidia-smi --query-gpu=gpu_name --format=csv,noheader", function(command, err) {
+    var output = Spawn.spawnSync("optirun nvidia-settings -q GpuUUID -t", function(command, err) {
       // Do Nothing
     });
-    return output.split('\n');
+
+    if (output == Spawn.ERROR) {
+      return Spawn.ERROR;
+    }
+
+    output = output.split('\n');
+    var result = [];
+
+    for (var i = 0; i < output.length; i++) {
+      result[i] = "GPU " + i;
+    }
+
+    return result;
   },
   getProperties(gpuCount) {
     return [
-      new SettingsProperties.UtilisationProperty(gpuCount, Processor.NVIDIA_SETTINGS),
-      new SettingsProperties.TemperatureProperty(gpuCount, Processor.NVIDIA_SETTINGS),
-      new SettingsProperties.MemoryProperty(gpuCount, Processor.NVIDIA_SETTINGS),
-      new SettingsProperties.FanProperty(gpuCount, Processor.NVIDIA_SETTINGS),
-      new SmiProperties.PowerProperty(gpuCount)
+      new SettingsProperties.UtilisationProperty(gpuCount, Processor.OPTIMUS),
+      new SettingsProperties.TemperatureProperty(gpuCount, Processor.OPTIMUS),
+      new SettingsProperties.MemoryProperty(gpuCount, Processor.OPTIMUS),
+      new SettingsProperties.FanProperty(gpuCount, Processor.OPTIMUS)
     ];
   },
   openSettings() {
@@ -73,7 +81,7 @@ var SettingsAndSmiProvider = new Lang.Class({
     if (nvidiaSettingsApp.get_n_windows()) {
       nvidiaSettingsApp.activate();
     } else {
-      Spawn.spawnAsync('nvidia-settings', Spawn.defaultErrorHandler);
+      Spawn.spawnAsync('optirun nvidia-settings -c :8', Spawn.defaultErrorHandler);
     }
   }
 });

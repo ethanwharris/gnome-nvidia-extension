@@ -42,12 +42,14 @@ const ProcessorHandler = Me.imports.processorHandler;
 const SettingsProvider = Me.imports.settingsProvider;
 const SmiProvider = Me.imports.smiProvider;
 const SettingsAndSmiProvider = Me.imports.settingsAndSmiProvider;
+const OptimusProvider = Me.imports.optimusProvider;
 const Spawn = Me.imports.spawn;
 
 var PROVIDERS = [
   SettingsAndSmiProvider.SettingsAndSmiProvider,
   SettingsProvider.SettingsProvider,
-  SmiProvider.SmiProvider
+  SmiProvider.SmiProvider,
+  OptimusProvider.OptimusProvider
 ];
 
 /*
@@ -217,12 +219,11 @@ const MainMenu = new Lang.Class({
 
     if (names != Spawn.ERROR) {
 
-      var properties = [];
       var listeners = [];
 
-      var props = this.provider.getProperties();
+      var properties = this.provider.getProperties(names.length - 1);
 
-      for (var i = 0; i < props.length; i++) {
+      for (var i = 0; i < properties.length; i++) {
         listeners[i] = [];
       }
 
@@ -234,9 +235,7 @@ const MainMenu = new Lang.Class({
 
         this.properties.add_child(label);
 
-        for (var i = 0; i < props.length; i++) {
-          properties[i] = new props[i](names.length - 1);
-
+        for (var i = 0; i < properties.length; i++) {
           var box = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
 
           var item = new PropertyMenuItem(properties[i], box, manager);
@@ -247,7 +246,7 @@ const MainMenu = new Lang.Class({
         }
       }
 
-      for (var i = 0; i < props.length; i++) {
+      for (var i = 0; i < properties.length; i++) {
         this.processor.addProperty(properties[i], listeners[i]);
       }
 

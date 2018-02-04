@@ -92,6 +92,17 @@ var NvidiaSettingsProcessor = new Lang.Class({
   }
 });
 
+var OptimusSettingsProcessor = new Lang.Class({
+  Name : 'OptimusSettingsProcessor',
+  Extends : Processor,
+  _init : function() {
+    this.parent('optirun nvidia-settings', 'optirun nvidia-settings ', '-t');
+  },
+  parse : function(output) {
+    this._parseFunction(output.split('\n'));
+  }
+});
+
 var NvidiaSmiProcessor = new Lang.Class({
   Name : 'NvidiaSmiProcessor',
   Extends : Processor,
@@ -113,5 +124,6 @@ var NvidiaSmiProcessor = new Lang.Class({
 
 var LIST = [
   NvidiaSettingsProcessor,
-  NvidiaSmiProcessor
+  NvidiaSmiProcessor,
+  OptimusSettingsProcessor
 ];

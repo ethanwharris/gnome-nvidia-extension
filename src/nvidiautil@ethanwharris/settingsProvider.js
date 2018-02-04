@@ -37,6 +37,7 @@ const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 
 const Spawn = Me.imports.spawn;
+const Processor = Me.imports.processor;
 
 const SettingsProperties = Me.imports.settingsProperties;
 
@@ -62,12 +63,12 @@ var SettingsProvider = new Lang.Class({
 
     return result;
   },
-  getProperties() {
+  getProperties(gpuCount) {
     return [
-      SettingsProperties.UtilisationProperty,
-      SettingsProperties.TemperatureProperty,
-      SettingsProperties.MemoryProperty,
-      SettingsProperties.FanProperty
+      new SettingsProperties.UtilisationProperty(gpuCount, Processor.NVIDIA_SETTINGS),
+      new SettingsProperties.TemperatureProperty(gpuCount, Processor.NVIDIA_SETTINGS),
+      new SettingsProperties.MemoryProperty(gpuCount, Processor.NVIDIA_SETTINGS),
+      new SettingsProperties.FanProperty(gpuCount, Processor.NVIDIA_SETTINGS)
     ];
   },
   openSettings() {

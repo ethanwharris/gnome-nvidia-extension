@@ -40,8 +40,8 @@ const Processor = Me.imports.processor;
 var UtilisationProperty = new Lang.Class({
   Name : 'UtilisationProperty',
   Extends : Property.Property,
-  _init : function(gpuCount) {
-    this.parent(Processor.NVIDIA_SETTINGS, 'Utilisation', '-q GPUUtilization ', 'card-symbolic');
+  _init : function(gpuCount, processor) {
+    this.parent(processor, 'Utilisation', '-q GPUUtilization ', 'card-symbolic');
 
     this._gpuCount = gpuCount;
   },
@@ -64,8 +64,8 @@ var UtilisationProperty = new Lang.Class({
 var TemperatureProperty = new Lang.Class({
   Name : 'TemperatureProperty',
   Extends : Property.Property,
-  _init : function(gpuCount) {
-    this.parent(Processor.NVIDIA_SETTINGS, 'Temperature (' + "\xB0" + "C" + ')', '-q GPUCoreTemp ', 'temp-symbolic');
+  _init : function(gpuCount, processor) {
+    this.parent(processor, 'Temperature (' + "\xB0" + "C" + ')', '-q GPUCoreTemp ', 'temp-symbolic');
 
     this._gpuCount = gpuCount;
   },
@@ -88,8 +88,8 @@ var TemperatureProperty = new Lang.Class({
 var MemoryProperty = new Lang.Class({
   Name : 'MemoryProperty',
   Extends : Property.Property,
-  _init : function(gpuCount) {
-    this.parent(Processor.NVIDIA_SETTINGS, 'Memory Usage', '-q UsedDedicatedGPUMemory -q TotalDedicatedGPUMemory ', 'ram-symbolic');
+  _init : function(gpuCount, processor) {
+    this.parent(processor, 'Memory Usage', '-q UsedDedicatedGPUMemory -q TotalDedicatedGPUMemory ', 'ram-symbolic');
 
     this._gpuCount = gpuCount;
   },
@@ -113,8 +113,8 @@ var MemoryProperty = new Lang.Class({
 var FanProperty = new Lang.Class({
   Name : 'FanProperty',
   Extends : Property.Property,
-  _init : function(gpuCount) {
-    this.parent(Processor.NVIDIA_SETTINGS, 'Fan Speed', '-q GPUCurrentFanSpeed ', 'fan-symbolic');
+  _init : function(gpuCount, processor) {
+    this.parent(processor, 'Fan Speed', '-q GPUCurrentFanSpeed ', 'fan-symbolic');
 
     this._gpuCount = gpuCount;
   },

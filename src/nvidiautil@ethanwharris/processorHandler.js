@@ -39,7 +39,7 @@ const Gtk = imports.gi.Gtk;
 var ProcessorHandler = new Lang.Class({
   Name : 'ProcessorHandler',
   _init : function() {
-    this._processors = [false, false];
+    this._processors = [false, false, false];
   },
   process : function() {
     for (var i = 0; i < this._processors.length; i++) {
@@ -67,6 +67,6 @@ var ProcessorHandler = new Lang.Class({
     }, property.getCallExtension());
   },
   reset : function() {
-    this._processors = [false, false];
+    this._processors = [false, false, false];
   }
 });
