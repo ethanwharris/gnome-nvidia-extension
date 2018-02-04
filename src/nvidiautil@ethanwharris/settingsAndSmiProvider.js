@@ -53,13 +53,17 @@ var SettingsAndSmiProvider = new Lang.Class({
     return output.split('\n');
   },
   getProperties(gpuCount) {
-    return [
+    this.storedProperties =  [
       new SettingsProperties.UtilisationProperty(gpuCount, Processor.NVIDIA_SETTINGS),
       new SettingsProperties.TemperatureProperty(gpuCount, Processor.NVIDIA_SETTINGS),
       new SettingsProperties.MemoryProperty(gpuCount, Processor.NVIDIA_SETTINGS),
       new SettingsProperties.FanProperty(gpuCount, Processor.NVIDIA_SETTINGS),
       new SmiProperties.PowerProperty(gpuCount)
     ];
+    return this.storedProperties;
+  },
+  retrieveProperties() {
+    return this.storedProperties;
   },
   openSettings() {
     let defaultAppSystem = Shell.AppSystem.get_default();
