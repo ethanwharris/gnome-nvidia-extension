@@ -180,7 +180,6 @@ const MainMenu = new Lang.Class({
     this._error = false;
     // this._settingsPointer = this._settings.connect('changed', Lang.bind(this, this.loadSettings));
 
-
     this.processor = new ProcessorHandler.ProcessorHandler();
 
     this.setMenu(new PersistentPopupMenu(this.actor, 0.0));
@@ -231,6 +230,8 @@ const MainMenu = new Lang.Class({
     this._settingChangedSignals = [];
     this._addSettingChangedSignal(Util.SETTINGS_PROVIDER, Lang.bind(this, this._reload));
     this._addSettingChangedSignal(Util.SETTINGS_REFRESH, Lang.bind(this, this._updatePollTime));
+    this._addSettingChangedSignal(Util.SETTINGS_TEMP_UNIT, Lang.bind(this, this._reload));
+
   },
   _reload : function() {
 
@@ -269,7 +270,6 @@ const MainMenu = new Lang.Class({
           let index = (n * properties.length) + i;
           var item = new PropertyMenuItem(properties[i], box, manager, this._settings, PROVIDER_SETTINGS[p], index);
 
-          global.log(properties[i].getName())
           if (properties[i].getName() == "Temperature") {
             unit = this._settings.get_int(Util.SETTINGS_TEMP_UNIT)
             properties[i].setUnit(unit)
@@ -311,6 +311,23 @@ const MainMenu = new Lang.Class({
       this._addTimeout(this._settings.get_int(Util.SETTINGS_REFRESH));
     }
   },
+  // _updateTempUnits : function() {
+  //   // Main.notifyError('', 'IN');
+  //   // let p = this._settings.get_int(Util.SETTINGS_PROVIDER);
+  //   // let provider = new PROVIDERS[p]();
+  //   var names = this.provider.getGpuNames();
+  //   var properties = this.provider.getProperties(names.length - 1);
+  //   var unit = 0;
+  //
+  //   for (var i = 0; i < properties.length; i++) {
+  //     if (properties[i].getName() == "Temperature") {
+  //
+  //       unit = this._settings.get_int(Util.SETTINGS_TEMP_UNIT)
+  //       // Main.notifyError('',''+unit)
+  //       properties[i].setUnit(unit)
+  //     }
+  //   }
+  // },
   /*
    * Create and add the timeout which updates values every t seconds
    */

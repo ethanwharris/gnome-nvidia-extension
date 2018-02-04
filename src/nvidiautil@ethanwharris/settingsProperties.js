@@ -74,6 +74,7 @@ var TemperatureProperty = new Lang.Class({
   parse : function(lines) {
     var line = '';
     var values = [];
+    var formattedValue = '';
 
     lines.shift();
 

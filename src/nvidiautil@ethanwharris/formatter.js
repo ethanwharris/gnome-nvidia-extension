@@ -57,6 +57,6 @@ var tempFormatter = new Lang.Class({
     return value + "\xB0" + "C";
   },
   formatFehrenheit : function(value) {
-    return (value*9/5+32) + "\xB0" + "F";
+    return Math.floor(value*9/5+32) + "\xB0" + "F";
   }
 });
