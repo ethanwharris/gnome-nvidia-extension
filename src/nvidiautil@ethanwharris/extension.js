@@ -180,7 +180,6 @@ const MainMenu = new Lang.Class({
     this._error = false;
     // this._settingsPointer = this._settings.connect('changed', Lang.bind(this, this.loadSettings));
 
-
     this.processor = new ProcessorHandler.ProcessorHandler();
 
     this.setMenu(new PersistentPopupMenu(this.actor, 0.0));
@@ -231,6 +230,8 @@ const MainMenu = new Lang.Class({
     this._settingChangedSignals = [];
     this._addSettingChangedSignal(Util.SETTINGS_PROVIDER, Lang.bind(this, this._reload));
     this._addSettingChangedSignal(Util.SETTINGS_REFRESH, Lang.bind(this, this._updatePollTime));
+    this._addSettingChangedSignal(Util.SETTINGS_TEMP_UNIT, Lang.bind(this, this._updateTempUnits));
+
   },
   _reload : function() {
 
@@ -269,6 +270,11 @@ const MainMenu = new Lang.Class({
           let index = (n * properties.length) + i;
           var item = new PropertyMenuItem(properties[i], box, manager, this._settings, PROVIDER_SETTINGS[p], index);
 
+          if (properties[i].getName() == "Temperature") {
+            unit = this._settings.get_int(Util.SETTINGS_TEMP_UNIT)
+            properties[i].setUnit(unit)
+          }
+
           listeners[i][n] = item;
           submenu.menu.addMenuItem(item);
           this.properties.add_child(box);
@@ -304,6 +310,21 @@ const MainMenu = new Lang.Class({
     if (!this._error) {
       this._addTimeout(this._settings.get_int(Util.SETTINGS_REFRESH));
     }
+  },
+  _updateTempUnits : function() {
+    var names = this.provider.getGpuNames();
+    var properties = this.provider.retrieveProperties();
+    var unit = 0;
+
+    for (var i = 0; i < properties.length; i++) {
+      if (properties[i].getName() == "Temperature") {
+
+        unit = this._settings.get_int(Util.SETTINGS_TEMP_UNIT)
+        properties[i].setUnit(unit)
+      }
+    }
+    this.processor.process();
+
   },
   /*
    * Create and add the timeout which updates values every t seconds

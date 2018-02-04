@@ -37,6 +37,8 @@ const Gtk = imports.gi.Gtk;
 const Property = Me.imports.property;
 const Processor = Me.imports.processor;
 
+const Formatter = Me.imports.formatter;
+
 var UtilisationProperty = new Lang.Class({
   Name : 'UtilisationProperty',
   Extends : Property.Property,
@@ -65,23 +67,28 @@ var TemperatureProperty = new Lang.Class({
   Name : 'TemperatureProperty',
   Extends : Property.Property,
   _init : function(gpuCount, processor) {
-    this.parent(processor, 'Temperature (' + "\xB0" + "C" + ')', '-q GPUCoreTemp ', 'temp-symbolic');
-
+    this.parent(processor, 'Temperature', '-q GPUCoreTemp ', 'temp-symbolic');
+    this.formatter = new Formatter.tempFormatter(Formatter.CENTIGRADE);
     this._gpuCount = gpuCount;
   },
   parse : function(lines) {
     var line = '';
     var values = [];
+    var formattedValue = '';
 
     lines.shift();
 
     for (let i = 0; i < this._gpuCount; i++) {
       line = lines.shift();
 
-      values = values.concat(line + "\xB0" + "C");
+      formattedValue = this.formatter.format(line);
+      values = values.concat(formattedValue);
     }
 
     return values;
+  },
+  setUnit(unit) {
+    this.formatter.setUnit(unit);
   }
 });
 

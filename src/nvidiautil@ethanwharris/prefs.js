@@ -99,6 +99,7 @@ function buildSettingWidget(setting) {
     let model = new Gtk.ListStore();
     model.set_column_types([GObject.TYPE_INT, GObject.TYPE_STRING]);
     let combobox = new Gtk.ComboBox({model: model});
+    var opts = '';
 
     let renderer = new Gtk.CellRendererText();
     combobox.pack_start(renderer, true);
