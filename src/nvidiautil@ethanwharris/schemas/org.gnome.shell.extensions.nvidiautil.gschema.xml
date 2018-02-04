@@ -1,40 +1,5 @@
 <schemalist gettext-domain="gse-nvidiautil">
    <schema id="org.gnome.shell.extensions.nvidiautil" path="/org/gnome/shell/extensions/nvidiautil/">
-     <key name="gpuutilisation" type="b">
-       <default>true</default>
-       <summary>GPU Utilisation</summary>
-       <description>
-         Displays the GPU utilisation in the toolbar
-       </description>
-     </key>
-     <key name="gputemp" type="b">
-       <default>false</default>
-       <summary>GPU Temperature</summary>
-       <description>
-         Displays the GPU temperature in the toolbar
-       </description>
-     </key>
-     <key name="gpumemoryutilisation" type="b">
-       <default>true</default>
-       <summary>GPU Memory Utilisation</summary>
-       <description>
-         Displays the GPU memory utilisation in the toolbar
-       </description>
-     </key>
-     <key name="gpupowerusage" type="b">
-       <default>false</default>
-       <summary>GPU Power Usage (Requires: nvidia-smi)</summary>
-       <description>
-         Displays the GPU power usage (W) in the toolbar
-       </description>
-     </key>
-     <key name="gpufanspeed" type="b">
-       <default>true</default>
-       <summary>GPU Fan Speed</summary>
-       <description>
-         Displays the GPU fan speed (%) in the toolbar
-       </description>
-     </key>
      <key name="refreshrate" type="i">
        <default>5</default>
        <summary>Refresh Interval (s)</summary>
@@ -55,6 +20,18 @@
        <description>
          Select the properties provider to use
        </description>
+     </key>
+     <key name="settingsconfig" type="as">
+       <default>[]</default>
+     </key>
+     <key name="smiconfig" type="as">
+       <default>[]</default>
+     </key>
+     <key name="settingsandsmiconfig" type="as">
+       <default>[]</default>
+     </key>
+     <key name="optimusconfig" type="as">
+       <default>[]</default>
      </key>
   </schema>
 </schemalist>

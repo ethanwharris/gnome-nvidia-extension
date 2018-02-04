@@ -52,6 +52,13 @@ var PROVIDERS = [
   OptimusProvider.OptimusProvider
 ];
 
+var PROVIDER_SETTINGS = [
+  "settingsandsmiconfig",
+  "settingsconfig",
+  "smiconfig",
+  "optimusconfig"
+]
+
 /*
  * Open the preferences for the nvidiautil extension
  */
@@ -62,8 +69,12 @@ function openPreferences() {
 const PropertyMenuItem = new Lang.Class({
   Name : 'PropertyMenuItem',
   Extends: PopupMenu.PopupBaseMenuItem,
-  _init : function(property, box, labelManager) {
+  _init : function(property, box, labelManager, settings, setting, index) {
     this.parent();
+
+    this._settings = settings;
+    this._setting = setting;
+    this._index = index;
 
     this._box = box;
     this.labelManager = labelManager;
@@ -96,6 +107,10 @@ const PropertyMenuItem = new Lang.Class({
       this._visible = false;
       this._box.visible = false;
       this.labelManager.decrement();
+
+      let flags = this._settings.get_strv(this._setting);
+      flags[this._index] = "inactive";
+      this._settings.set_strv(this._setting, flags);
     } else {
       this.actor.add_style_pseudo_class('active');
       this._box.add_child(this._icon);
@@ -103,6 +118,10 @@ const PropertyMenuItem = new Lang.Class({
       this._visible = true;
       this._box.visible = true;
       this.labelManager.increment();
+
+      let flags = this._settings.get_strv(this._setting);
+      flags[this._index] = "active";
+      this._settings.set_strv(this._setting, flags);
     }
   },
   setActive : function(active) {
@@ -158,7 +177,9 @@ const MainMenu = new Lang.Class({
     this.parent(0.0, _("GPU Statistics"));
     this.timeoutId = -1;
     this._settings = Util.getSettings();
-    this._settingsPointer = this._settings.connect('changed', Lang.bind(this, this.loadSettings));
+    this._error = false;
+    // this._settingsPointer = this._settings.connect('changed', Lang.bind(this, this.loadSettings));
+
 
     this.processor = new ProcessorHandler.ProcessorHandler();
 
@@ -175,7 +196,8 @@ const MainMenu = new Lang.Class({
     this._propertiesMenu = new PopupMenu.PopupMenuSection();
     this.menu.addMenuItem(this._propertiesMenu);
 
-    this.loadSettings();
+    this._reload();
+    this._updatePollTime();
 
     this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
@@ -205,15 +227,21 @@ const MainMenu = new Lang.Class({
     item.actor.add(cog, { expand: true, x_fill: false });
 
     this.menu.addMenuItem(item);
+
+    this._settingChangedSignals = [];
+    this._addSettingChangedSignal(Util.SETTINGS_PROVIDER, Lang.bind(this, this._reload));
+    this._addSettingChangedSignal(Util.SETTINGS_REFRESH, Lang.bind(this, this._updatePollTime));
   },
-  loadSettings : function() {
+  _reload : function() {
 
     this.properties.destroy_all_children();
     this._propertiesMenu.removeAll();
 
     this.processor.reset();
 
-    this.provider = new PROVIDERS[this._settings.get_int(Util.SETTINGS_PROVIDER)]();
+    let p = this._settings.get_int(Util.SETTINGS_PROVIDER);
+    this.provider = new PROVIDERS[p]();
+    let flags = this._settings.get_strv(PROVIDER_SETTINGS[p]);
 
     var names = this.provider.getGpuNames();
 
@@ -238,7 +266,8 @@ const MainMenu = new Lang.Class({
         for (var i = 0; i < properties.length; i++) {
           var box = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
 
-          var item = new PropertyMenuItem(properties[i], box, manager);
+          let index = (n * properties.length) + i;
+          var item = new PropertyMenuItem(properties[i], box, manager, this._settings, PROVIDER_SETTINGS[p], index);
 
           listeners[i][n] = item;
           submenu.menu.addMenuItem(item);
@@ -250,6 +279,29 @@ const MainMenu = new Lang.Class({
         this.processor.addProperty(properties[i], listeners[i]);
       }
 
+      this.processor.process();
+
+      for (var n = 0; n < names.length - 1; n++) {
+        for (var i = 0; i < properties.length; i++) {
+          let index = (n * properties.length) + i;
+
+          if (!flags[index]) {
+            flags[index] = "inactive";
+          }
+
+          if (flags[index] == "active") {
+            listeners[i][n].activate();
+          }
+        }
+      }
+
+      this._settings.set_strv(PROVIDER_SETTINGS[p], flags);
+    } else {
+      this._error = true;
+    }
+  },
+  _updatePollTime : function() {
+    if (!this._error) {
       this._addTimeout(this._settings.get_int(Util.SETTINGS_REFRESH));
     }
   },
@@ -258,8 +310,6 @@ const MainMenu = new Lang.Class({
    */
   _addTimeout : function(t) {
     this._removeTimeout();
-
-    this.processor.process();
 
     this.timeoutId = GLib.timeout_add_seconds(0, t, Lang.bind(this, function() {
       this.processor.process();
@@ -275,9 +325,17 @@ const MainMenu = new Lang.Class({
       this.timeoutId = -1;
     }
   },
+  _addSettingChangedSignal : function(key, callback) {
+    this._settingChangedSignals.push(this._settings.connect('changed::' + key, callback));
+  },
   destroy : function() {
     this._removeTimeout();
-    this._settings.disconnect(this._settingsPointer);
+    // this._settings.disconnect(this._settingsPointer);
+
+    for (let signal of this._settingChangedSignals) {
+      this._settings.disconnect(signal);
+    };
+
     this.parent();
   }
 });

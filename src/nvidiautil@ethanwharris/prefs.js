@@ -26,36 +26,6 @@ const GObject = imports.gi.GObject;
 const Lang = imports.lang;
 
 const SETTINGS = {
-    gpuutilisation : {
-      type : 'noshow',
-      key : 'gpuutilisation',
-      label : _("GPU Utilisation"),
-      tooltip : _("Displays the GPU utilisation in the toolbar")
-    },
-    gputemp : {
-      type : 'noshow',
-      key : 'gputemp',
-      label : _("GPU Temperature"),
-      tooltip : _("Displays the GPU temperature in the toolbar")
-    },
-    gpumemoryutilisation : {
-      type : 'noshow',
-      key : 'gpumemoryutilisation',
-      label : _("GPU Memory Utilisation"),
-      tooltip : _("Displays the GPU memory utilisation in the toolbar")
-    },
-    gpupowerusage : {
-      type : 'noshow',
-      key : 'gpupowerusage',
-      label : _("GPU Power Usage (Requires: nvidia-smi)"),
-      tooltip : _("Displays the GPU power usage (W) in the toolbar")
-    },
-    gpufanspeed : {
-      type : 'noshow',
-      key : 'gpufanspeed',
-      label : _("GPU Fan Speed"),
-      tooltip : _("Displays the GPU fan speed (%) in the toolbar")
-    },
     refreshrate : {
       type : 'int',
       key : 'refreshrate',
