@@ -36,6 +36,10 @@ const Gtk = imports.gi.Gtk;
 
 const Spawn = Me.imports.spawn;
 
+var NVIDIA_SETTINGS = 0;
+var NVIDIA_SMI = 1;
+var OPTIMUS = 2;
+
 /*
  * Utility function to perform one function and then another
  */
@@ -49,7 +53,8 @@ function andThen(first, second) {
 const Processor = new Lang.Class({
   Name : 'Processor',
   Abstract : true,
-  _init : function(baseCall, tailCall) {
+  _init : function(name, baseCall, tailCall) {
+    this._name = name;
     this._baseCall = baseCall;
     this._tailCall = tailCall;
     this._call = this._baseCall;
@@ -70,6 +75,9 @@ const Processor = new Lang.Class({
   addProperty : function(parseFunction, callExtension) {
     this._call += callExtension;
     this._parseFunction = andThen(this._parseFunction, parseFunction);
+  },
+  getName : function() {
+    return this._name;
   }
 });
 
@@ -77,7 +85,18 @@ var NvidiaSettingsProcessor = new Lang.Class({
   Name : 'NvidiaSettingsProcessor',
   Extends : Processor,
   _init : function() {
-    this.parent('nvidia-settings ', '-t');
+    this.parent('nvidia-settings', 'nvidia-settings ', '-t');
+  },
+  parse : function(output) {
+    this._parseFunction(output.split('\n'));
+  }
+});
+
+var OptimusSettingsProcessor = new Lang.Class({
+  Name : 'OptimusSettingsProcessor',
+  Extends : Processor,
+  _init : function() {
+    this.parent('optirun nvidia-settings', 'optirun nvidia-settings ', '-t');
   },
   parse : function(output) {
     this._parseFunction(output.split('\n'));
@@ -88,7 +107,7 @@ var NvidiaSmiProcessor = new Lang.Class({
   Name : 'NvidiaSmiProcessor',
   Extends : Processor,
   _init : function() {
-    this.parent('nvidia-smi --query-gpu=', ' --format=csv,noheader,nounits');
+    this.parent('nvidia-smi', 'nvidia-smi --query-gpu=', ' --format=csv,noheader,nounits');
   },
   parse : function(output) {
     var lines = output.split('\n');
@@ -102,3 +121,9 @@ var NvidiaSmiProcessor = new Lang.Class({
     this._parseFunction(items);
   }
 });
+
+var LIST = [
+  NvidiaSettingsProcessor,
+  NvidiaSmiProcessor,
+  OptimusSettingsProcessor
+];

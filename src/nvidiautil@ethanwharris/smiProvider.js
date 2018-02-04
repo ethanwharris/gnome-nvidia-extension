@@ -34,28 +34,26 @@ const Lang = imports.lang;
 const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 
-var Property = new Lang.Class({
-  Name : 'Property',
-  Abstract : true,
-  _init : function(processor, name, callExtension, icon) {
-    this._processor = processor;
-    this._name = name;
-    this._callExtension = callExtension;
-    this._icon = icon;
+const Spawn = Me.imports.spawn;
+
+const SmiProperties = Me.imports.smiProperties;
+
+var SmiProvider = new Lang.Class({
+  Name : 'SmiProvider',
+  _init : function() {
   },
-  getName : function() {
-    return this._name;
+  getGpuNames() {
+    var output = Spawn.spawnSync("nvidia-smi --query-gpu=gpu_name --format=csv,noheader", function(command, err) {
+      // Do Nothing
+    });
+    return output.split('\n');
   },
-  getCallExtension : function() {
-    return this._callExtension;
+  getProperties(gpuCount) {
+    return [
+      new SmiProperties.PowerProperty(gpuCount)
+    ];
   },
-  getIcon : function() {
-    return this._icon;
-  },
-  parse : function(lines) {
-    return '';
-  },
-  declare : function() {
-    return this._processor;
+  openSettings() {
+    Main.notifyError("Settings are not available in smi mode", "Switch to a provider which supports nivida-settings");
   }
 });

@@ -38,41 +38,25 @@ const Gtk = imports.gi.Gtk;
 const Util = Me.imports.util;
 const Property = Me.imports.property;
 const Processor = Me.imports.processor;
+const ProcessorHandler = Me.imports.processorHandler;
+const SettingsProvider = Me.imports.settingsProvider;
+const SmiProvider = Me.imports.smiProvider;
+const SettingsAndSmiProvider = Me.imports.settingsAndSmiProvider;
+const OptimusProvider = Me.imports.optimusProvider;
 const Spawn = Me.imports.spawn;
+
+var PROVIDERS = [
+  SettingsAndSmiProvider.SettingsAndSmiProvider,
+  SettingsProvider.SettingsProvider,
+  SmiProvider.SmiProvider,
+  OptimusProvider.OptimusProvider
+];
 
 /*
  * Open the preferences for the nvidiautil extension
  */
 function openPreferences() {
   Spawn.spawnAsync("gnome-shell-extension-prefs " + Me.metadata['uuid'], Spawn.defaultErrorHandler);
-}
-
-/*
- * Open the Nvidia Settings tool
- * Note: This will not check if nvidia-settings exists first
- */
-function openSettings() {
-  const Shell = imports.gi.Shell;
-  let defaultAppSystem = Shell.AppSystem.get_default();
-  let nvidiaSettingsApp = defaultAppSystem.lookup_app('nvidia-settings.desktop');
-
-  if (!nvidiaSettingsApp) {
-    Main.notifyError("Couldn't find nvidia-settings on your device", "Check you have it installed correctly");
-    return;
-  }
-
-  if (nvidiaSettingsApp.get_n_windows()) {
-    nvidiaSettingsApp.activate();
-  } else {
-    Spawn.spawnAsync('nvidia-settings', Spawn.defaultErrorHandler);
-  }
-}
-
-function getGpuNames() {
-  var output = Spawn.spawnSync("nvidia-smi --query-gpu=gpu_name --format=csv,noheader", function(command, err) {
-    // Do Nothing
-  });
-  return output.split('\n');
 }
 
 const PropertyMenuItem = new Lang.Class({
@@ -133,18 +117,6 @@ const PropertyMenuItem = new Lang.Class({
   }
 });
 
-const PropertyHandler = new Lang.Class({
-  Name : 'PropertyHandler',
-  _init : function(processor, listeners, property) {
-    processor.addProperty(function(lines) {
-      let values = property.parse(lines);
-      for(var i = 0; i < values.length; i++) {
-        listeners[i].handle(values[i]);
-      }
-    }, property.getCallExtension());
-  }
-});
-
 const PersistentPopupMenu = new Lang.Class({
   Name : 'PersistentPopupMenu',
   Extends : PopupMenu.PopupMenu,
@@ -188,90 +160,24 @@ const MainMenu = new Lang.Class({
     this._settings = Util.getSettings();
     this._settingsPointer = this._settings.connect('changed', Lang.bind(this, this.loadSettings));
 
+    this.processor = new ProcessorHandler.ProcessorHandler();
+
     this.setMenu(new PersistentPopupMenu(this.actor, 0.0));
 
     let hbox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
 
-    let properties = new St.BoxLayout({style_class: 'panel-status-menu-box'});
+    this.properties = new St.BoxLayout({style_class: 'panel-status-menu-box'});
 
-    hbox.add_actor(properties);
+    hbox.add_actor(this.properties);
     hbox.add_actor(PopupMenu.arrowIcon(St.Side.BOTTOM));
     this.actor.add_child(hbox);
 
-    this.settingsProcessor = new Processor.NvidiaSettingsProcessor();
-    this.smiProcessor = new Processor.NvidiaSmiProcessor();
+    this._propertiesMenu = new PopupMenu.PopupMenuSection();
+    this.menu.addMenuItem(this._propertiesMenu);
 
-    var names = getGpuNames();
+    this.loadSettings();
 
-    if (names != Spawn.ERROR) {
-
-      var utilisationProperty = new Property.UtilisationProperty(names.length - 1);
-      var utilisationListeners = [];
-
-      var temperatureProperty = new Property.TemperatureProperty(names.length - 1);
-      var temperatureListeners = [];
-
-      var memoryProperty = new Property.MemoryProperty(names.length - 1);
-      var memoryListeners = [];
-
-      var fanProperty = new Property.FanProperty(names.length - 1);
-      var fanListeners = [];
-
-      var powerProperty = new Property.PowerProperty(names.length - 1);
-      var powerListeners = [];
-
-      for(var n = 0; n < names.length - 1; n++) {
-        var name = names[n];
-
-        let submenu = new PopupMenu.PopupSubMenuMenuItem(names[n]);
-
-        var gpuLabel = new St.Label({ text : n + ':', style_class : 'gpulabel'});
-        var labelManager = new GpuLabelDisplayManager(gpuLabel);
-        this.menu.addMenuItem(submenu);
-
-        var utilisationBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
-        var tmp = new PropertyMenuItem(utilisationProperty, utilisationBox, labelManager);
-        utilisationListeners[n] = tmp;
-        submenu.menu.addMenuItem(tmp);
-
-        var temperatureBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
-        tmp = new PropertyMenuItem(temperatureProperty, temperatureBox, labelManager);
-        temperatureListeners[n] = tmp;
-        submenu.menu.addMenuItem(tmp);
-
-        var memoryBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
-        tmp = new PropertyMenuItem(memoryProperty, memoryBox, labelManager);
-        memoryListeners[n] = tmp;
-        submenu.menu.addMenuItem(tmp);
-
-        var fanBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
-        tmp = new PropertyMenuItem(fanProperty, fanBox, labelManager);
-        fanListeners[n] = tmp;
-        submenu.menu.addMenuItem(tmp);
-
-        var powerBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
-        tmp = new PropertyMenuItem(powerProperty, powerBox, labelManager);
-        powerListeners[n] = tmp;
-        submenu.menu.addMenuItem(tmp);
-
-        properties.add_child(gpuLabel);
-        properties.add_child(utilisationBox);
-        properties.add_child(temperatureBox);
-        properties.add_child(memoryBox);
-        properties.add_child(fanBox);
-        properties.add_child(powerBox);
-      }
-
-      var utilisationHandler = new PropertyHandler(this.settingsProcessor, utilisationListeners, utilisationProperty);
-      var temperatureHandler = new PropertyHandler(this.settingsProcessor, temperatureListeners, temperatureProperty);
-      var memoryHandler = new PropertyHandler(this.settingsProcessor, memoryListeners, memoryProperty);
-      var fanHandler = new PropertyHandler(this.settingsProcessor, fanListeners, fanProperty);
-      var powerHandler = new PropertyHandler(this.smiProcessor, powerListeners, powerProperty);
-
-      this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-
-      this.loadSettings();
-    }
+    this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
     var item = new PopupMenu.PopupBaseMenuItem({ reactive: false,
                                          can_focus: false });
@@ -295,13 +201,57 @@ const MainMenu = new Lang.Class({
       style_class: 'system-menu-action'
     });
     cog.child = new St.Icon({ icon_name: 'cog-symbolic' });
-    cog.connect('clicked', () => { openSettings(); });
+    cog.connect('clicked', Lang.bind(this, this.provider.openSettings));
     item.actor.add(cog, { expand: true, x_fill: false });
 
     this.menu.addMenuItem(item);
   },
   loadSettings : function() {
-    this._addTimeout(this._settings.get_int(Util.SETTINGS_REFRESH));
+
+    this.properties.destroy_all_children();
+    this._propertiesMenu.removeAll();
+
+    this.processor.reset();
+
+    this.provider = new PROVIDERS[this._settings.get_int(Util.SETTINGS_PROVIDER)]();
+
+    var names = this.provider.getGpuNames();
+
+    if (names != Spawn.ERROR) {
+
+      var listeners = [];
+
+      var properties = this.provider.getProperties(names.length - 1);
+
+      for (var i = 0; i < properties.length; i++) {
+        listeners[i] = [];
+      }
+
+      for (var n = 0; n < names.length - 1; n++) {
+        let submenu = new PopupMenu.PopupSubMenuMenuItem(names[n]);
+        let label = new St.Label({ text : n + ':', style_class : 'gpulabel'});
+        let manager = new GpuLabelDisplayManager(label);
+        this._propertiesMenu.addMenuItem(submenu);
+
+        this.properties.add_child(label);
+
+        for (var i = 0; i < properties.length; i++) {
+          var box = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
+
+          var item = new PropertyMenuItem(properties[i], box, manager);
+
+          listeners[i][n] = item;
+          submenu.menu.addMenuItem(item);
+          this.properties.add_child(box);
+        }
+      }
+
+      for (var i = 0; i < properties.length; i++) {
+        this.processor.addProperty(properties[i], listeners[i]);
+      }
+
+      this._addTimeout(this._settings.get_int(Util.SETTINGS_REFRESH));
+    }
   },
   /*
    * Create and add the timeout which updates values every t seconds
@@ -309,12 +259,10 @@ const MainMenu = new Lang.Class({
   _addTimeout : function(t) {
     this._removeTimeout();
 
-    this.settingsProcessor.process();
-    this.smiProcessor.process();
+    this.processor.process();
 
     this.timeoutId = GLib.timeout_add_seconds(0, t, Lang.bind(this, function() {
-      this.settingsProcessor.process();
-      this.smiProcessor.process();
+      this.processor.process();
       return true;
     }));
   },

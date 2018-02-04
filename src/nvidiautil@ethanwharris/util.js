@@ -24,6 +24,7 @@ var SETTINGS_MEMORY = "gpumemoryutilisation";
 var SETTINGS_POWER = "gpupowerusage";
 var SETTINGS_FAN = "gpufanspeed";
 var SETTINGS_REFRESH = "refreshrate";
+var SETTINGS_PROVIDER = "provider";
 
 /**
  * getSettings:

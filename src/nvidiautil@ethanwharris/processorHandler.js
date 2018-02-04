@@ -30,32 +30,43 @@ const ShellMountOperation = imports.ui.shellMountOperation;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
+const Processor = Me.imports.processor;
+
 const Lang = imports.lang;
 const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 
-var Property = new Lang.Class({
-  Name : 'Property',
-  Abstract : true,
-  _init : function(processor, name, callExtension, icon) {
-    this._processor = processor;
-    this._name = name;
-    this._callExtension = callExtension;
-    this._icon = icon;
+var ProcessorHandler = new Lang.Class({
+  Name : 'ProcessorHandler',
+  _init : function() {
+    this._processors = [false, false, false];
   },
-  getName : function() {
-    return this._name;
+  process : function() {
+    for (var i = 0; i < this._processors.length; i++) {
+      if (this._processors[i]) {
+        try {
+          this._processors[i].process();
+        } catch (err) {
+          Main.notifyError("Error parsing " + this._processors[i].getName(), err.message);
+          this._processors[i] = false;
+        }
+      }
+    }
   },
-  getCallExtension : function() {
-    return this._callExtension;
+  addProperty : function(property, listeners) {
+    var processor = property.declare();
+    if (!this._processors[processor]) {
+      this._processors[processor] = new Processor.LIST[processor]();
+    }
+
+    this._processors[processor].addProperty(function(lines) {
+      let values = property.parse(lines);
+      for(var i = 0; i < values.length; i++) {
+        listeners[i].handle(values[i]);
+      }
+    }, property.getCallExtension());
   },
-  getIcon : function() {
-    return this._icon;
-  },
-  parse : function(lines) {
-    return '';
-  },
-  declare : function() {
-    return this._processor;
+  reset : function() {
+    this._processors = [false, false, false];
   }
 });
