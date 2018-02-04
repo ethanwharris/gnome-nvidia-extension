@@ -18,11 +18,6 @@ const Gio = imports.gi.Gio;
 const Config = imports.misc.config;
 const ExtensionUtils = imports.misc.extensionUtils;
 
-var SETTINGS_UTILISATION = "gpuutilisation";
-var SETTINGS_TEMPERATURE = "gputemp";
-var SETTINGS_MEMORY = "gpumemoryutilisation";
-var SETTINGS_POWER = "gpupowerusage";
-var SETTINGS_FAN = "gpufanspeed";
 var SETTINGS_REFRESH = "refreshrate";
 var SETTINGS_PROVIDER = "provider";
 
