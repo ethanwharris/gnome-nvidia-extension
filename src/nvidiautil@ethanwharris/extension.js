@@ -269,6 +269,12 @@ const MainMenu = new Lang.Class({
           let index = (n * properties.length) + i;
           var item = new PropertyMenuItem(properties[i], box, manager, this._settings, PROVIDER_SETTINGS[p], index);
 
+          global.log(properties[i].getName())
+          if (properties[i].getName() == "Temperature") {
+            unit = this._settings.get_int(Util.SETTINGS_TEMP_UNIT)
+            properties[i].setUnit(unit)
+          }
+
           listeners[i][n] = item;
           submenu.menu.addMenuItem(item);
           this.properties.add_child(box);
