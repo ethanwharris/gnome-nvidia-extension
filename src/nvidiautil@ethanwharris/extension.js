@@ -151,7 +151,7 @@ const PersistentPopupMenu = new Lang.Class({
 });
 
 const GpuLabelDisplayManager = new Lang.Class({
-  Name : 'gpuLabelDisplayManager',
+  Name : 'GpuLabelDisplayManager',
   _init : function(gpuLabel) {
     this.gpuLabel = gpuLabel;
     this.count = 0;
@@ -170,6 +170,16 @@ const GpuLabelDisplayManager = new Lang.Class({
     if (this.count == 0 && this.gpuLabel.visible == true) {
       this.gpuLabel.visible = false;
     }
+  }
+});
+
+const EmptyDisplayManager = new Lang.Class({
+  Name : 'EmptyDisplayManager',
+  increment : function() {
+    // Do Nothing
+  },
+  decrement : function() {
+    // Do Nothing
   }
 });
 
@@ -262,11 +272,18 @@ const MainMenu = new Lang.Class({
 
       for (var n = 0; n < names.length - 1; n++) {
         let submenu = new PopupMenu.PopupSubMenuMenuItem(names[n]);
-        let label = new St.Label({ text : n + ':', style_class : 'gpulabel'});
-        let manager = new GpuLabelDisplayManager(label);
-        this._propertiesMenu.addMenuItem(submenu);
 
-        this.properties.add_child(label);
+        let manager;
+
+        if (names.length - 1 > 1) {
+          let label = new St.Label({ text : n + ':', style_class : 'gpulabel'});
+          manager = new GpuLabelDisplayManager(label);
+          this.properties.add_child(label);
+        } else {
+          manager = new EmptyDisplayManager();
+        }
+
+        this._propertiesMenu.addMenuItem(submenu);
 
         for (var i = 0; i < properties.length; i++) {
           var box = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
