@@ -101,16 +101,21 @@ var MemoryProperty = new Lang.Class({
     this._gpuCount = gpuCount;
   },
   parse : function(lines) {
-    var values = [];
+    let values = [];
+
+    let used_memory = [];
 
     for (let i = 0; i < this._gpuCount; i++) {
-      var used_memory = lines.shift();
-      var total_memory = lines.shift();
+      used_memory[i] = lines.shift();
+    }
 
-      var mem_usage = ((used_memory / total_memory) * 100).toString();
-      mem_usage = mem_usage.substring(0,2);
-      mem_usage = mem_usage.replace(/\D/g,'');
-      values = values.concat(mem_usage + "%");
+    for (let i = 0; i < this._gpuCount; i++) {
+      let total_memory = lines.shift();
+
+      let memory_usage = ((used_memory[i] / total_memory) * 100).toString();
+      memory_usage = memory_usage.substring(0,2);
+      memory_usage = memory_usage.replace(/\D/g,'');
+      values = values.concat(memory_usage + "%");
     }
 
     return values;
