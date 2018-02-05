@@ -41,6 +41,13 @@ const SETTINGS = {
       tooltip : _('Set the temperature format to either Centigrade (C) or Fahrenheit (F)'),
       options : ['\u00b0C','\u00b0F']
     },
+    position : {
+      type : 'combo',
+      key : 'position',
+      label : 'Extension Position',
+      tooltip : 'Set the position for the extension',
+      options : ['Left', 'Center', 'Right']
+    },
     provider : {
       type : 'combo',
       key : 'provider',
