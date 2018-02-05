@@ -43,9 +43,19 @@ var Formatter = new Lang.Class({
   _init : function(name) {
     this._name = name;
   },
-  format : function(value) {
-    return value;
+  format : function(values) {
+    for (let i = 0; i < values.length; i++) {
+      let stringValue = values[i].replace(/[^0-9.]/g,'');
+      values[i] = parseFloat(stringValue);
+      if (stringValue == '' || isNaN(values[i]) || !isFinite(stringValue)) {
+        return "ERR";
+      }
+    }
+    return this._format(values);
   },
+  _format : function(values) {
+    return values;
+  }
 });
 
 var PercentFormatter = new Lang.Class({
@@ -54,13 +64,8 @@ var PercentFormatter = new Lang.Class({
   _init : function(name) {
     this.parent(name);
   },
-  format : function(value) {
-    value = value.trim();
-    if (value == '' || value == '[Not Supported]') {
-      return "ERR"
-    }
-
-    return value + "%";
+  _format : function(values) {
+    return values[0] + "%";
   }
 })
 
@@ -70,17 +75,8 @@ var PowerFormatter = new Lang.Class({
   _init : function() {
     this.parent('PowerFormatter');
   },
-  format : function(value) {
-    value = value.trim();
-    var pow = parseFloat(value);
-
-    if (isNaN(pow) || !isFinite(value)) {
-      return "ERR"
-    }
-
-    pow = Math.floor(pow)
-
-    return pow + "W";
+  _format : function(values) {
+    return Math.floor(values[0]) + "W";
   }
 })
 
@@ -90,19 +86,8 @@ var MemoryFormatter = new Lang.Class({
   _init : function() {
     this.parent('MemoryFormatter');
   },
-  format : function(used_memory, total_memory) {
-    used_memory = used_memory.trim();
-    total_memory = total_memory.trim();
-    if (used_memory == '' || used_memory == '[Not Supported]' || total_memory == '' || total_memory == '[Not Supported]' || total_memory == '0') {
-      return "ERR"
-    }
-
-    var mem_usage = ((used_memory / total_memory) * 100).toString();
-    mem_usage = mem_usage.substring(0,2);
-    mem_usage = mem_usage.replace(/\D/g,'');
-
-    // Main.notifyError('',''+used_memory + '-' + total_memory)
-
+  _format : function(values) {
+    var mem_usage = Math.floor((values[0] / values[1]) * 100);
     return mem_usage + "%";
   }
 })
@@ -118,22 +103,17 @@ var TempFormatter = new Lang.Class({
   setUnit : function(unit) {
     this.currentUnit = unit;
   },
-  format : function(value) {
-    value = value.trim();
-    if (value == '' || value == '[Not Supported]') {
-      return "ERR"
-    }
-
+  _format : function(value) {
     if (this.currentUnit == CENTIGRADE) {
-      return this.formatCentigrade(value);
+      return this._formatCentigrade(value);
     } else if (this.currentUnit == FAHRENHEIT) {
-      return this.formatFehrenheit(value);
+      return this._formatFehrenheit(value);
     }
   },
-  formatCentigrade : function(value) {
+  _formatCentigrade : function(value) {
     return value + "\xB0" + "C";
   },
-  formatFehrenheit : function(value) {
+  _formatFehrenheit : function(value) {
     return Math.floor(value*9/5+32) + "\xB0" + "F";
   }
 });

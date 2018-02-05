@@ -37,11 +37,13 @@ const Gtk = imports.gi.Gtk;
 var Property = new Lang.Class({
   Name : 'Property',
   Abstract : true,
-  _init : function(processor, name, callExtension, icon) {
+  _init : function(processor, name, callExtension, icon, formatter, gpuCount) {
     this._processor = processor;
     this._name = name;
     this._callExtension = callExtension;
     this._icon = icon;
+    this._formatter = formatter;
+    this._gpuCount = gpuCount;
   },
   getName : function() {
     return this._name;
@@ -53,7 +55,13 @@ var Property = new Lang.Class({
     return this._icon;
   },
   parse : function(lines) {
-    return '';
+    let values = [];
+
+    for (let i = 0; i < this._gpuCount; i++) {
+      values = values.concat(this._formatter.format([lines.shift()]));
+    }
+
+    return values;
   },
   declare : function() {
     return this._processor;

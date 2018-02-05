@@ -43,24 +43,14 @@ var UtilisationProperty = new Lang.Class({
   Name : 'UtilisationProperty',
   Extends : Property.Property,
   _init : function(gpuCount, processor) {
-    this.parent(processor, 'Utilisation', '-q GPUUtilization ', 'card-symbolic');
-    this.formatter = new Formatter.PercentFormatter('UtilisationFormatter');
-    this._gpuCount = gpuCount;
+    this.parent(processor, 'Utilisation', '-q GPUUtilization ', 'card-symbolic', new Formatter.PercentFormatter('UtilisationFormatter'), gpuCount);
   },
   parse : function(lines) {
-    var line = '';
-    var values = [];
-
     for (let i = 0; i < this._gpuCount; i++) {
-      line = lines.shift();
-
-      line = line.substring(9,11);
-      line = line.replace(/\D/g,'');
-
-      values = values.concat(this.formatter.format(line));
+      lines[0] = lines[0].substring(9,11);
     }
 
-    return values;
+    return this.parent(lines);
   }
 });
 
@@ -68,27 +58,10 @@ var TemperatureProperty = new Lang.Class({
   Name : 'TemperatureProperty',
   Extends : Property.Property,
   _init : function(gpuCount, processor) {
-    this.parent(processor, 'Temperature', '-q GPUCoreTemp ', 'temp-symbolic');
-    this.formatter = new Formatter.TempFormatter(Formatter.CENTIGRADE);
-    this._gpuCount = gpuCount;
-  },
-  parse : function(lines) {
-    var line = '';
-    var values = [];
-    var formattedValue = '';
-
-    lines.shift();
-
-    for (let i = 0; i < this._gpuCount; i++) {
-      line = lines.shift();
-      formattedValue = this.formatter.format(line);
-      values = values.concat(formattedValue);
-    }
-
-    return values;
+    this.parent(processor, 'Temperature', '-q [GPU]/GPUCoreTemp ', 'temp-symbolic', new Formatter.TempFormatter(Formatter.CENTIGRADE), gpuCount);
   },
   setUnit(unit) {
-    this.formatter.setUnit(unit);
+    this._formatter.setUnit(unit);
   }
 });
 
@@ -96,9 +69,7 @@ var MemoryProperty = new Lang.Class({
   Name : 'MemoryProperty',
   Extends : Property.Property,
   _init : function(gpuCount, processor) {
-    this.parent(processor, 'Memory Usage', '-q UsedDedicatedGPUMemory -q TotalDedicatedGPUMemory ', 'ram-symbolic');
-    this.formatter = new Formatter.MemoryFormatter()
-    this._gpuCount = gpuCount;
+    this.parent(processor, 'Memory Usage', '-q UsedDedicatedGPUMemory -q TotalDedicatedGPUMemory ', 'ram-symbolic', new Formatter.MemoryFormatter(), gpuCount);
   },
   parse : function(lines) {
     let values = [];
@@ -112,7 +83,7 @@ var MemoryProperty = new Lang.Class({
     for (let i = 0; i < this._gpuCount; i++) {
       let total_memory = lines.shift();
 
-      values = values.concat(this.formatter.format(used_memory[i], total_memory));
+      values = values.concat(this._formatter.format([used_memory[i], total_memory]));
     }
 
     return values;
@@ -123,20 +94,6 @@ var FanProperty = new Lang.Class({
   Name : 'FanProperty',
   Extends : Property.Property,
   _init : function(gpuCount, processor) {
-    this.parent(processor, 'Fan Speed', '-q GPUCurrentFanSpeed ', 'fan-symbolic');
-    this.formatter = new Formatter.PercentFormatter('FanFormatter')
-    this._gpuCount = gpuCount;
-  },
-  parse : function(lines) {
-    var line = '';
-    var values = [];
-
-    for (let i = 0; i < this._gpuCount; i++) {
-      line = lines.shift();
-
-      values = values.concat(this.formatter.format(line));
-    }
-
-    return values;
+    this.parent(processor, 'Fan Speed', '-q GPUCurrentFanSpeed ', 'fan-symbolic', new Formatter.PercentFormatter('FanFormatter'), gpuCount);
   }
 });

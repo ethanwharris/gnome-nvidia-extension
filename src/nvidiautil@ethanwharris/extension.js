@@ -100,10 +100,6 @@ const PropertyMenuItem = new Lang.Class({
     this._box.visible = false;
   },
   destroy : function() {
-    if (this._visible) {
-      this.activate("");
-    }
-
     this._box.destroy();
     this._icon.destroy();
     this._statisticLabelHidden.destroy();
@@ -150,6 +146,10 @@ const PropertyMenuItem = new Lang.Class({
     this._statisticLabelHidden.text = value;
     this._statisticLabelVisible.text = value;
     if (value == 'ERR') {
+      if (this._visible) {
+        this.activate("");
+      }
+
       this.destroy();
     }
   }
