@@ -62,12 +62,15 @@ var OptimusProvider = new Lang.Class({
     return result;
   },
   getProperties(gpuCount) {
-    return [
+    this.storedProperties = [
       new SettingsProperties.UtilisationProperty(gpuCount, Processor.OPTIMUS),
       new SettingsProperties.TemperatureProperty(gpuCount, Processor.OPTIMUS),
       new SettingsProperties.MemoryProperty(gpuCount, Processor.OPTIMUS),
       new SettingsProperties.FanProperty(gpuCount, Processor.OPTIMUS)
     ];
+  },
+  retrieveProperties() {
+    return this.storedProperties;
   },
   openSettings() {
     let defaultAppSystem = Shell.AppSystem.get_default();

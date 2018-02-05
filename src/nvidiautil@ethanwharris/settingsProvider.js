@@ -64,12 +64,16 @@ var SettingsProvider = new Lang.Class({
     return result;
   },
   getProperties(gpuCount) {
-    return [
+    this.storedProperties = [
       new SettingsProperties.UtilisationProperty(gpuCount, Processor.NVIDIA_SETTINGS),
       new SettingsProperties.TemperatureProperty(gpuCount, Processor.NVIDIA_SETTINGS),
       new SettingsProperties.MemoryProperty(gpuCount, Processor.NVIDIA_SETTINGS),
       new SettingsProperties.FanProperty(gpuCount, Processor.NVIDIA_SETTINGS)
     ];
+    return this.storedProperties;
+  },
+  retrieveProperties() {
+    return this.storedProperties;
   },
   openSettings() {
     let defaultAppSystem = Shell.AppSystem.get_default();

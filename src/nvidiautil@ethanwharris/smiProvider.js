@@ -49,9 +49,12 @@ var SmiProvider = new Lang.Class({
     return output.split('\n');
   },
   getProperties(gpuCount) {
-    return [
+    this.storedProperties = [
       new SmiProperties.PowerProperty(gpuCount)
     ];
+  },
+  retrieveProperties() {
+    return this.storedProperties;
   },
   openSettings() {
     Main.notifyError("Settings are not available in smi mode", "Switch to a provider which supports nivida-settings");
