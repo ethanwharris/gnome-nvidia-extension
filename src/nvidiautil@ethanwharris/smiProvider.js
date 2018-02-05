@@ -50,8 +50,13 @@ var SmiProvider = new Lang.Class({
   },
   getProperties(gpuCount) {
     this.storedProperties = [
+      new SmiProperties.UtilisationProperty(gpuCount),
+      new SmiProperties.TemperatureProperty(gpuCount),
+      new SmiProperties.MemoryProperty(gpuCount),
+      new SmiProperties.FanProperty(gpuCount),
       new SmiProperties.PowerProperty(gpuCount)
     ];
+    return this.storedProperties;
   },
   retrieveProperties() {
     return this.storedProperties;
