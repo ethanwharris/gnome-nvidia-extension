@@ -37,16 +37,88 @@ const Gtk = imports.gi.Gtk;
 const CENTIGRADE = 0;
 const FAHRENHEIT = 1;
 
-var tempFormatter = new Lang.Class({
+var Formatter = new Lang.Class({
+  Name : 'Formatter',
+  Abstract : true,
+  _init : function(name) {
+    this._name = name;
+  },
+  format : function(value) {
+    return value
+  },
+});
+
+var PercentFormatter = new Lang.Class({
+  Name : 'PercentFormatter',
+  Extends : Formatter,
+  _init : function(name) {
+    this.parent(name);
+  },
+  format : function(value) {
+    if (value == '') {
+      return "ERR"
+    }
+
+    return value + "%";
+  }
+})
+
+var PowerFormatter = new Lang.Class({
+  Name : 'PowerFormatter',
+  Extends : Formatter,
+  _init : function() {
+    this.parent('PowerFormatter');
+  },
+  format : function(value) {
+    var pow = parseFloat(value);
+
+    if (isNaN(pow) || !isFinite(value)) {
+      return "ERR"
+    }
+
+    pow = Math.floor(pow)
+
+    return pow + "W";
+  }
+})
+
+var MemoryFormatter = new Lang.Class({
+  Name : 'MemoryFormatter',
+  Extends : Formatter,
+  _init : function() {
+    this.parent('MemoryFormatter');
+  },
+  format : function(used_memory, total_memory) {
+    if (used_memory == '' || total_memory == '' || total_memory == '0') {
+      return "ERR"
+    }
+
+    var mem_usage = ((used_memory / total_memory) * 100).toString();
+    mem_usage = mem_usage.substring(0,2);
+    mem_usage = mem_usage.replace(/\D/g,'');
+
+    // Main.notifyError('',''+used_memory + '-' + total_memory)
+
+    return mem_usage + "%";
+  }
+})
+
+var TempFormatter = new Lang.Class({
   Name : 'TempFormatter',
+  Extends : Formatter,
   currentUnit : 0,
   _init : function(unit) {
+    this.parent('TempFormatter')
     this.currentUnit = unit;
   },
   setUnit : function(unit) {
     this.currentUnit = unit;
   },
   format : function(value) {
+    if (value == '') {
+      return "ERR"
+    }
+
     if (this.currentUnit == CENTIGRADE) {
       return this.formatCentigrade(value);
     } else if (this.currentUnit == FAHRENHEIT) {

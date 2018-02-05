@@ -133,6 +133,9 @@ const PropertyMenuItem = new Lang.Class({
   handle : function(value) {
     this._statisticLabelHidden.text = value;
     this._statisticLabelVisible.text = value;
+    if (value == 'ERR') {
+      this.destroy();
+    }
   }
 });
 

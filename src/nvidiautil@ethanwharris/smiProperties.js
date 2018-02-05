@@ -36,13 +36,14 @@ const Gtk = imports.gi.Gtk;
 
 const Property = Me.imports.property;
 const Processor = Me.imports.processor;
+const Formatter = Me.imports.formatter;
 
 var PowerProperty = new Lang.Class({
   Name : 'PowerProperty',
   Extends : Property.Property,
   _init : function(gpuCount) {
     this.parent(Processor.NVIDIA_SMI, 'Power Usage (W)', 'power.draw,', 'power-symbolic');
-
+    this.formatter = new Formatter.PowerFormatter()
     this._gpuCount = gpuCount;
   },
   parse : function(lines) {
@@ -52,13 +53,7 @@ var PowerProperty = new Lang.Class({
     for (let i = 0; i < this._gpuCount; i++) {
       line = lines.shift();
 
-      var pow = parseFloat(line);
-
-      if (isNaN(pow) || !isFinite(line)) {
-        values = values.concat('ERR');
-      } else {
-        values = values.concat(line.split('.')[0] + "W");
-      }
+      values = values.concat(this.formatter.format(line));
     }
 
     return values;
