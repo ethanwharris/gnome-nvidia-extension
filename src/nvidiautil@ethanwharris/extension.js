@@ -173,10 +173,10 @@ const GpuLabelDisplayManager = new Lang.Class({
 const MainMenu = new Lang.Class({
   Name : 'MainMenu',
   Extends : PanelMenu.Button,
-  _init : function() {
+  _init : function(settings) {
     this.parent(0.0, _("GPU Statistics"));
     this.timeoutId = -1;
-    this._settings = Util.getSettings();
+    this._settings = settings;
     this._error = false;
     // this._settingsPointer = this._settings.connect('changed', Lang.bind(this, this.loadSettings));
 
@@ -231,6 +231,7 @@ const MainMenu = new Lang.Class({
     this._addSettingChangedSignal(Util.SETTINGS_PROVIDER, Lang.bind(this, this._reload));
     this._addSettingChangedSignal(Util.SETTINGS_REFRESH, Lang.bind(this, this._updatePollTime));
     this._addSettingChangedSignal(Util.SETTINGS_TEMP_UNIT, Lang.bind(this, this._updateTempUnits));
+    this._addSettingChangedSignal(Util.SETTINGS_POSITION, Lang.bind(this, this._updatePanelPosition));
 
   },
   _reload : function() {
@@ -326,6 +327,22 @@ const MainMenu = new Lang.Class({
     this.processor.process();
 
   },
+  _updatePanelPosition : function() {
+    this.container.get_parent().remove_actor(this.container);
+
+    let boxes = {
+      left: Main.panel._leftBox,
+      center: Main.panel._centerBox,
+      right: Main.panel._rightBox
+    };
+
+    let pos = this.getPanelPosition();
+    boxes[pos].insert_child_at_index(this.container, pos == 'right' ? 0 : -1)
+  },
+  getPanelPosition : function() {
+    let positions = ["left", "center", "right"];
+    return positions[_settings.get_int(Util.SETTINGS_POSITION)];
+  },
   /*
    * Create and add the timeout which updates values every t seconds
    */
@@ -362,18 +379,21 @@ const MainMenu = new Lang.Class({
 });
 
 let _menu;
+let _settings;
 
 /*
  * Init function, nothing major here, do not edit view
  */
 function init() {
   Gtk.IconTheme.get_default().append_search_path(Me.dir.get_child('icons').get_path());
-  // extension_settings = Util.getSettings();
+  _settings = Util.getSettings();
 }
 
 function enable() {
-    _menu = new MainMenu();
-    Main.panel.addToStatusArea('main-menu', _menu);
+    _menu = new MainMenu(_settings);
+
+    let pos = _menu.getPanelPosition();
+    Main.panel.addToStatusArea('main-menu', _menu, pos == 'right' ? 0 : -1, pos);
 }
 
 function disable() {

@@ -20,6 +20,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 
 var SETTINGS_REFRESH = "refreshrate";
 var SETTINGS_PROVIDER = "provider";
+var SETTINGS_POSITION = "position";
 var SETTINGS_TEMP_UNIT = "tempformat";
 
 /**
