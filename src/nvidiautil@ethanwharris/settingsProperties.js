@@ -101,13 +101,18 @@ var MemoryProperty = new Lang.Class({
     this._gpuCount = gpuCount;
   },
   parse : function(lines) {
-    var values = [];
+    let values = [];
+
+    let used_memory = [];
 
     for (let i = 0; i < this._gpuCount; i++) {
-      var used_memory = lines.shift();
-      var total_memory = lines.shift();
+      used_memory[i] = lines.shift();
+    }
 
-      values = values.concat(this.formatter.format(used_memory, total_memory));
+    for (let i = 0; i < this._gpuCount; i++) {
+      let total_memory = lines.shift();
+
+      values = values.concat(this.formatter.format(used_memory[i], total_memory));
     }
 
     return values;
