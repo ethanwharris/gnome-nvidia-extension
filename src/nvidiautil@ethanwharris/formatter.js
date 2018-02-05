@@ -34,8 +34,8 @@ const Lang = imports.lang;
 const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 
-const CENTIGRADE = 0;
-const FAHRENHEIT = 1;
+var CENTIGRADE = 0;
+var FAHRENHEIT = 1;
 
 var Formatter = new Lang.Class({
   Name : 'Formatter',
@@ -44,7 +44,7 @@ var Formatter = new Lang.Class({
     this._name = name;
   },
   format : function(value) {
-    return value
+    return value;
   },
 });
 
@@ -55,7 +55,8 @@ var PercentFormatter = new Lang.Class({
     this.parent(name);
   },
   format : function(value) {
-    if (value == '') {
+    value = value.trim();
+    if (value == '' || value == '[Not Supported]') {
       return "ERR"
     }
 
@@ -70,6 +71,7 @@ var PowerFormatter = new Lang.Class({
     this.parent('PowerFormatter');
   },
   format : function(value) {
+    value = value.trim();
     var pow = parseFloat(value);
 
     if (isNaN(pow) || !isFinite(value)) {
@@ -89,7 +91,9 @@ var MemoryFormatter = new Lang.Class({
     this.parent('MemoryFormatter');
   },
   format : function(used_memory, total_memory) {
-    if (used_memory == '' || total_memory == '' || total_memory == '0') {
+    used_memory = used_memory.trim();
+    total_memory = total_memory.trim();
+    if (used_memory == '' || used_memory == '[Not Supported]' || total_memory == '' || total_memory == '[Not Supported]' || total_memory == '0') {
       return "ERR"
     }
 
@@ -115,7 +119,8 @@ var TempFormatter = new Lang.Class({
     this.currentUnit = unit;
   },
   format : function(value) {
-    if (value == '') {
+    value = value.trim();
+    if (value == '' || value == '[Not Supported]') {
       return "ERR"
     }
 

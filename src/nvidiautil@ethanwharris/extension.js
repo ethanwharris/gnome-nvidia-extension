@@ -92,18 +92,36 @@ const PropertyMenuItem = new Lang.Class({
     this._statisticLabelHidden = new St.Label({ text: '0' });
     this._statisticLabelVisible = new St.Label({ text: '0', style_class: 'label' });
 
+    this._box.add_child(this._icon);
+    this._box.add_child(this._statisticLabelVisible);
+
     this.actor.add(this._statisticLabelHidden);
     this._visible = false;
     this._box.visible = false;
   },
   destroy : function() {
+    if (this._visible) {
+      this.activate("");
+    }
+
+    this._box.destroy();
+    this._icon.destroy();
+    this._statisticLabelHidden.destroy();
+
     this.parent();
+    this.activate = function(event) {
+      // Do Nothing
+    };
+    this.handle = function(value) {
+      // Do Nothing
+    };
+    this.setActive = function(active) {
+      // Do Nothing
+    }
   },
   activate : function(event) {
     if (this._visible) {
       this.actor.remove_style_pseudo_class('active');
-      this._box.remove_child(this._icon);
-      this._box.remove_child(this._statisticLabelVisible);
       this._visible = false;
       this._box.visible = false;
       this.labelManager.decrement();
@@ -113,8 +131,6 @@ const PropertyMenuItem = new Lang.Class({
       this._settings.set_strv(this._setting, flags);
     } else {
       this.actor.add_style_pseudo_class('active');
-      this._box.add_child(this._icon);
-      this._box.add_child(this._statisticLabelVisible);
       this._visible = true;
       this._box.visible = true;
       this.labelManager.increment();
@@ -292,7 +308,7 @@ const MainMenu = new Lang.Class({
           var item = new PropertyMenuItem(properties[i], box, manager, this._settings, PROVIDER_SETTINGS[p], index);
 
           if (properties[i].getName() == "Temperature") {
-            unit = this._settings.get_int(Util.SETTINGS_TEMP_UNIT)
+            let unit = this._settings.get_int(Util.SETTINGS_TEMP_UNIT)
             properties[i].setUnit(unit)
           }
 
