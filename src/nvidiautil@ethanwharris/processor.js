@@ -112,12 +112,14 @@ var NvidiaSmiProcessor = new Lang.Class({
   parse : function(output) {
     var lines = output.split('\n');
     var items = [];
-    for(var i = 0; i < lines.length; i++) {
+
+    for(var i = 0; i < (lines.length-1); i++) {
         var fields = lines[i].split(',');
         for(var j = 0; j < fields.length; j++) {
-          items[(fields.length * i) + j] = fields[j];
+          items[((lines.length-1)*j)+i] = fields[j];
         }
     }
+
     this._parseFunction(items);
   }
 });
