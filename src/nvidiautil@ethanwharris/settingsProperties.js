@@ -44,7 +44,7 @@ var UtilisationProperty = new Lang.Class({
   Extends : Property.Property,
   _init : function(gpuCount, processor) {
     this.parent(processor, 'Utilisation', '-q GPUUtilization ', 'card-symbolic');
-
+    this.formatter = new Formatter.PercentFormatter('UtilisationFormatter');
     this._gpuCount = gpuCount;
   },
   parse : function(lines) {
@@ -56,7 +56,8 @@ var UtilisationProperty = new Lang.Class({
 
       line = line.substring(9,11);
       line = line.replace(/\D/g,'');
-      values = values.concat(line + "%");
+
+      values = values.concat(this.formatter.format(line));
     }
 
     return values;
@@ -68,7 +69,7 @@ var TemperatureProperty = new Lang.Class({
   Extends : Property.Property,
   _init : function(gpuCount, processor) {
     this.parent(processor, 'Temperature', '-q GPUCoreTemp ', 'temp-symbolic');
-    this.formatter = new Formatter.tempFormatter(Formatter.CENTIGRADE);
+    this.formatter = new Formatter.TempFormatter(Formatter.CENTIGRADE);
     this._gpuCount = gpuCount;
   },
   parse : function(lines) {
@@ -80,7 +81,6 @@ var TemperatureProperty = new Lang.Class({
 
     for (let i = 0; i < this._gpuCount; i++) {
       line = lines.shift();
-
       formattedValue = this.formatter.format(line);
       values = values.concat(formattedValue);
     }
@@ -97,7 +97,7 @@ var MemoryProperty = new Lang.Class({
   Extends : Property.Property,
   _init : function(gpuCount, processor) {
     this.parent(processor, 'Memory Usage', '-q UsedDedicatedGPUMemory -q TotalDedicatedGPUMemory ', 'ram-symbolic');
-
+    this.formatter = new Formatter.MemoryFormatter()
     this._gpuCount = gpuCount;
   },
   parse : function(lines) {
@@ -107,10 +107,7 @@ var MemoryProperty = new Lang.Class({
       var used_memory = lines.shift();
       var total_memory = lines.shift();
 
-      var mem_usage = ((used_memory / total_memory) * 100).toString();
-      mem_usage = mem_usage.substring(0,2);
-      mem_usage = mem_usage.replace(/\D/g,'');
-      values = values.concat(mem_usage + "%");
+      values = values.concat(this.formatter.format(used_memory, total_memory));
     }
 
     return values;
@@ -122,7 +119,7 @@ var FanProperty = new Lang.Class({
   Extends : Property.Property,
   _init : function(gpuCount, processor) {
     this.parent(processor, 'Fan Speed', '-q GPUCurrentFanSpeed ', 'fan-symbolic');
-
+    this.formatter = new Formatter.PercentFormatter('FanFormatter')
     this._gpuCount = gpuCount;
   },
   parse : function(lines) {
@@ -131,7 +128,8 @@ var FanProperty = new Lang.Class({
 
     for (let i = 0; i < this._gpuCount; i++) {
       line = lines.shift();
-      values = values.concat(line + "%");
+
+      values = values.concat(this.formatter.format(line));
     }
 
     return values;
