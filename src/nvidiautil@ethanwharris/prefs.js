@@ -23,16 +23,16 @@ const SETTINGS = {
     refreshrate : {
       type : 'int',
       key : 'refreshrate',
-      label : _("Refresh Interval (s)"),
-      tooltip : _("The time between refreshes in seconds"),
+      label : "Refresh Interval (s)",
+      tooltip : "The time between refreshes in seconds",
       min : 1,
       max : 20
     },
     tempformat : {
       type : 'combo',
       key : 'tempformat',
-      label : ('Temperature Units'),
-      tooltip : _('Set the temperature format to either Centigrade (C) or Fahrenheit (F)'),
+      label : 'Temperature Units',
+      tooltip : 'Set the temperature format to either Centigrade (C) or Fahrenheit (F)',
       options : ['\u00b0C','\u00b0F']
     },
     position : {
@@ -70,20 +70,20 @@ function buildSettingWidget(setting) {
   let box = new Gtk.Box(({ orientation : Gtk.Orientation.HORIZONTAL }));
 
   if (SETTINGS[setting].type == 'bool') {
-    let label = new Gtk.Label(({ label : _(SETTINGS[setting].label), xalign: 0}));
+    let label = new Gtk.Label(({ label : SETTINGS[setting].label, xalign: 0}));
     let control = new Gtk.Switch({ active : settings.get_boolean(setting) });
 
     control.connect('notify::active', function(button) {
       settings.set_boolean(setting, button.get_active());
     });
 
-    label.set_tooltip_text(_(SETTINGS[setting].tooltip));
-    control.set_tooltip_text(_(SETTINGS[setting].tooltip));
+    label.set_tooltip_text(SETTINGS[setting].tooltip);
+    control.set_tooltip_text(SETTINGS[setting].tooltip);
 
     box.pack_start(label, true, true, 0);
     box.add(control);
   } else if (SETTINGS[setting].type == 'int') {
-    let label = new Gtk.Label(({ label : _(SETTINGS[setting].label), xalign: 0}));
+    let label = new Gtk.Label(({ label : SETTINGS[setting].label, xalign: 0}));
     let control = Gtk.SpinButton.new_with_range (SETTINGS[setting].min, SETTINGS[setting].max, 1);
     control.set_value(settings.get_int(setting));
 
@@ -91,8 +91,8 @@ function buildSettingWidget(setting) {
       settings.set_int(setting, control.get_value());
     });
 
-    label.set_tooltip_text(_(SETTINGS[setting].tooltip));
-    control.set_tooltip_text(_(SETTINGS[setting].tooltip));
+    label.set_tooltip_text(SETTINGS[setting].tooltip);
+    control.set_tooltip_text(SETTINGS[setting].tooltip);
 
     box.pack_start(label, true, true, 0);
     box.add(control);
@@ -123,8 +123,8 @@ function buildSettingWidget(setting) {
 
     let label = new Gtk.Label({ label: SETTINGS[setting].label, xalign : 0})
 
-    label.set_tooltip_text(_(SETTINGS[setting].tooltip));
-    combobox.set_tooltip_text(_(SETTINGS[setting].tooltip));
+    label.set_tooltip_text(SETTINGS[setting].tooltip);
+    combobox.set_tooltip_text(SETTINGS[setting].tooltip);
 
     box.pack_start(label, true, true, 0);
     box.add(combobox);
