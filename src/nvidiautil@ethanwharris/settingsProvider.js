@@ -50,7 +50,7 @@ var SettingsProvider = new Lang.Class({
       // Do Nothing
     });
 
-    if (output == Spawn.ERROR) {
+    if (output == Spawn.ERROR || output.indexOf("ERROR") >= 0) {
       return Spawn.ERROR;
     }
 

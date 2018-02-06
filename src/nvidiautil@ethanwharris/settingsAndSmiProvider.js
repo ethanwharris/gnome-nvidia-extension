@@ -50,6 +50,11 @@ var SettingsAndSmiProvider = new Lang.Class({
     var output = Spawn.spawnSync("nvidia-smi --query-gpu=gpu_name --format=csv,noheader", function(command, err) {
       // Do Nothing
     });
+
+    if (output.indexOf("libnvidia-ml.so") >= 0) {
+      return Spawn.ERROR;
+    }
+
     return output.split('\n');
   },
   getProperties(gpuCount) {
