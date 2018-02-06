@@ -100,7 +100,7 @@ function buildSettingWidget(setting) {
     let model = new Gtk.ListStore();
     model.set_column_types([GObject.TYPE_INT, GObject.TYPE_STRING]);
     let combobox = new Gtk.ComboBox({model: model});
-    var opts = '';
+    let opts = '';
 
     let renderer = new Gtk.CellRendererText();
     combobox.pack_start(renderer, true);
@@ -139,7 +139,7 @@ function buildPrefsWidget() {
   let vbox = new Gtk.Box({ orientation : Gtk.Orientation.VERTICAL,
     border_width: 10, spacing: 10 });
 
-  for (var setting in SETTINGS) {
+  for (let setting in SETTINGS) {
     let setting_box = buildSettingWidget(setting);
     if (setting_box) {
       vbox.add(setting_box);

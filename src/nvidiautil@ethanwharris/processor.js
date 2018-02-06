@@ -92,12 +92,12 @@ var NvidiaSmiProcessor = new Lang.Class({
     this.parent('nvidia-smi', 'nvidia-smi --query-gpu=', ' --format=csv,noheader,nounits');
   },
   parse : function(output) {
-    var lines = output.split('\n');
-    var items = [];
+    let lines = output.split('\n');
+    let items = [];
 
-    for(var i = 0; i < (lines.length-1); i++) {
-        var fields = lines[i].split(',');
-        for(var j = 0; j < fields.length; j++) {
+    for(let i = 0; i < (lines.length-1); i++) {
+        let fields = lines[i].split(',');
+        for(let j = 0; j < fields.length; j++) {
           items[((lines.length-1)*j)+i] = fields[j];
         }
     }

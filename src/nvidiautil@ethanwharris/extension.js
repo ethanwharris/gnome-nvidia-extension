@@ -194,7 +194,6 @@ const MainMenu = new Lang.Class({
     this.timeoutId = -1;
     this._settings = settings;
     this._error = false;
-    // this._settingsPointer = this._settings.connect('changed', Lang.bind(this, this.loadSettings));
 
     this.processor = new ProcessorHandler.ProcessorHandler();
 
@@ -216,7 +215,7 @@ const MainMenu = new Lang.Class({
 
     this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
-    var item = new PopupMenu.PopupBaseMenuItem({ reactive: false,
+    let item = new PopupMenu.PopupBaseMenuItem({ reactive: false,
                                          can_focus: false });
 
     let wrench = new St.Button({
@@ -261,19 +260,19 @@ const MainMenu = new Lang.Class({
     this.provider = new PROVIDERS[p]();
     let flags = this._settings.get_strv(PROVIDER_SETTINGS[p]);
 
-    var names = this.provider.getGpuNames();
+    let names = this.provider.getGpuNames();
 
     if (names != Spawn.ERROR) {
 
-      var listeners = [];
+      let listeners = [];
 
-      var properties = this.provider.getProperties(names.length - 1);
+      let properties = this.provider.getProperties(names.length - 1);
 
-      for (var i = 0; i < properties.length; i++) {
+      for (let i = 0; i < properties.length; i++) {
         listeners[i] = [];
       }
 
-      for (var n = 0; n < names.length - 1; n++) {
+      for (let n = 0; n < names.length - 1; n++) {
         let submenu = new PopupMenu.PopupSubMenuMenuItem(names[n]);
 
         let manager;
@@ -288,11 +287,11 @@ const MainMenu = new Lang.Class({
 
         this._propertiesMenu.addMenuItem(submenu);
 
-        for (var i = 0; i < properties.length; i++) {
-          var box = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
+        for (let i = 0; i < properties.length; i++) {
+          let box = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
 
           let index = (n * properties.length) + i;
-          var item = new PropertyMenuItem(properties[i], box, manager, this._settings, PROVIDER_SETTINGS[p], index);
+          let item = new PropertyMenuItem(properties[i], box, manager, this._settings, PROVIDER_SETTINGS[p], index);
 
           if (properties[i].getName() == "Temperature") {
             let unit = this._settings.get_int(Util.SETTINGS_TEMP_UNIT)
@@ -305,14 +304,14 @@ const MainMenu = new Lang.Class({
         }
       }
 
-      for (var i = 0; i < properties.length; i++) {
+      for (let i = 0; i < properties.length; i++) {
         this.processor.addProperty(properties[i], listeners[i]);
       }
 
       this.processor.process();
 
-      for (var n = 0; n < names.length - 1; n++) {
-        for (var i = 0; i < properties.length; i++) {
+      for (let n = 0; n < names.length - 1; n++) {
+        for (let i = 0; i < properties.length; i++) {
           let index = (n * properties.length) + i;
 
           if (!flags[index]) {
@@ -336,11 +335,11 @@ const MainMenu = new Lang.Class({
     }
   },
   _updateTempUnits : function() {
-    var names = this.provider.getGpuNames();
-    var properties = this.provider.retrieveProperties();
-    var unit = 0;
+    let names = this.provider.getGpuNames();
+    let properties = this.provider.retrieveProperties();
+    let unit = 0;
 
-    for (var i = 0; i < properties.length; i++) {
+    for (let i = 0; i < properties.length; i++) {
       if (properties[i].getName() == "Temperature") {
 
         unit = this._settings.get_int(Util.SETTINGS_TEMP_UNIT)
@@ -391,7 +390,6 @@ const MainMenu = new Lang.Class({
   },
   destroy : function() {
     this._removeTimeout();
-    // this._settings.disconnect(this._settingsPointer);
 
     for (let signal of this._settingChangedSignals) {
       this._settings.disconnect(signal);

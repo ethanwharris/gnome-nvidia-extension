@@ -25,7 +25,7 @@ var SmiProvider = new Lang.Class({
   _init : function() {
   },
   getGpuNames() {
-    var output = Spawn.spawnSync("nvidia-smi --query-gpu=gpu_name --format=csv,noheader", function(command, err) {
+    let output = Spawn.spawnSync("nvidia-smi --query-gpu=gpu_name --format=csv,noheader", function(command, err) {
       // Do Nothing
     });
 

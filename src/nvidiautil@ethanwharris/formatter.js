@@ -68,7 +68,7 @@ var MemoryFormatter = new Lang.Class({
     this.parent('MemoryFormatter');
   },
   _format : function(values) {
-    var mem_usage = Math.floor((values[0] / values[1]) * 100);
+    let mem_usage = Math.floor((values[0] / values[1]) * 100);
     return mem_usage + "%";
   }
 })
