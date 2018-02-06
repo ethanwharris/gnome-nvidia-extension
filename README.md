@@ -7,10 +7,9 @@ nvidia-settings and nvidia-smi
 # Installation from git
     git clone https://github.com/ethanwharris/gnome-nvidia-extension.git
     cd gnome-nvidia-extension
-    ```bash
-    $ make
-    $ make install
-    ```
+    make
+    make install
+
 Use `alt + f2`, `r`, `Enter` to restart the gnome shell (if this is not allowed then log out and log back in)
 Enable the extension in the gnome tweak tool.
 
