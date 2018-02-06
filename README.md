@@ -7,9 +7,12 @@ nvidia-settings and nvidia-smi
 # Installation from git
     git clone https://github.com/ethanwharris/gnome-nvidia-extension.git
     cd gnome-nvidia-extension
-    mkdir -p ~/.local/share/gnome-shell/extensions
-    cp -r src/nvidiautil@ethanwharris ~/.local/share/gnome-shell/extensions/
-Use `alt + f2` to restart the gnome shell. If this is not allowed then log out and log back in. Enable the extension in the gnome tweak tool.
+    ```bash
+    $ make
+    $ make install
+    ```
+Use `alt + f2`, `r`, `Enter` to restart the gnome shell (if this is not allowed then log out and log back in)
+Enable the extension in the gnome tweak tool.
 
 # Icons
 For icons we use font-awesome:
