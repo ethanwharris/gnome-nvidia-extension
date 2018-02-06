@@ -27,7 +27,7 @@ var OptimusProvider = new Lang.Class({
   _init : function() {
   },
   getGpuNames() {
-    var output = Spawn.spawnSync("optirun nvidia-settings -q GpuUUID -t", function(command, err) {
+    let output = Spawn.spawnSync("optirun nvidia-settings -q GpuUUID -t", function(command, err) {
       // Do Nothing
     });
 
@@ -36,9 +36,9 @@ var OptimusProvider = new Lang.Class({
     }
 
     output = output.split('\n');
-    var result = [];
+    let result = [];
 
-    for (var i = 0; i < output.length; i++) {
+    for (let i = 0; i < output.length; i++) {
       result[i] = "GPU " + i;
     }
 

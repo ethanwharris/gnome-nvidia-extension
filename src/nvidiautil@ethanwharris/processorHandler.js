@@ -25,7 +25,7 @@ var ProcessorHandler = new Lang.Class({
     this._processors = [false, false, false];
   },
   process : function() {
-    for (var i = 0; i < this._processors.length; i++) {
+    for (let i = 0; i < this._processors.length; i++) {
       if (this._processors[i]) {
         try {
           this._processors[i].process();
@@ -37,14 +37,14 @@ var ProcessorHandler = new Lang.Class({
     }
   },
   addProperty : function(property, listeners) {
-    var processor = property.declare();
+    let processor = property.declare();
     if (!this._processors[processor]) {
       this._processors[processor] = new Processor.LIST[processor]();
     }
 
     this._processors[processor].addProperty(function(lines) {
       let values = property.parse(lines);
-      for(var i = 0; i < values.length; i++) {
+      for(let i = 0; i < values.length; i++) {
         listeners[i].handle(values[i]);
       }
     }, property.getCallExtension());
