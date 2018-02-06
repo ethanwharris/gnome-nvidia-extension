@@ -1,6 +1,6 @@
 # gnome-nvidia-extension
 A Gnome extension to show Nvidia GPU information
-
+(https://extensions.gnome.org/extension/1320/nvidia-gpu-stats-tool/)
 # Requirements
 nvidia-settings and nvidia-smi
 
