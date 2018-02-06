@@ -13,31 +13,18 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/licenses/>.*/
 
-const Clutter = imports.gi.Clutter;
-const Gio = imports.gi.Gio;
 const St = imports.gi.St;
-const Shell = imports.gi.Shell;
-
-const Gettext = imports.gettext.domain('gnome-shell-extensions');
-const _ = Gettext.gettext;
-
 const Main = imports.ui.main;
-const Panel = imports.ui.panel;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
-const ShellMountOperation = imports.ui.shellMountOperation;
+const Lang = imports.lang;
+const GLib = imports.gi.GLib;
+const Gtk = imports.gi.Gtk;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
-const MUtil = imports.misc.util;
-
-const Lang = imports.lang;
-const GLib = imports.gi.GLib;
-const Gtk = imports.gi.Gtk;
 const Util = Me.imports.util;
-const Property = Me.imports.property;
-const Processor = Me.imports.processor;
 const ProcessorHandler = Me.imports.processorHandler;
 const SettingsProvider = Me.imports.settingsProvider;
 const SmiProvider = Me.imports.smiProvider;

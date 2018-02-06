@@ -13,15 +13,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/licenses/>.*/
 const Gtk = imports.gi.Gtk;
-const GLib = imports.gi.GLib;
-
-const Gettext = imports.gettext.domain('gnome-shell-extensions-nvidiautil');
-const _ = Gettext.gettext;
-
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Util = Me.imports.util;
-
 const GObject = imports.gi.GObject;
 const Lang = imports.lang;
 

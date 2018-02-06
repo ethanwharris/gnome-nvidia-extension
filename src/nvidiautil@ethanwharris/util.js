@@ -12,10 +12,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/licenses/>.*/
-const Gettext = imports.gettext;
 const Gio = imports.gi.Gio;
-
-const Config = imports.misc.config;
 const ExtensionUtils = imports.misc.extensionUtils;
 
 var SETTINGS_REFRESH = "refreshrate";
