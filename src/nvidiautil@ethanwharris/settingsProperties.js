@@ -19,7 +19,6 @@ const Lang = imports.lang;
 const Formatter = Me.imports.formatter;
 const Property = Me.imports.property;
 
-
 var UtilisationProperty = new Lang.Class({
   Name : 'UtilisationProperty',
   Extends : Property.Property,
@@ -28,7 +27,7 @@ var UtilisationProperty = new Lang.Class({
   },
   parse : function(lines) {
     for (let i = 0; i < this._gpuCount; i++) {
-      lines[0] = lines[0].substring(9,11);
+      lines[i] = lines[i].substring(9,11);
     }
 
     return this.parent(lines);
