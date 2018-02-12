@@ -51,7 +51,24 @@ var MemoryProperty = new Lang.Class({
   Name : 'MemoryProperty',
   Extends : Property.Property,
   _init : function(gpuCount) {
-    this.parent(Processor.NVIDIA_SMI, 'Memory Usage', 'utilization.memory,', 'ram-symbolic', new Formatter.PercentFormatter('MemoryFormatter'), gpuCount);
+    this.parent(Processor.NVIDIA_SMI, 'Memory Usage', 'memory.used,memory.total,', 'ram-symbolic', new Formatter.MemoryFormatter('MemoryFormatter'), gpuCount);
+  },
+  parse : function(lines) {
+    let values = [];
+
+    let used_memory = [];
+
+    for (let i = 0; i < this._gpuCount; i++) {
+      used_memory[i] = lines.shift();
+    }
+
+    for (let i = 0; i < this._gpuCount; i++) {
+      let total_memory = lines.shift();
+
+      values = values.concat(this._formatter.format([used_memory[i], total_memory]));
+    }
+
+    return values;
   }
 });
 
