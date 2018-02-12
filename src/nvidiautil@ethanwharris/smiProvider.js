@@ -40,7 +40,7 @@ var SmiProvider = new Lang.Class({
     this.storedProperties = [
       new SmiProperties.UtilisationProperty(gpuCount),
       new SmiProperties.TemperatureProperty(gpuCount),
-      _getMemoryProperty(gpuCount),
+      new SmiProperties.MemoryProperty(gpuCount),
       new SmiProperties.FanProperty(gpuCount),
       new SmiProperties.PowerProperty(gpuCount)
     ];
@@ -53,18 +53,3 @@ var SmiProvider = new Lang.Class({
     Main.notifyError("Settings are not available in smi mode", "Switch to a provider which supports nivida-settings");
   }
 });
-
-function _getMemoryProperty(gpuCount) {
-  let output = Spawn.spawnSync("nvidia-smi --query-gpu=utilization.memory --format=csv,noheader", function(command, err) {
-    // Do Nothing
-  });
-  output = output.split('\n');
-  let MemoryProperty = new SmiProperties.MemoryProperty(gpuCount);
-  for (let i = 0; i < gpuCount; i++) {
-    if (output[i] == '[Not Supported]') {
-      MemoryProperty = new SmiProperties.BackupMemoryProperty(gpuCount);
-    }
-  }
-
-  return MemoryProperty
-}
