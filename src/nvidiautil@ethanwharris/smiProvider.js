@@ -49,6 +49,9 @@ var SmiProvider = new Lang.Class({
   retrieveProperties() {
     return this.storedProperties;
   },
+  hasSettings() {
+    return false;
+  },
   openSettings() {
     Main.notifyError("Settings are not available in smi mode", "Switch to a provider which supports nivida-settings");
   }
