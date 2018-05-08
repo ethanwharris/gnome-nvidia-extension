@@ -50,6 +50,9 @@ var SettingsAndSmiProvider = new Lang.Class({
   retrieveProperties() {
     return this.storedProperties;
   },
+  hasSettings() {
+    return true;
+  },
   openSettings() {
     let defaultAppSystem = Shell.AppSystem.get_default();
     let nvidiaSettingsApp = defaultAppSystem.lookup_app('nvidia-settings.desktop');

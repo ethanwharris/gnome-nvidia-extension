@@ -207,40 +207,8 @@ const MainMenu = new Lang.Class({
     hbox.add_actor(PopupMenu.arrowIcon(St.Side.BOTTOM));
     this.actor.add_child(hbox);
 
-    this._propertiesMenu = new PopupMenu.PopupMenuSection();
-    this.menu.addMenuItem(this._propertiesMenu);
-
     this._reload();
     this._updatePollTime();
-
-    this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-
-    let item = new PopupMenu.PopupBaseMenuItem({ reactive: false,
-                                         can_focus: false });
-
-    let wrench = new St.Button({
-      reactive: true,
-      can_focus: true,
-      track_hover: true,
-      accessible_name: 'Open Preferences',
-      style_class: 'system-menu-action'
-    });
-    wrench.child = new St.Icon({ icon_name: 'wrench-symbolic' });
-    wrench.connect('clicked', () => { openPreferences(); });
-    item.actor.add(wrench, { expand: true, x_fill: false });
-
-    let cog = new St.Button({
-      reactive: true,
-      can_focus: true,
-      track_hover: true,
-      accessible_name: 'Open Nvidia Settings',
-      style_class: 'system-menu-action'
-    });
-    cog.child = new St.Icon({ icon_name: 'cog-symbolic' });
-    cog.connect('clicked', Lang.bind(this, this.provider.openSettings));
-    item.actor.add(cog, { expand: true, x_fill: false });
-
-    this.menu.addMenuItem(item);
 
     this._settingChangedSignals = [];
     this._addSettingChangedSignal(Util.SETTINGS_PROVIDER, Lang.bind(this, this._reload));
@@ -250,14 +218,18 @@ const MainMenu = new Lang.Class({
 
   },
   _reload : function() {
+    this.menu.removeAll();
+
+    this._propertiesMenu = new PopupMenu.PopupMenuSection();
+    this.menu.addMenuItem(this._propertiesMenu);
 
     this.properties.destroy_all_children();
-    this._propertiesMenu.removeAll();
 
     this.processor.reset();
 
     let p = this._settings.get_int(Util.SETTINGS_PROVIDER);
     this.provider = new PROVIDERS[p]();
+
     let flags = this._settings.get_strv(PROVIDER_SETTINGS[p]);
 
     let names = this.provider.getGpuNames();
@@ -328,6 +300,37 @@ const MainMenu = new Lang.Class({
     } else {
       this._error = true;
     }
+
+    this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+
+    let item = new PopupMenu.PopupBaseMenuItem({ reactive: false,
+                                         can_focus: false });
+
+    this.wrench = new St.Button({
+      reactive: true,
+      can_focus: true,
+      track_hover: true,
+      accessible_name: 'Open Preferences',
+      style_class: 'system-menu-action'
+    });
+    this.wrench.child = new St.Icon({ icon_name: 'wrench-symbolic' });
+    this.wrench.connect('clicked', () => { openPreferences(); });
+    item.actor.add(this.wrench, { expand: true, x_fill: false });
+
+    if (this.provider.hasSettings()) {
+      this.cog = new St.Button({
+        reactive: true,
+        can_focus: true,
+        track_hover: true,
+        accessible_name: 'Open Nvidia Settings',
+        style_class: 'system-menu-action'
+      });
+      this.cog.child = new St.Icon({ icon_name: 'cog-symbolic' });
+      this.cog.connect('clicked', Lang.bind(this, this.provider.openSettings));
+      item.actor.add(this.cog, { expand: true, x_fill: false });
+    }
+
+    this.menu.addMenuItem(item);
   },
   _updatePollTime : function() {
     if (!this._error) {
