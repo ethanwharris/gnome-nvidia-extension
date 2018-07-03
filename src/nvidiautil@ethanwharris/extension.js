@@ -59,6 +59,8 @@ const PropertyMenuItem = new Lang.Class({
   _init : function(property, box, labelManager, settings, setting, index) {
     this.parent();
 
+    this._destroyed = false;
+
     this._settings = settings;
     this._setting = setting;
     this._index = index;
@@ -82,13 +84,23 @@ const PropertyMenuItem = new Lang.Class({
     this._box.add_child(this._icon);
     this._box.add_child(this._statisticLabelVisible);
 
+    //this.reloadBox(2);
+
     this.actor.add(this._statisticLabelHidden);
     this._visible = false;
     this._box.visible = false;
   },
+  reloadBox : function(spacing, icons) {
+    if (!this._destroyed) {
+      this._icon.visible = icons;
+
+      this._statisticLabelVisible.set_style('margin-right: ' + spacing + 'px');
+    }
+  },
   destroy : function() {
+    this._destroyed = true;
+
     this._box.destroy();
-    this._icon.destroy();
     this._statisticLabelHidden.destroy();
 
     this.parent();
@@ -215,7 +227,8 @@ const MainMenu = new Lang.Class({
     this._addSettingChangedSignal(Util.SETTINGS_REFRESH, Lang.bind(this, this._updatePollTime));
     this._addSettingChangedSignal(Util.SETTINGS_TEMP_UNIT, Lang.bind(this, this._updateTempUnits));
     this._addSettingChangedSignal(Util.SETTINGS_POSITION, Lang.bind(this, this._updatePanelPosition));
-
+    this._addSettingChangedSignal(Util.SETTINGS_SPACING, Lang.bind(this, this._updateSpacing));
+    this._addSettingChangedSignal(Util.SETTINGS_ICONS, Lang.bind(this, this._updateSpacing));
   },
   _reload : function() {
     this.menu.removeAll();
@@ -232,24 +245,24 @@ const MainMenu = new Lang.Class({
 
     let flags = this._settings.get_strv(PROVIDER_SETTINGS[p]);
 
-    let names = this.provider.getGpuNames();
+    this.names = this.provider.getGpuNames();
 
-    if (names != Spawn.ERROR) {
+    if (this.names != Spawn.ERROR) {
 
       let listeners = [];
 
-      let properties = this.provider.getProperties(names.length - 1);
+      this.providerProperties = this.provider.getProperties(this.names.length - 1);
 
-      for (let i = 0; i < properties.length; i++) {
+      for (let i = 0; i < this.providerProperties.length; i++) {
         listeners[i] = [];
       }
 
-      for (let n = 0; n < names.length - 1; n++) {
-        let submenu = new PopupMenu.PopupSubMenuMenuItem(names[n]);
+      for (let n = 0; n < this.names.length - 1; n++) {
+        let submenu = new PopupMenu.PopupSubMenuMenuItem(this.names[n]);
 
         let manager;
 
-        if (names.length - 1 > 1) {
+        if (this.names.length - 1 > 1) {
           let label = new St.Label({ text : n + ':', style_class : 'gpulabel'});
           manager = new GpuLabelDisplayManager(label);
           this.properties.add_child(label);
@@ -259,15 +272,15 @@ const MainMenu = new Lang.Class({
 
         this._propertiesMenu.addMenuItem(submenu);
 
-        for (let i = 0; i < properties.length; i++) {
+        for (let i = 0; i < this.providerProperties.length; i++) {
           let box = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
 
-          let index = (n * properties.length) + i;
-          let item = new PropertyMenuItem(properties[i], box, manager, this._settings, PROVIDER_SETTINGS[p], index);
+          let index = (n * this.providerProperties.length) + i;
+          let item = new PropertyMenuItem(this.providerProperties[i], box, manager, this._settings, PROVIDER_SETTINGS[p], index);
 
-          if (properties[i].getName() == "Temperature") {
+          if (this.providerProperties[i].getName() == "Temperature") {
             let unit = this._settings.get_int(Util.SETTINGS_TEMP_UNIT)
-            properties[i].setUnit(unit)
+            this.providerProperties[i].setUnit(unit)
           }
 
           listeners[i][n] = item;
@@ -276,15 +289,15 @@ const MainMenu = new Lang.Class({
         }
       }
 
-      for (let i = 0; i < properties.length; i++) {
-        this.processor.addProperty(properties[i], listeners[i]);
+      for (let i = 0; i < this.providerProperties.length; i++) {
+        this.processor.addProperty(this.providerProperties[i], listeners[i]);
       }
 
       this.processor.process();
 
-      for (let n = 0; n < names.length - 1; n++) {
-        for (let i = 0; i < properties.length; i++) {
-          let index = (n * properties.length) + i;
+      for (let n = 0; n < this.names.length - 1; n++) {
+        for (let i = 0; i < this.providerProperties.length; i++) {
+          let index = (n * this.providerProperties.length) + i;
 
           if (!flags[index]) {
             flags[index] = "inactive";
@@ -295,6 +308,10 @@ const MainMenu = new Lang.Class({
           }
         }
       }
+
+      this._items = listeners;
+
+      this._updateSpacing();
 
       this._settings.set_strv(PROVIDER_SETTINGS[p], flags);
     } else {
@@ -338,19 +355,16 @@ const MainMenu = new Lang.Class({
     }
   },
   _updateTempUnits : function() {
-    let names = this.provider.getGpuNames();
-    let properties = this.provider.retrieveProperties();
     let unit = 0;
 
-    for (let i = 0; i < properties.length; i++) {
-      if (properties[i].getName() == "Temperature") {
+    for (let i = 0; i < this.providerProperties.length; i++) {
+      if (this.providerProperties[i].getName() == "Temperature") {
 
         unit = this._settings.get_int(Util.SETTINGS_TEMP_UNIT)
-        properties[i].setUnit(unit)
+        this.providerProperties[i].setUnit(unit)
       }
     }
     this.processor.process();
-
   },
   _updatePanelPosition : function() {
     this.container.get_parent().remove_actor(this.container);
@@ -367,6 +381,16 @@ const MainMenu = new Lang.Class({
   getPanelPosition : function() {
     let positions = ["left", "center", "right"];
     return positions[_settings.get_int(Util.SETTINGS_POSITION)];
+  },
+  _updateSpacing : function() {
+    let spacing = _settings.get_int(Util.SETTINGS_SPACING);
+    let icons = _settings.get_boolean(Util.SETTINGS_ICONS);
+
+    for (let n = 0; n < this.names.length - 1; n++) {
+      for (let i = 0; i < this.providerProperties.length; i++) {
+        this._items[i][n].reloadBox(spacing, icons);
+      }
+    }
   },
   /*
    * Create and add the timeout which updates values every t seconds

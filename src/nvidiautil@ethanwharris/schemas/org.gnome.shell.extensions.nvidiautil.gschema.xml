@@ -28,6 +28,20 @@
          Select the properties provider to use
        </description>
      </key>
+     <key name="spacing" type="i">
+       <default>5</default>
+       <summary>Spacing (px)</summary>
+       <description>
+         Set the label spacing distance
+       </description>
+     </key>
+     <key name="icons" type="b">
+       <default>true</default>
+       <summary>Show Icons in Bar</summary>
+       <description>
+         Show icons in bar
+       </description>
+     </key>
      <key name="settingsconfig" type="as">
        <default>[]</default>
      </key>

@@ -14,8 +14,13 @@ You should have received a copy of the GNU General Public License
 along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/licenses/>.*/
 
 .label {
-  min-width: 27px;
-  margin-right: 5px;
+  margin-right: 10px;
+  margin-top: 3px;
+  text-align: left;
+}
+
+.labelNarrow {
+  margin-right: 0px;
   margin-top: 3px;
   text-align: left;
 }
