@@ -48,6 +48,20 @@ const SETTINGS = {
       label : 'Properties Provider',
       tooltip : 'Select the properties provider to use',
       options : ['Nvidia Settings and SMI', 'Nvidia Settings', 'Nvidia SMI', 'Optimus with Bumblebee (beta)']
+    },
+    spacing : {
+      type : 'int',
+      key : 'spacing',
+      label : 'Spacing (px)',
+      tooltip : 'Set the label spacing distance',
+      min : 0,
+      max : 20
+    },
+    icons : {
+      type : 'bool',
+      key : 'icons',
+      label : 'Show Icons in Bar',
+      tooltip : 'Show icons in bar'
     }
 };
 
@@ -74,7 +88,7 @@ function buildSettingWidget(setting) {
     let control = new Gtk.Switch({ active : settings.get_boolean(setting) });
 
     control.connect('notify::active', function(button) {
-      settings.set_boolean(setting, button.get_active());
+      settings.set_boolean(setting, control.get_active());
     });
 
     label.set_tooltip_text(SETTINGS[setting].tooltip);

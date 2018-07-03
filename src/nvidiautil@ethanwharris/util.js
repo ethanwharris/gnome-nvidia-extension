@@ -19,6 +19,8 @@ var SETTINGS_REFRESH = "refreshrate";
 var SETTINGS_PROVIDER = "provider";
 var SETTINGS_POSITION = "position";
 var SETTINGS_TEMP_UNIT = "tempformat";
+var SETTINGS_SPACING = "spacing";
+var SETTINGS_ICONS = "icons";
 
 /**
  * getSettings:
