@@ -33,7 +33,13 @@ var SmiProvider = new Lang.Class({
       return Spawn.ERROR;
     }
 
-    return output.split('\n');
+    output = output.split('\n');
+
+    for (let i = 0; i < output.length; i++) {
+      output[i] = i + ": " + output[i];
+    }
+
+    return output;
   },
   getProperties(gpuCount) {
 

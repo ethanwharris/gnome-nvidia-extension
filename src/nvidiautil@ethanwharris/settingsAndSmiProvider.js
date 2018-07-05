@@ -22,20 +22,17 @@ const SettingsProperties = Me.imports.settingsProperties;
 const SmiProperties = Me.imports.smiProperties;
 const Processor = Me.imports.processor;
 
+const SettingsProvider = Me.imports.settingsProvider;
+const SmiProvider = Me.imports.smiProvider;
+
 var SettingsAndSmiProvider = new Lang.Class({
   Name : 'SettingsAndSmiProvider',
   _init : function() {
+    this.settings = new SettingsProvider.SettingsProvider();
+    this.smi = new SmiProvider.SmiProvider();
   },
   getGpuNames() {
-    let output = Spawn.spawnSync("nvidia-smi --query-gpu=gpu_name --format=csv,noheader", function(command, err) {
-      // Do Nothing
-    });
-
-    if (output.indexOf("libnvidia-ml.so") >= 0) {
-      return Spawn.ERROR;
-    }
-
-    return output.split('\n');
+    return this.smi.getGpuNames();
   },
   getProperties(gpuCount) {
     this.storedProperties =  [
@@ -54,18 +51,6 @@ var SettingsAndSmiProvider = new Lang.Class({
     return true;
   },
   openSettings() {
-    let defaultAppSystem = Shell.AppSystem.get_default();
-    let nvidiaSettingsApp = defaultAppSystem.lookup_app('nvidia-settings.desktop');
-
-    if (!nvidiaSettingsApp) {
-      Main.notifyError("Couldn't find nvidia-settings on your device", "Check you have it installed correctly");
-      return;
-    }
-
-    if (nvidiaSettingsApp.get_n_windows()) {
-      nvidiaSettingsApp.activate();
-    } else {
-      Spawn.spawnAsync('nvidia-settings', Spawn.defaultErrorHandler);
-    }
+    this.settings.openSettings();
   }
 });
