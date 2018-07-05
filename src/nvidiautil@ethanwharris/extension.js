@@ -263,7 +263,11 @@ const MainMenu = new Lang.Class({
         let manager;
 
         if (this.names.length - 1 > 1) {
-          let label = new St.Label({ text : n + ':', style_class : 'gpulabel'});
+          let style = 'gpulabel';
+          if (n == 0) {
+            style = 'gpulabelleft';
+          }
+          let label = new St.Label({ text : n + ':', style_class : style});
           manager = new GpuLabelDisplayManager(label);
           this.properties.add_child(label);
         } else {
