@@ -347,7 +347,7 @@ const MainMenu = new Lang.Class({
         style_class: 'system-menu-action'
       });
       this.cog.child = new St.Icon({ icon_name: 'cog-symbolic' });
-      this.cog.connect('clicked', Lang.bind(this, this.provider.openSettings));
+      this.cog.connect('clicked', Lang.bind(this.provider, this.provider.openSettings));
       item.actor.add(this.cog, { expand: true, x_fill: false });
     }
 
