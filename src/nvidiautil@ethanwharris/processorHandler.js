@@ -20,11 +20,11 @@ const Processor = Me.imports.processor;
 const Lang = imports.lang;
 
 var ProcessorHandler = new Lang.Class({
-  Name : 'ProcessorHandler',
-  _init : function() {
+  Name: 'ProcessorHandler',
+  _init: function() {
     this._processors = [false, false, false];
   },
-  process : function() {
+  process: function() {
     for (let i = 0; i < this._processors.length; i++) {
       if (this._processors[i]) {
         try {
@@ -36,7 +36,7 @@ var ProcessorHandler = new Lang.Class({
       }
     }
   },
-  addProperty : function(property, listeners) {
+  addProperty: function(property, listeners) {
     let processor = property.declare();
     if (!this._processors[processor]) {
       this._processors[processor] = new Processor.LIST[processor]();
@@ -49,7 +49,7 @@ var ProcessorHandler = new Lang.Class({
       }
     }, property.getCallExtension());
   },
-  reset : function() {
+  reset: function() {
     this._processors = [false, false, false];
   }
 });

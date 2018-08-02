@@ -23,10 +23,10 @@ const Processor = Me.imports.processor;
 const SettingsProperties = Me.imports.settingsProperties;
 
 var SettingsProvider = new Lang.Class({
-  Name : 'SettingsProvider',
-  _init : function() {
+  Name: 'SettingsProvider',
+  _init: function() {
   },
-  getGpuNames() {
+  getGpuNames: function() {
     let output = Spawn.spawnSync("nvidia-settings -q GpuUUID -t", function(command, err) {
       // Do Nothing
     });
@@ -44,7 +44,7 @@ var SettingsProvider = new Lang.Class({
 
     return result;
   },
-  getProperties(gpuCount) {
+  getProperties: function(gpuCount) {
     this.storedProperties = [
       new SettingsProperties.UtilisationProperty(gpuCount, Processor.NVIDIA_SETTINGS),
       new SettingsProperties.TemperatureProperty(gpuCount, Processor.NVIDIA_SETTINGS),
@@ -53,13 +53,13 @@ var SettingsProvider = new Lang.Class({
     ];
     return this.storedProperties;
   },
-  retrieveProperties() {
+  retrieveProperties: function() {
     return this.storedProperties;
   },
-  hasSettings() {
+  hasSettings: function() {
     return true;
   },
-  openSettings() {
+  openSettings: function() {
     let defaultAppSystem = Shell.AppSystem.get_default();
     let nvidiaSettingsApp = defaultAppSystem.lookup_app('nvidia-settings.desktop');
 

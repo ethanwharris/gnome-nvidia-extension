@@ -21,10 +21,10 @@ const Spawn = Me.imports.spawn;
 const SmiProperties = Me.imports.smiProperties;
 
 var SmiProvider = new Lang.Class({
-  Name : 'SmiProvider',
-  _init : function() {
+  Name: 'SmiProvider',
+  _init: function() {
   },
-  getGpuNames() {
+  getGpuNames: function() {
     let output = Spawn.spawnSync("nvidia-smi --query-gpu=gpu_name --format=csv,noheader", function(command, err) {
       // Do Nothing
     });
@@ -41,7 +41,7 @@ var SmiProvider = new Lang.Class({
 
     return output;
   },
-  getProperties(gpuCount) {
+  getProperties: function(gpuCount) {
 
     this.storedProperties = [
       new SmiProperties.UtilisationProperty(gpuCount),
@@ -52,13 +52,13 @@ var SmiProvider = new Lang.Class({
     ];
     return this.storedProperties;
   },
-  retrieveProperties() {
+  retrieveProperties: function() {
     return this.storedProperties;
   },
-  hasSettings() {
+  hasSettings: function() {
     return false;
   },
-  openSettings() {
+  openSettings: function() {
     Main.notifyError("Settings are not available in smi mode", "Switch to a provider which supports nivida-settings");
   }
 });
