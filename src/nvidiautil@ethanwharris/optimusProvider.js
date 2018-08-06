@@ -17,21 +17,21 @@ const Shell = imports.gi.Shell;
 const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const Spawn = Me.imports.spawn;
-const SettingsProperties = Me.imports.settingsProperties;
 const Lang = imports.lang;
-
+const Spawn = Me.imports.spawn;
+const Processor = Me.imports.processor;
+const SettingsProperties = Me.imports.settingsProperties;
 
 var OptimusProvider = new Lang.Class({
-  Name : 'OptimusProvider',
-  _init : function() {
+  Name: 'OptimusProvider',
+  _init: function() {
   },
-  getGpuNames() {
+  getGpuNames: function() {
     let output = Spawn.spawnSync("optirun nvidia-settings -q GpuUUID -t", function(command, err) {
       // Do Nothing
     });
 
-    if (output == Spawn.ERROR) {
+    if (output == Spawn.ERROR || output.indexOf("ERROR") >= 0) {
       return Spawn.ERROR;
     }
 
@@ -44,7 +44,7 @@ var OptimusProvider = new Lang.Class({
 
     return result;
   },
-  getProperties(gpuCount) {
+  getProperties: function(gpuCount) {
     this.storedProperties = [
       new SettingsProperties.UtilisationProperty(gpuCount, Processor.OPTIMUS),
       new SettingsProperties.TemperatureProperty(gpuCount, Processor.OPTIMUS),
@@ -52,13 +52,13 @@ var OptimusProvider = new Lang.Class({
       new SettingsProperties.FanProperty(gpuCount, Processor.OPTIMUS)
     ];
   },
-  retrieveProperties() {
+  retrieveProperties: function() {
     return this.storedProperties;
   },
-  hasSettings() {
+  hasSettings: function() {
     return true;
   },
-  openSettings() {
+  openSettings: function() {
     let defaultAppSystem = Shell.AppSystem.get_default();
     let nvidiaSettingsApp = defaultAppSystem.lookup_app('nvidia-settings.desktop');
 

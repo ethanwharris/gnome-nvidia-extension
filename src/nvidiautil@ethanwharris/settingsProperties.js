@@ -20,12 +20,12 @@ const Formatter = Me.imports.formatter;
 const Property = Me.imports.property;
 
 var UtilisationProperty = new Lang.Class({
-  Name : 'UtilisationProperty',
-  Extends : Property.Property,
-  _init : function(gpuCount, processor) {
+  Name: 'UtilisationProperty',
+  Extends: Property.Property,
+  _init: function(gpuCount, processor) {
     this.parent(processor, 'Utilisation', '-q GPUUtilization ', 'card-symbolic', new Formatter.PercentFormatter('UtilisationFormatter'), gpuCount);
   },
-  parse : function(lines) {
+  parse: function(lines) {
     for (let i = 0; i < this._gpuCount; i++) {
       lines[i] = lines[i].substring(9,11);
     }
@@ -35,23 +35,23 @@ var UtilisationProperty = new Lang.Class({
 });
 
 var TemperatureProperty = new Lang.Class({
-  Name : 'TemperatureProperty',
-  Extends : Property.Property,
-  _init : function(gpuCount, processor) {
+  Name: 'TemperatureProperty',
+  Extends: Property.Property,
+  _init: function(gpuCount, processor) {
     this.parent(processor, 'Temperature', '-q [GPU]/GPUCoreTemp ', 'temp-symbolic', new Formatter.TempFormatter(Formatter.CENTIGRADE), gpuCount);
   },
-  setUnit(unit) {
+  setUnit: function(unit) {
     this._formatter.setUnit(unit);
   }
 });
 
 var MemoryProperty = new Lang.Class({
-  Name : 'MemoryProperty',
-  Extends : Property.Property,
-  _init : function(gpuCount, processor) {
+  Name: 'MemoryProperty',
+  Extends: Property.Property,
+  _init: function(gpuCount, processor) {
     this.parent(processor, 'Memory Usage', '-q UsedDedicatedGPUMemory -q TotalDedicatedGPUMemory ', 'ram-symbolic', new Formatter.MemoryFormatter(), gpuCount);
   },
-  parse : function(lines) {
+  parse: function(lines) {
     let values = [];
 
     let used_memory = [];
@@ -71,9 +71,9 @@ var MemoryProperty = new Lang.Class({
 });
 
 var FanProperty = new Lang.Class({
-  Name : 'FanProperty',
-  Extends : Property.Property,
-  _init : function(gpuCount, processor) {
+  Name: 'FanProperty',
+  Extends: Property.Property,
+  _init: function(gpuCount, processor) {
     this.parent(processor, 'Fan Speed', '-q GPUCurrentFanSpeed ', 'fan-symbolic', new Formatter.PercentFormatter('FanFormatter'), gpuCount);
   }
 });

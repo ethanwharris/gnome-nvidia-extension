@@ -54,9 +54,9 @@ function openPreferences() {
 }
 
 const PropertyMenuItem = new Lang.Class({
-  Name : 'PropertyMenuItem',
+  Name: 'PropertyMenuItem',
   Extends: PopupMenu.PopupBaseMenuItem,
-  _init : function(property, box, labelManager, settings, setting, index) {
+  _init: function(property, box, labelManager, settings, setting, index) {
     this.parent();
 
     this._destroyed = false;
@@ -90,14 +90,14 @@ const PropertyMenuItem = new Lang.Class({
     this._visible = false;
     this._box.visible = false;
   },
-  reloadBox : function(spacing, icons) {
+  reloadBox: function(spacing, icons) {
     if (!this._destroyed) {
       this._icon.visible = icons;
 
       this._statisticLabelVisible.set_style('margin-right: ' + spacing + 'px');
     }
   },
-  destroy : function() {
+  destroy: function() {
     this._destroyed = true;
 
     this._box.destroy();
@@ -114,7 +114,7 @@ const PropertyMenuItem = new Lang.Class({
       // Do Nothing
     }
   },
-  activate : function(event) {
+  activate: function(event) {
     if (this._visible) {
       this.actor.remove_style_pseudo_class('active');
       this._visible = false;
@@ -135,13 +135,13 @@ const PropertyMenuItem = new Lang.Class({
       this._settings.set_strv(this._setting, flags);
     }
   },
-  setActive : function(active) {
+  setActive: function(active) {
     this.parent(active);
     if (this._visible) {
       this.actor.add_style_pseudo_class('active');
     }
   },
-  handle : function(value) {
+  handle: function(value) {
     this._statisticLabelHidden.text = value;
     this._statisticLabelVisible.text = value;
     if (value == 'ERR') {
@@ -155,9 +155,9 @@ const PropertyMenuItem = new Lang.Class({
 });
 
 const PersistentPopupMenu = new Lang.Class({
-  Name : 'PersistentPopupMenu',
-  Extends : PopupMenu.PopupMenu,
-  _init : function(actor, menuAlignment) {
+  Name: 'PersistentPopupMenu',
+  Extends: PopupMenu.PopupMenu,
+  _init: function(actor, menuAlignment) {
     this.parent(actor, menuAlignment, St.Side.TOP, 0);
   },
   _setOpenedSubMenu: function(submenu) {
@@ -166,20 +166,20 @@ const PersistentPopupMenu = new Lang.Class({
 });
 
 const GpuLabelDisplayManager = new Lang.Class({
-  Name : 'GpuLabelDisplayManager',
-  _init : function(gpuLabel) {
+  Name: 'GpuLabelDisplayManager',
+  _init: function(gpuLabel) {
     this.gpuLabel = gpuLabel;
     this.count = 0;
     this.gpuLabel.visible = false;
   },
-  increment : function() {
+  increment: function() {
     this.count = this.count + 1;
 
     if (this.gpuLabel.visible == false) {
       this.gpuLabel.visible = true;
     }
   },
-  decrement : function() {
+  decrement: function() {
     this.count = this.count - 1;
 
     if (this.count == 0 && this.gpuLabel.visible == true) {
@@ -189,19 +189,19 @@ const GpuLabelDisplayManager = new Lang.Class({
 });
 
 const EmptyDisplayManager = new Lang.Class({
-  Name : 'EmptyDisplayManager',
-  increment : function() {
+  Name: 'EmptyDisplayManager',
+  increment: function() {
     // Do Nothing
   },
-  decrement : function() {
+  decrement: function() {
     // Do Nothing
   }
 });
 
 const MainMenu = new Lang.Class({
-  Name : 'MainMenu',
-  Extends : PanelMenu.Button,
-  _init : function(settings) {
+  Name: 'MainMenu',
+  Extends: PanelMenu.Button,
+  _init: function(settings) {
     this.parent(0.0, _("GPU Statistics"));
     this.timeoutId = -1;
     this._settings = settings;
@@ -230,7 +230,7 @@ const MainMenu = new Lang.Class({
     this._addSettingChangedSignal(Util.SETTINGS_SPACING, Lang.bind(this, this._updateSpacing));
     this._addSettingChangedSignal(Util.SETTINGS_ICONS, Lang.bind(this, this._updateSpacing));
   },
-  _reload : function() {
+  _reload: function() {
     this.menu.removeAll();
 
     this._propertiesMenu = new PopupMenu.PopupMenuSection();
@@ -353,12 +353,12 @@ const MainMenu = new Lang.Class({
 
     this.menu.addMenuItem(item);
   },
-  _updatePollTime : function() {
+  _updatePollTime: function() {
     if (!this._error) {
       this._addTimeout(this._settings.get_int(Util.SETTINGS_REFRESH));
     }
   },
-  _updateTempUnits : function() {
+  _updateTempUnits: function() {
     let unit = 0;
 
     for (let i = 0; i < this.providerProperties.length; i++) {
@@ -370,7 +370,7 @@ const MainMenu = new Lang.Class({
     }
     this.processor.process();
   },
-  _updatePanelPosition : function() {
+  _updatePanelPosition: function() {
     this.container.get_parent().remove_actor(this.container);
 
     let boxes = {
@@ -399,7 +399,7 @@ const MainMenu = new Lang.Class({
   /*
    * Create and add the timeout which updates values every t seconds
    */
-  _addTimeout : function(t) {
+  _addTimeout: function(t) {
     this._removeTimeout();
 
     this.timeoutId = GLib.timeout_add_seconds(0, t, Lang.bind(this, function() {
@@ -410,16 +410,16 @@ const MainMenu = new Lang.Class({
   /*
    * Remove current timeout
    */
-  _removeTimeout : function() {
+  _removeTimeout: function() {
     if (this.timeoutId != -1) {
       GLib.source_remove(this.timeoutId);
       this.timeoutId = -1;
     }
   },
-  _addSettingChangedSignal : function(key, callback) {
+  _addSettingChangedSignal: function(key, callback) {
     this._settingChangedSignals.push(this._settings.connect('changed::' + key, callback));
   },
-  destroy : function() {
+  destroy: function() {
     this._removeTimeout();
 
     for (let signal of this._settingChangedSignals) {
