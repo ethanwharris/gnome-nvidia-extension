@@ -17,10 +17,10 @@ const Shell = imports.gi.Shell;
 const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const Spawn = Me.imports.spawn;
-const SettingsProperties = Me.imports.settingsProperties;
 const Lang = imports.lang;
-
+const Spawn = Me.imports.spawn;
+const Processor = Me.imports.processor;
+const SettingsProperties = Me.imports.settingsProperties;
 
 var OptimusProvider = new Lang.Class({
   Name: 'OptimusProvider',
@@ -31,7 +31,7 @@ var OptimusProvider = new Lang.Class({
       // Do Nothing
     });
 
-    if (output == Spawn.ERROR) {
+    if (output == Spawn.ERROR || output.indexOf("ERROR") >= 0) {
       return Spawn.ERROR;
     }
 

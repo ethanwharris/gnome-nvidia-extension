@@ -29,6 +29,10 @@ var SmiProvider = new Lang.Class({
       // Do Nothing
     });
 
+    if (output == Spawn.ERROR || output.indexOf("ERROR") >= 0) {
+      return Spawn.ERROR;
+    }
+
     if (output.indexOf("libnvidia-ml.so") >= 0) {
       return Spawn.ERROR;
     }
