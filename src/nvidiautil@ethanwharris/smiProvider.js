@@ -18,6 +18,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Lang = imports.lang;
 const Spawn = Me.imports.spawn;
+const Processor = Me.imports.processor;
 const SmiProperties = Me.imports.smiProperties;
 
 var SmiProvider = new Lang.Class({
@@ -46,13 +47,12 @@ var SmiProvider = new Lang.Class({
     return output;
   },
   getProperties: function(gpuCount) {
-
     this.storedProperties = [
-      new SmiProperties.UtilisationProperty(gpuCount),
-      new SmiProperties.TemperatureProperty(gpuCount),
-      new SmiProperties.MemoryProperty(gpuCount),
-      new SmiProperties.FanProperty(gpuCount),
-      new SmiProperties.PowerProperty(gpuCount)
+      new SmiProperties.UtilisationProperty(gpuCount, Processor.NVIDIA_SMI),
+      new SmiProperties.TemperatureProperty(gpuCount, Processor.NVIDIA_SMI),
+      new SmiProperties.MemoryProperty(gpuCount, Processor.NVIDIA_SMI),
+      new SmiProperties.FanProperty(gpuCount, Processor.NVIDIA_SMI),
+      new SmiProperties.PowerProperty(gpuCount, Processor.NVIDIA_SMI)
     ];
     return this.storedProperties;
   },

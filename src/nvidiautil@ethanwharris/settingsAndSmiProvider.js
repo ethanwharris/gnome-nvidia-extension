@@ -40,7 +40,7 @@ var SettingsAndSmiProvider = new Lang.Class({
       new SettingsProperties.TemperatureProperty(gpuCount, Processor.NVIDIA_SETTINGS),
       new SettingsProperties.MemoryProperty(gpuCount, Processor.NVIDIA_SETTINGS),
       new SettingsProperties.FanProperty(gpuCount, Processor.NVIDIA_SETTINGS),
-      new SmiProperties.PowerProperty(gpuCount)
+      new SmiProperties.PowerProperty(gpuCount, Processor.NVIDIA_SMI)
     ];
     return this.storedProperties;
   },

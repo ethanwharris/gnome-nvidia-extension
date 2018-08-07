@@ -78,10 +78,20 @@ var OptimusSettingsProcessor = new Lang.Class({
   Name: 'OptimusSettingsProcessor',
   Extends: Processor,
   _init: function() {
-    this.parent('optirun nvidia-settings', 'optirun nvidia-settings ', '-t');
+    this.parent('optirun nvidia-smi', 'optirun nvidia-smi --query-gpu=', ' --format=csv,noheader,nounits');
   },
   parse: function(output) {
-    this._parseFunction(output.split('\n'));
+    let lines = output.split('\n');
+    let items = [];
+
+    for(let i = 0; i < (lines.length-1); i++) {
+        let fields = lines[i].split(',');
+        for(let j = 0; j < fields.length; j++) {
+          items[((lines.length-1)*j)+i] = fields[j];
+        }
+    }
+
+    this._parseFunction(items);
   }
 });
 
