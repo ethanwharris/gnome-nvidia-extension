@@ -75,7 +75,7 @@ var OptimusProvider = new Lang.Class({
     if (nvidiaSettingsApp.get_n_windows()) {
       nvidiaSettingsApp.activate();
     } else {
-      Spawn.spawnAsync('optirun nvidia-settings -c :8', Spawn.defaultErrorHandler);
+      Spawn.spawnAsync('optirun -b none nvidia-settings -c :8', Spawn.defaultErrorHandler);
     }
   }
 });
