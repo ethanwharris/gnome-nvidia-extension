@@ -47,7 +47,6 @@ var SmiProvider = new Lang.Class({
     return output;
   },
   getProperties: function(gpuCount) {
-
     this.storedProperties = [
       new SmiProperties.UtilisationProperty(gpuCount, Processor.NVIDIA_SMI),
       new SmiProperties.TemperatureProperty(gpuCount, Processor.NVIDIA_SMI),

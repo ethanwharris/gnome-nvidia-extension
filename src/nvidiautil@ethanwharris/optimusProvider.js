@@ -52,6 +52,7 @@ var OptimusProvider = new Lang.Class({
       new SmiProperties.FanProperty(gpuCount, Processor.OPTIMUS),
       new SmiProperties.PowerProperty(gpuCount, Processor.OPTIMUS)
     ];
+    return this.storedProperties;
   },
   retrieveProperties: function() {
     return this.storedProperties;
