@@ -20,14 +20,14 @@ const Me = ExtensionUtils.getCurrentExtension();
 const Lang = imports.lang;
 const Spawn = Me.imports.spawn;
 const Processor = Me.imports.processor;
-const SettingsProperties = Me.imports.settingsProperties;
+const SmiProperties = Me.imports.smiProperties;
 
 var OptimusProvider = new Lang.Class({
   Name: 'OptimusProvider',
   _init: function() {
   },
   getGpuNames: function() {
-    let output = Spawn.spawnSync("optirun nvidia-settings -q GpuUUID -t", function(command, err) {
+    let output = Spawn.spawnSync("optirun nvidia-smi --query-gpu=gpu_name --format=csv,noheader", function(command, err) {
       // Do Nothing
     });
 
@@ -46,10 +46,11 @@ var OptimusProvider = new Lang.Class({
   },
   getProperties: function(gpuCount) {
     this.storedProperties = [
-      new SettingsProperties.UtilisationProperty(gpuCount, Processor.OPTIMUS),
-      new SettingsProperties.TemperatureProperty(gpuCount, Processor.OPTIMUS),
-      new SettingsProperties.MemoryProperty(gpuCount, Processor.OPTIMUS),
-      new SettingsProperties.FanProperty(gpuCount, Processor.OPTIMUS)
+      new SmiProperties.UtilisationProperty(gpuCount, Processor.OPTIMUS),
+      new SmiProperties.TemperatureProperty(gpuCount, Processor.OPTIMUS),
+      new SmiProperties.MemoryProperty(gpuCount, Processor.OPTIMUS),
+      new SmiProperties.FanProperty(gpuCount, Processor.OPTIMUS),
+      new SmiProperties.PowerProperty(gpuCount, Processor.OPTIMUS)
     ];
   },
   retrieveProperties: function() {
