@@ -35,14 +35,17 @@ var OptimusProvider = new Lang.Class({
       return Spawn.ERROR;
     }
 
-    output = output.split('\n');
-    let result = [];
-
-    for (let i = 0; i < output.length; i++) {
-      result[i] = "GPU " + i;
+    if (output.indexOf("libnvidia-ml.so") >= 0) {
+      return Spawn.ERROR;
     }
 
-    return result;
+    output = output.split('\n');
+
+    for (let i = 0; i < output.length; i++) {
+      output[i] = i + ": " + output[i];
+    }
+
+    return output;
   },
   getProperties: function(gpuCount) {
     this.storedProperties = [
