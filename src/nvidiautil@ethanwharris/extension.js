@@ -20,6 +20,7 @@ const PopupMenu = imports.ui.popupMenu;
 const Lang = imports.lang;
 const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
+const Clutter = imports.gi.Clutter;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -79,7 +80,11 @@ const PropertyMenuItem = new Lang.Class({
                                       style_class: 'system-status-icon' });
 
     this._statisticLabelHidden = new St.Label({ text: '0' });
-    this._statisticLabelVisible = new St.Label({ text: '0', style_class: 'label' });
+    this._statisticLabelVisible = new St.Label({
+        text: '0',
+        style_class: 'label',
+        y_expand: true,
+        y_align: Clutter.ActorAlign.CENTER });
 
     this._box.add_child(this._icon);
     this._box.add_child(this._statisticLabelVisible);
