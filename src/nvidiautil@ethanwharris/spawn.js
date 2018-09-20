@@ -29,7 +29,12 @@ function spawnAsync(command, callback) {
 
 function spawnSync(command, callback) {
   try {
-    return GLib.spawn_command_line_sync(command)[1].toString();
+    let data = GLib.spawn_command_line_sync(command)[1];
+    if (data instanceof Uint8Array) {
+      return imports.byteArray.toString(data);
+    } else {
+      return data.toString();
+    }
   } catch (err) {
     callback(command, err);
     return ERROR;
