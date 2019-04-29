@@ -2,19 +2,7 @@
   "description":
     "Shows NVIDIA GPU stats in the toolbar. Requires nvidia-settings or nvidia-smi. Includes Bumblebee support.",
   "shell-version": [
-    "3.6",
-    "3.8",
-    "3.10",
-    "3.12",
-    "3.14",
-    "3.16",
-    "3.18",
-    "3.20",
-    "3.22",
-    "3.24",
-    "3.26",
-    "3.28",
-    "3.30"
+    "3.32"
   ],
   "name": "NVIDIA GPU Stats Tool",
   "settings-schema": "org.gnome.shell.extensions.nvidiautil",

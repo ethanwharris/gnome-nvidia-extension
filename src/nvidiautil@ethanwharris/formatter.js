@@ -13,18 +13,18 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/licenses/>.*/
 
+const GObject = imports.gi.GObject;
 const Lang = imports.lang;
 
 var CENTIGRADE = 0;
 var FAHRENHEIT = 1;
 
-var Formatter = new Lang.Class({
-  Name: 'Formatter',
-  Abstract: true,
-  _init: function(name) {
+class Formatter {
+  //Abstract: true,
+  constructor(name) {
     this._name = name;
-  },
-  format: function(values) {
+  }
+  format(values) {
     for (let i = 0; i < values.length; i++) {
       let stringValue = values[i].replace(/[^0-9.]/g,'');
       values[i] = parseFloat(stringValue);
@@ -33,68 +33,60 @@ var Formatter = new Lang.Class({
       }
     }
     return this._format(values);
-  },
-  _format: function(values) {
+  }
+  _format(values) {
     return values;
   }
-});
+}
 
-var PercentFormatter = new Lang.Class({
-  Name: 'PercentFormatter',
-  Extends: Formatter,
-  _init: function(name) {
-    this.parent(name);
-  },
-  _format: function(values) {
+class PercentFormatter extends Formatter {
+  constructor(name) {
+    super(name);
+  }
+  _format(values) {
     return values[0] + "%";
   }
-})
+}
 
-var PowerFormatter = new Lang.Class({
-  Name: 'PowerFormatter',
-  Extends: Formatter,
-  _init: function() {
-    this.parent('PowerFormatter');
-  },
-  _format: function(values) {
+class PowerFormatter extends Formatter {
+  constructor() {
+    super('PowerFormatter');
+  }
+  _format(values) {
     return Math.floor(values[0]) + "W";
   }
-})
+}
 
-var MemoryFormatter = new Lang.Class({
-  Name: 'MemoryFormatter',
-  Extends: Formatter,
-  _init: function() {
-    this.parent('MemoryFormatter');
-  },
-  _format: function(values) {
+class MemoryFormatter extends Formatter {
+  constructor() {
+    super('MemoryFormatter');
+  }
+  _format(values) {
     let mem_usage = Math.floor((values[0] / values[1]) * 100);
     return mem_usage + "%";
   }
-})
+}
 
-var TempFormatter = new Lang.Class({
-  Name: 'TempFormatter',
-  Extends: Formatter,
-  currentUnit: 0,
-  _init: function(unit) {
-    this.parent('TempFormatter')
+class TempFormatter extends Formatter {
+  //currentUnit: 0,
+  constructor(unit) {
+    super('TempFormatter')
     this.currentUnit = unit;
-  },
-  setUnit: function(unit) {
+  }
+  setUnit(unit) {
     this.currentUnit = unit;
-  },
-  _format: function(value) {
+  }
+  _format(value) {
     if (this.currentUnit == CENTIGRADE) {
       return this._formatCentigrade(value);
     } else if (this.currentUnit == FAHRENHEIT) {
       return this._formatFehrenheit(value);
     }
-  },
-  _formatCentigrade: function(value) {
+  }
+  _formatCentigrade(value) {
     return value + "\xB0" + "C";
-  },
-  _formatFehrenheit: function(value) {
+  }
+  _formatFehrenheit(value) {
     return Math.floor(value*9/5+32) + "\xB0" + "F";
   }
-});
+}

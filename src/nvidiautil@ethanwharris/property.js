@@ -15,27 +15,26 @@ along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/license
 
 const Lang = imports.lang;
 
-var Property = new Lang.Class({
-  Name: 'Property',
-  Abstract: true,
-  _init: function(processor, name, callExtension, icon, formatter, gpuCount) {
+class Property {
+  //Abstract: true,
+  constructor(processor, name, callExtension, icon, formatter, gpuCount) {
     this._processor = processor;
     this._name = name;
     this._callExtension = callExtension;
     this._icon = icon;
     this._formatter = formatter;
     this._gpuCount = gpuCount;
-  },
-  getName: function() {
+  }
+  getName() {
     return this._name;
-  },
-  getCallExtension: function() {
+  }
+  getCallExtension() {
     return this._callExtension;
-  },
-  getIcon: function() {
+  }
+  getIcon() {
     return this._icon;
-  },
-  parse: function(lines) {
+  }
+  parse(lines) {
     let values = [];
 
     for (let i = 0; i < this._gpuCount; i++) {
@@ -43,8 +42,8 @@ var Property = new Lang.Class({
     }
 
     return values;
-  },
-  declare: function() {
+  }
+  declare() {
     return this._processor;
   }
-});
+}

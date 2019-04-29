@@ -25,16 +25,15 @@ const Processor = Me.imports.processor;
 const SettingsProvider = Me.imports.settingsProvider;
 const SmiProvider = Me.imports.smiProvider;
 
-var SettingsAndSmiProvider = new Lang.Class({
-  Name: 'SettingsAndSmiProvider',
-  _init: function() {
+class SettingsAndSmiProvider {
+  constructor() {
     this.settings = new SettingsProvider.SettingsProvider();
     this.smi = new SmiProvider.SmiProvider();
-  },
-  getGpuNames: function() {
+  }
+  getGpuNames() {
     return this.smi.getGpuNames();
-  },
-  getProperties: function(gpuCount) {
+  }
+  getProperties(gpuCount) {
     this.storedProperties =  [
       new SettingsProperties.UtilisationProperty(gpuCount, Processor.NVIDIA_SETTINGS),
       new SettingsProperties.TemperatureProperty(gpuCount, Processor.NVIDIA_SETTINGS),
@@ -43,14 +42,14 @@ var SettingsAndSmiProvider = new Lang.Class({
       new SmiProperties.PowerProperty(gpuCount, Processor.NVIDIA_SMI)
     ];
     return this.storedProperties;
-  },
-  retrieveProperties: function() {
+  }
+  retrieveProperties() {
     return this.storedProperties;
-  },
-  hasSettings: function() {
+  }
+  hasSettings() {
     return true;
-  },
-  openSettings: function() {
+  }
+  openSettings() {
     this.settings.openSettings();
   }
-});
+}

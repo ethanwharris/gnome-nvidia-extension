@@ -22,11 +22,10 @@ const Spawn = Me.imports.spawn;
 const Processor = Me.imports.processor;
 const SmiProperties = Me.imports.smiProperties;
 
-var OptimusProvider = new Lang.Class({
-  Name: 'OptimusProvider',
-  _init: function() {
-  },
-  getGpuNames: function() {
+class OptimusProvider {
+  constructor() {
+  }
+  getGpuNames() {
     let output = Spawn.spawnSync("optirun nvidia-smi --query-gpu=gpu_name --format=csv,noheader", function(command, err) {
       // Do Nothing
     });
@@ -46,8 +45,8 @@ var OptimusProvider = new Lang.Class({
     }
 
     return output;
-  },
-  getProperties: function(gpuCount) {
+  }
+  getProperties(gpuCount) {
     this.storedProperties = [
       new SmiProperties.UtilisationProperty(gpuCount, Processor.OPTIMUS),
       new SmiProperties.TemperatureProperty(gpuCount, Processor.OPTIMUS),
@@ -56,14 +55,14 @@ var OptimusProvider = new Lang.Class({
       new SmiProperties.PowerProperty(gpuCount, Processor.OPTIMUS)
     ];
     return this.storedProperties;
-  },
-  retrieveProperties: function() {
+  }
+  retrieveProperties() {
     return this.storedProperties;
-  },
-  hasSettings: function() {
+  }
+  hasSettings() {
     return true;
-  },
-  openSettings: function() {
+  }
+  openSettings() {
     let defaultAppSystem = Shell.AppSystem.get_default();
     let nvidiaSettingsApp = defaultAppSystem.lookup_app('nvidia-settings.desktop');
 
@@ -78,4 +77,4 @@ var OptimusProvider = new Lang.Class({
       Spawn.spawnAsync('optirun -b none nvidia-settings -c :8', Spawn.defaultErrorHandler);
     }
   }
-});
+}

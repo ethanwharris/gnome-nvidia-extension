@@ -19,40 +19,32 @@ const Lang = imports.lang;
 const Property = Me.imports.property;
 const Formatter = Me.imports.formatter;
 
-var UtilisationProperty = new Lang.Class({
-  Name: 'UtilisationProperty',
-  Extends: Property.Property,
-  _init: function(gpuCount, processor) {
-    this.parent(processor, 'Utilisation', 'utilization.gpu,', 'card-symbolic', new Formatter.PercentFormatter('UtilisationFormatter'), gpuCount);
+class UtilisationProperty extends Property.Property {
+  constructor(gpuCount, processor) {
+    super(processor, 'Utilisation', 'utilization.gpu,', 'card-symbolic', new Formatter.PercentFormatter('UtilisationFormatter'), gpuCount);
   }
-});
+}
 
-var PowerProperty = new Lang.Class({
-  Name: 'PowerProperty',
-  Extends: Property.Property,
-  _init: function(gpuCount, processor) {
-    this.parent(processor, 'Power Usage (W)', 'power.draw,', 'power-symbolic', new Formatter.PowerFormatter(), gpuCount);
+class PowerProperty extends Property.Property {
+  constructor(gpuCount, processor) {
+    super(processor, 'Power Usage (W)', 'power.draw,', 'power-symbolic', new Formatter.PowerFormatter(), gpuCount);
   }
-});
+}
 
-var TemperatureProperty = new Lang.Class({
-  Name: 'TemperatureProperty',
-  Extends: Property.Property,
-  _init: function(gpuCount, processor) {
-    this.parent(processor, 'Temperature', 'temperature.gpu,', 'temp-symbolic', new Formatter.TempFormatter(Formatter.CENTIGRADE), gpuCount);
-  },
-  setUnit: function(unit) {
+class TemperatureProperty extends Property.Property {
+  constructor(gpuCount, processor) {
+    super(processor, 'Temperature', 'temperature.gpu,', 'temp-symbolic', new Formatter.TempFormatter(Formatter.CENTIGRADE), gpuCount);
+  }
+  setUnit(unit) {
     this._formatter.setUnit(unit);
   }
-});
+}
 
-var MemoryProperty = new Lang.Class({
-  Name: 'MemoryProperty',
-  Extends: Property.Property,
-  _init: function(gpuCount, processor) {
-    this.parent(processor, 'Memory Usage', 'memory.used,memory.total,', 'ram-symbolic', new Formatter.MemoryFormatter('MemoryFormatter'), gpuCount);
-  },
-  parse: function(lines) {
+class MemoryProperty extends Property.Property {
+  constructor(gpuCount, processor) {
+    super(processor, 'Memory Usage', 'memory.used,memory.total,', 'ram-symbolic', new Formatter.MemoryFormatter('MemoryFormatter'), gpuCount);
+  }
+  parse(lines) {
     let values = [];
 
     let used_memory = [];
@@ -69,12 +61,10 @@ var MemoryProperty = new Lang.Class({
 
     return values;
   }
-});
+}
 
-var FanProperty = new Lang.Class({
-  Name: 'FanProperty',
-  Extends: Property.Property,
-  _init: function(gpuCount, processor) {
-    this.parent(processor, 'Fan Speed', 'fan.speed,', 'fan-symbolic', new Formatter.PercentFormatter('FanFormatter'), gpuCount);
+class FanProperty extends Property.Property {
+  constructor(gpuCount, processor) {
+    super(processor, 'Fan Speed', 'fan.speed,', 'fan-symbolic', new Formatter.PercentFormatter('FanFormatter'), gpuCount);
   }
-});
+}
