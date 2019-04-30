@@ -140,7 +140,7 @@ class PropertyMenuItem extends PopupMenu.PopupBaseMenuItem {
     }
   }
   setActive(active) {
-    super._init(active);
+    super.setActive(active);
     if (this._visible) {
       this.actor.add_style_pseudo_class('active');
     }

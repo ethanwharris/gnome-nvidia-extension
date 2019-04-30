@@ -28,8 +28,7 @@ class UtilisationProperty extends Property.Property {
       lines[i] = lines[i].substring(9,11);
     }
 
-    //return super(lines); //super
-    return lines;
+    return super.parse(lines);
   }
 }
 

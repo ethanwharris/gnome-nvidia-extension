@@ -44,7 +44,6 @@ class ProcessorHandler {
     this._processors[processor].addProperty(function(lines) {
       let values = property.parse(lines);
       for(let i = 0; i < values.length; i++) {
-        if (listeners[i])
           listeners[i].handle(values[i]);
       }
     }, property.getCallExtension());
