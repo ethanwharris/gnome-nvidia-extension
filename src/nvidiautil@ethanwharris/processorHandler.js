@@ -19,12 +19,11 @@ const Me = ExtensionUtils.getCurrentExtension();
 const Processor = Me.imports.processor;
 const Lang = imports.lang;
 
-var ProcessorHandler = new Lang.Class({
-  Name: 'ProcessorHandler',
-  _init: function() {
+class ProcessorHandler {
+  constructor() {
     this._processors = [false, false, false];
-  },
-  process: function() {
+  }
+  process() {
     for (let i = 0; i < this._processors.length; i++) {
       if (this._processors[i]) {
         try {
@@ -35,8 +34,8 @@ var ProcessorHandler = new Lang.Class({
         }
       }
     }
-  },
-  addProperty: function(property, listeners) {
+  }
+  addProperty(property, listeners) {
     let processor = property.declare();
     if (!this._processors[processor]) {
       this._processors[processor] = new Processor.LIST[processor]();
@@ -45,11 +44,11 @@ var ProcessorHandler = new Lang.Class({
     this._processors[processor].addProperty(function(lines) {
       let values = property.parse(lines);
       for(let i = 0; i < values.length; i++) {
-        listeners[i].handle(values[i]);
+          listeners[i].handle(values[i]);
       }
     }, property.getCallExtension());
-  },
-  reset: function() {
+  }
+  reset() {
     this._processors = [false, false, false];
   }
-});
+}

@@ -21,6 +21,7 @@ const Lang = imports.lang;
 const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 const Clutter = imports.gi.Clutter;
+const GObject = imports.gi.GObject;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -54,11 +55,9 @@ function openPreferences() {
   Spawn.spawnAsync("gnome-shell-extension-prefs " + Me.metadata['uuid'], Spawn.defaultErrorHandler);
 }
 
-const PropertyMenuItem = new Lang.Class({
-  Name: 'PropertyMenuItem',
-  Extends: PopupMenu.PopupBaseMenuItem,
-  _init: function(property, box, labelManager, settings, setting, index) {
-    this.parent();
+class PropertyMenuItem extends PopupMenu.PopupBaseMenuItem {
+  constructor(property, box, labelManager, settings, setting, index) {
+    super();
 
     this._destroyed = false;
 
@@ -94,21 +93,21 @@ const PropertyMenuItem = new Lang.Class({
     this.actor.add(this._statisticLabelHidden);
     this._visible = false;
     this._box.visible = false;
-  },
-  reloadBox: function(spacing, icons) {
+  }
+  reloadBox(spacing, icons) {
     if (!this._destroyed) {
       this._icon.visible = icons;
 
       this._statisticLabelVisible.set_style('margin-right: ' + spacing + 'px');
     }
-  },
-  destroy: function() {
+  }
+  destroy() {
     this._destroyed = true;
 
     this._box.destroy();
     this._statisticLabelHidden.destroy();
 
-    this.parent();
+    super.destroy();
     this.activate = function(event) {
       // Do Nothing
     };
@@ -118,8 +117,8 @@ const PropertyMenuItem = new Lang.Class({
     this.setActive = function(active) {
       // Do Nothing
     }
-  },
-  activate: function(event) {
+  }
+  activate(event) {
     if (this._visible) {
       this.actor.remove_style_pseudo_class('active');
       this._visible = false;
@@ -139,14 +138,14 @@ const PropertyMenuItem = new Lang.Class({
       flags[this._index] = "active";
       this._settings.set_strv(this._setting, flags);
     }
-  },
-  setActive: function(active) {
-    this.parent(active);
+  }
+  setActive(active) {
+    super.setActive(active);
     if (this._visible) {
       this.actor.add_style_pseudo_class('active');
     }
-  },
-  handle: function(value) {
+  }
+  handle(value) {
     this._statisticLabelHidden.text = value;
     this._statisticLabelVisible.text = value;
     if (value == 'ERR') {
@@ -157,57 +156,52 @@ const PropertyMenuItem = new Lang.Class({
       this.destroy();
     }
   }
-});
+}
 
-const PersistentPopupMenu = new Lang.Class({
-  Name: 'PersistentPopupMenu',
-  Extends: PopupMenu.PopupMenu,
-  _init: function(actor, menuAlignment) {
-    this.parent(actor, menuAlignment, St.Side.TOP, 0);
-  },
-  _setOpenedSubMenu: function(submenu) {
+ class PersistentPopupMenu extends PopupMenu.PopupMenu {
+  constructor(actor, menuAlignment) {
+    super(actor, menuAlignment, St.Side.TOP, 0);
+  }
+  _setOpenedSubMenu(submenu) {
     this._openedSubMenu = submenu;
   }
-});
+}
 
-const GpuLabelDisplayManager = new Lang.Class({
-  Name: 'GpuLabelDisplayManager',
-  _init: function(gpuLabel) {
+ class GpuLabelDisplayManager {
+  constructor(gpuLabel) {
     this.gpuLabel = gpuLabel;
     this.count = 0;
     this.gpuLabel.visible = false;
-  },
-  increment: function() {
+  }
+  increment() {
     this.count = this.count + 1;
 
     if (this.gpuLabel.visible == false) {
       this.gpuLabel.visible = true;
     }
-  },
-  decrement: function() {
+  }
+  decrement() {
     this.count = this.count - 1;
 
     if (this.count == 0 && this.gpuLabel.visible == true) {
       this.gpuLabel.visible = false;
     }
   }
-});
+}
 
-const EmptyDisplayManager = new Lang.Class({
-  Name: 'EmptyDisplayManager',
-  increment: function() {
-    // Do Nothing
-  },
-  decrement: function() {
+ class EmptyDisplayManager {
+  increment() {
     // Do Nothing
   }
-});
+  decrement() {
+    // Do Nothing
+  }
+}
 
-const MainMenu = new Lang.Class({
-  Name: 'MainMenu',
-  Extends: PanelMenu.Button,
-  _init: function(settings) {
-    this.parent(0.0, _("GPU Statistics"));
+const MainMenu = GObject.registerClass(
+ class MainMenu extends PanelMenu.Button {
+  _init(settings) {
+    super._init(0.0, _("GPU Statistics"));
     this.timeoutId = -1;
     this._settings = settings;
     this._error = false;
@@ -234,8 +228,8 @@ const MainMenu = new Lang.Class({
     this._addSettingChangedSignal(Util.SETTINGS_POSITION, Lang.bind(this, this._updatePanelPosition));
     this._addSettingChangedSignal(Util.SETTINGS_SPACING, Lang.bind(this, this._updateSpacing));
     this._addSettingChangedSignal(Util.SETTINGS_ICONS, Lang.bind(this, this._updateSpacing));
-  },
-  _reload: function() {
+  }
+  _reload() {
     this.menu.removeAll();
 
     this._propertiesMenu = new PopupMenu.PopupMenuSection();
@@ -357,13 +351,13 @@ const MainMenu = new Lang.Class({
     }
 
     this.menu.addMenuItem(item);
-  },
-  _updatePollTime: function() {
+  }
+  _updatePollTime() {
     if (!this._error) {
       this._addTimeout(this._settings.get_int(Util.SETTINGS_REFRESH));
     }
-  },
-  _updateTempUnits: function() {
+  }
+  _updateTempUnits() {
     let unit = 0;
 
     for (let i = 0; i < this.providerProperties.length; i++) {
@@ -374,8 +368,8 @@ const MainMenu = new Lang.Class({
       }
     }
     this.processor.process();
-  },
-  _updatePanelPosition: function() {
+  }
+  _updatePanelPosition() {
     this.container.get_parent().remove_actor(this.container);
 
     let boxes = {
@@ -386,12 +380,12 @@ const MainMenu = new Lang.Class({
 
     let pos = this.getPanelPosition();
     boxes[pos].insert_child_at_index(this.container, pos == 'right' ? 0 : -1)
-  },
-  getPanelPosition : function() {
+  }
+  getPanelPosition() {
     let positions = ["left", "center", "right"];
     return positions[_settings.get_int(Util.SETTINGS_POSITION)];
-  },
-  _updateSpacing : function() {
+  }
+  _updateSpacing() {
     let spacing = _settings.get_int(Util.SETTINGS_SPACING);
     let icons = _settings.get_boolean(Util.SETTINGS_ICONS);
 
@@ -400,38 +394,38 @@ const MainMenu = new Lang.Class({
         this._items[i][n].reloadBox(spacing, icons);
       }
     }
-  },
+  }
   /*
    * Create and add the timeout which updates values every t seconds
    */
-  _addTimeout: function(t) {
+  _addTimeout(t) {
     this._removeTimeout();
 
     this.timeoutId = GLib.timeout_add_seconds(0, t, Lang.bind(this, function() {
       this.processor.process();
       return true;
     }));
-  },
+  }
   /*
    * Remove current timeout
    */
-  _removeTimeout: function() {
+  _removeTimeout() {
     if (this.timeoutId != -1) {
       GLib.source_remove(this.timeoutId);
       this.timeoutId = -1;
     }
-  },
-  _addSettingChangedSignal: function(key, callback) {
+  }
+  _addSettingChangedSignal(key, callback) {
     this._settingChangedSignals.push(this._settings.connect('changed::' + key, callback));
-  },
-  destroy: function() {
+  }
+  destroy() {
     this._removeTimeout();
 
     for (let signal of this._settingChangedSignals) {
       this._settings.disconnect(signal);
     };
 
-    this.parent();
+    super.destroy();
   }
 });
 

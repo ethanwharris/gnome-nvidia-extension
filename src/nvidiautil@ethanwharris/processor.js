@@ -32,10 +32,10 @@ function andThen(first, second) {
   };
 }
 
-const Processor = new Lang.Class({
-  Name: 'Processor',
-  Abstract: true,
-  _init: function(name, baseCall, tailCall) {
+/* const class */
+class Processor {
+  //Abstract: true,
+  constructor(name, baseCall, tailCall) {
     this._name = name;
     this._baseCall = baseCall;
     this._tailCall = tailCall;
@@ -44,43 +44,39 @@ const Processor = new Lang.Class({
     this._parseFunction = function(lines) {
       return;
     };
-  },
-  parse: function(output) {
+  }
+  parse(output) {
     // Do Nothing
-  },
-  process: function() {
+  }
+  process() {
     var output = Spawn.spawnSync(this._call + this._tailCall, Spawn.defaultErrorHandler);
     if (output != Spawn.ERROR) {
       this.parse(output);
     }
-  },
-  addProperty: function(parseFunction, callExtension) {
+  }
+  addProperty(parseFunction, callExtension) {
     this._call += callExtension;
     this._parseFunction = andThen(this._parseFunction, parseFunction);
-  },
-  getName: function() {
+  }
+  getName() {
     return this._name;
   }
-});
+}
 
-var NvidiaSettingsProcessor = new Lang.Class({
-  Name: 'NvidiaSettingsProcessor',
-  Extends: Processor,
-  _init: function() {
-    this.parent('nvidia-settings', 'nvidia-settings ', '-t');
-  },
-  parse: function(output) {
+class NvidiaSettingsProcessor extends Processor {
+  constructor() {
+    super('nvidia-settings', 'nvidia-settings ', '-t');
+  }
+  parse(output) {
     this._parseFunction(output.split('\n'));
   }
-});
+}
 
-var OptimusSettingsProcessor = new Lang.Class({
-  Name: 'OptimusSettingsProcessor',
-  Extends: Processor,
-  _init: function() {
-    this.parent('optirun nvidia-smi', 'optirun nvidia-smi --query-gpu=', ' --format=csv,noheader,nounits');
-  },
-  parse: function(output) {
+class OptimusSettingsProcessor extends Processor {
+  constructor() {
+    super('optirun nvidia-smi', 'optirun nvidia-smi --query-gpu=', ' --format=csv,noheader,nounits');
+  }
+  parse(output) {
     let lines = output.split('\n');
     let items = [];
 
@@ -93,15 +89,13 @@ var OptimusSettingsProcessor = new Lang.Class({
 
     this._parseFunction(items);
   }
-});
+}
 
-var NvidiaSmiProcessor = new Lang.Class({
-  Name: 'NvidiaSmiProcessor',
-  Extends: Processor,
-  _init: function() {
-    this.parent('nvidia-smi', 'nvidia-smi --query-gpu=', ' --format=csv,noheader,nounits');
-  },
-  parse: function(output) {
+class NvidiaSmiProcessor extends Processor {
+  constructor() {
+    super('nvidia-smi', 'nvidia-smi --query-gpu=', ' --format=csv,noheader,nounits');
+  }
+  parse(output) {
     let lines = output.split('\n');
     let items = [];
 
@@ -114,7 +108,7 @@ var NvidiaSmiProcessor = new Lang.Class({
 
     this._parseFunction(items);
   }
-});
+}
 
 var LIST = [
   NvidiaSettingsProcessor,
