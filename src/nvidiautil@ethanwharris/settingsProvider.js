@@ -22,7 +22,7 @@ const Spawn = Me.imports.spawn;
 const Processor = Me.imports.processor;
 const SettingsProperties = Me.imports.settingsProperties;
 
-class SettingsProvider {
+var SettingsProvider = class {
   constructor() {
   }
   getGpuNames() {

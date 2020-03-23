@@ -25,7 +25,7 @@ const Processor = Me.imports.processor;
 const SettingsProvider = Me.imports.settingsProvider;
 const SmiProvider = Me.imports.smiProvider;
 
-class SettingsAndSmiProvider {
+var SettingsAndSmiProvider = class {
   constructor() {
     this.settings = new SettingsProvider.SettingsProvider();
     this.smi = new SmiProvider.SmiProvider();

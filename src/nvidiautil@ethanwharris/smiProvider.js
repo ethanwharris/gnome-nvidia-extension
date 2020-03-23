@@ -21,7 +21,7 @@ const Spawn = Me.imports.spawn;
 const Processor = Me.imports.processor;
 const SmiProperties = Me.imports.smiProperties;
 
-class SmiProvider {
+var SmiProvider = class {
   constructor() {
   }
   getGpuNames() {

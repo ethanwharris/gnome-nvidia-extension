@@ -19,7 +19,7 @@ const Me = ExtensionUtils.getCurrentExtension();
 const Processor = Me.imports.processor;
 const Lang = imports.lang;
 
-class ProcessorHandler {
+var ProcessorHandler = class {
   constructor() {
     this._processors = [false, false, false];
   }

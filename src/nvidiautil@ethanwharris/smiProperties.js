@@ -18,31 +18,32 @@ const Me = ExtensionUtils.getCurrentExtension();
 const Lang = imports.lang;
 const Property = Me.imports.property;
 const Formatter = Me.imports.formatter;
+const GIcons = Me.imports.gIcons;
 
-class UtilisationProperty extends Property.Property {
+var UtilisationProperty = class extends Property.Property {
   constructor(gpuCount, processor) {
-    super(processor, 'Utilisation', 'utilization.gpu,', 'card-symbolic', new Formatter.PercentFormatter('UtilisationFormatter'), gpuCount);
+    super(processor, 'Utilisation', 'utilization.gpu,', GIcons.Card, new Formatter.PercentFormatter('UtilisationFormatter'), gpuCount);
   }
 }
 
-class PowerProperty extends Property.Property {
+var PowerProperty = class extends Property.Property {
   constructor(gpuCount, processor) {
-    super(processor, 'Power Usage (W)', 'power.draw,', 'power-symbolic', new Formatter.PowerFormatter(), gpuCount);
+    super(processor, 'Power Usage (W)', 'power.draw,', GIcons.Power, new Formatter.PowerFormatter(), gpuCount);
   }
 }
 
-class TemperatureProperty extends Property.Property {
+var TemperatureProperty = class extends Property.Property {
   constructor(gpuCount, processor) {
-    super(processor, 'Temperature', 'temperature.gpu,', 'temp-symbolic', new Formatter.TempFormatter(Formatter.CENTIGRADE), gpuCount);
+    super(processor, 'Temperature', 'temperature.gpu,', GIcons.Temp, new Formatter.TempFormatter(Formatter.CENTIGRADE), gpuCount);
   }
   setUnit(unit) {
     this._formatter.setUnit(unit);
   }
 }
 
-class MemoryProperty extends Property.Property {
+var MemoryProperty = class extends Property.Property {
   constructor(gpuCount, processor) {
-    super(processor, 'Memory Usage', 'memory.used,memory.total,', 'ram-symbolic', new Formatter.MemoryFormatter('MemoryFormatter'), gpuCount);
+    super(processor, 'Memory Usage', 'memory.used,memory.total,', GIcons.RAM, new Formatter.MemoryFormatter('MemoryFormatter'), gpuCount);
   }
   parse(lines) {
     let values = [];
@@ -63,8 +64,8 @@ class MemoryProperty extends Property.Property {
   }
 }
 
-class FanProperty extends Property.Property {
+var FanProperty = class extends Property.Property {
   constructor(gpuCount, processor) {
-    super(processor, 'Fan Speed', 'fan.speed,', 'fan-symbolic', new Formatter.PercentFormatter('FanFormatter'), gpuCount);
+    super(processor, 'Fan Speed', 'fan.speed,', GIcons.Fan, new Formatter.PercentFormatter('FanFormatter'), gpuCount);
   }
 }

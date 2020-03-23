@@ -18,10 +18,11 @@ const Me = ExtensionUtils.getCurrentExtension();
 const Lang = imports.lang;
 const Formatter = Me.imports.formatter;
 const Property = Me.imports.property;
+const GIcons = Me.imports.gIcons;
 
-class UtilisationProperty extends Property.Property {
+var UtilisationProperty = class extends Property.Property {
   constructor(gpuCount, processor) {
-    super(processor, 'Utilisation', '-q GPUUtilization ', 'card-symbolic', new Formatter.PercentFormatter('UtilisationFormatter'), gpuCount);
+    super(processor, 'Utilisation', '-q GPUUtilization ', GIcons.Card, new Formatter.PercentFormatter('UtilisationFormatter'), gpuCount);
   }
   parse(lines) {
     for (let i = 0; i < this._gpuCount; i++) {
@@ -32,18 +33,18 @@ class UtilisationProperty extends Property.Property {
   }
 }
 
-class TemperatureProperty extends Property.Property {
+var TemperatureProperty = class extends Property.Property {
   constructor(gpuCount, processor) {
-    super(processor, 'Temperature', '-q [GPU]/GPUCoreTemp ', 'temp-symbolic', new Formatter.TempFormatter(Formatter.CENTIGRADE), gpuCount);
+    super(processor, 'Temperature', '-q [GPU]/GPUCoreTemp ', GIcons.Temp, new Formatter.TempFormatter(Formatter.CENTIGRADE), gpuCount);
   }
   setUnit(unit) {
     this._formatter.setUnit(unit);
   }
 }
 
-class MemoryProperty extends Property.Property {
+var MemoryProperty = class extends Property.Property {
   constructor(gpuCount, processor) {
-    super(processor, 'Memory Usage', '-q UsedDedicatedGPUMemory -q TotalDedicatedGPUMemory ', 'ram-symbolic', new Formatter.MemoryFormatter(), gpuCount);
+    super(processor, 'Memory Usage', '-q UsedDedicatedGPUMemory -q TotalDedicatedGPUMemory ', GIcons.RAM, new Formatter.MemoryFormatter(), gpuCount);
   }
   parse(lines) {
     let values = [];
@@ -64,8 +65,8 @@ class MemoryProperty extends Property.Property {
   }
 }
 
-class FanProperty extends Property.Property {
+var FanProperty = class extends Property.Property {
   constructor(gpuCount, processor) {
-    super(processor, 'Fan Speed', '-q GPUCurrentFanSpeed ', 'fan-symbolic', new Formatter.PercentFormatter('FanFormatter'), gpuCount);
+    super(processor, 'Fan Speed', '-q GPUCurrentFanSpeed ', GIcons.Fan, new Formatter.PercentFormatter('FanFormatter'), gpuCount);
   }
 }

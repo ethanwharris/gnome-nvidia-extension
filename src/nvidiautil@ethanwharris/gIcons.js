@@ -14,36 +14,16 @@ You should have received a copy of the GNU General Public License
 along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/licenses/>.*/
 
 const Lang = imports.lang;
+const Gio = imports.gi.Gio;
 
-var Property = class {
-  //Abstract: true,
-  constructor(processor, name, callExtension, icon, formatter, gpuCount) {
-    this._processor = processor;
-    this._name = name;
-    this._callExtension = callExtension;
-    this._icon = icon;
-    this._formatter = formatter;
-    this._gpuCount = gpuCount;
-  }
-  getName() {
-    return this._name;
-  }
-  getCallExtension() {
-    return this._callExtension;
-  }
-  getIcon() {
-    return this._icon;
-  }
-  parse(lines) {
-    let values = [];
+const ExtensionUtils = imports.misc.extensionUtils;
+const Me = ExtensionUtils.getCurrentExtension();
 
-    for (let i = 0; i < this._gpuCount; i++) {
-      values = values.concat(this._formatter.format([lines.shift()]));
-    }
+var Card = Gio.icon_new_for_string(Me.path + '/icons/card-symbolic.svg');
+var Cog = Gio.icon_new_for_string(Me.path + '/icons/cog-symbolic.svg');
+var Fan = Gio.icon_new_for_string(Me.path + '/icons/fan-symbolic.svg');
+var Power = Gio.icon_new_for_string(Me.path + '/icons/power-symbolic.svg');
+var RAM = Gio.icon_new_for_string(Me.path + '/icons/ram-symbolic.svg');
+var Temp = Gio.icon_new_for_string(Me.path + '/icons/temp-symbolic.svg');
+var Wrench = Gio.icon_new_for_string(Me.path + '/icons/wrench-symbolic.svg');
 
-    return values;
-  }
-  declare() {
-    return this._processor;
-  }
-}

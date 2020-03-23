@@ -33,7 +33,7 @@ function andThen(first, second) {
 }
 
 /* const class */
-class Processor {
+var Processor = class {
   //Abstract: true,
   constructor(name, baseCall, tailCall) {
     this._name = name;
@@ -63,7 +63,7 @@ class Processor {
   }
 }
 
-class NvidiaSettingsProcessor extends Processor {
+var NvidiaSettingsProcessor = class extends Processor {
   constructor() {
     super('nvidia-settings', 'nvidia-settings ', '-t');
   }
@@ -72,7 +72,7 @@ class NvidiaSettingsProcessor extends Processor {
   }
 }
 
-class OptimusSettingsProcessor extends Processor {
+var OptimusSettingsProcessor = class extends Processor {
   constructor() {
     super('optirun nvidia-smi', 'optirun nvidia-smi --query-gpu=', ' --format=csv,noheader,nounits');
   }
@@ -91,7 +91,7 @@ class OptimusSettingsProcessor extends Processor {
   }
 }
 
-class NvidiaSmiProcessor extends Processor {
+var NvidiaSmiProcessor = class extends Processor {
   constructor() {
     super('nvidia-smi', 'nvidia-smi --query-gpu=', ' --format=csv,noheader,nounits');
   }

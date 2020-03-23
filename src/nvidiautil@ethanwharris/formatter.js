@@ -19,7 +19,7 @@ const Lang = imports.lang;
 var CENTIGRADE = 0;
 var FAHRENHEIT = 1;
 
-class Formatter {
+var Formatter = class {
   //Abstract: true,
   constructor(name) {
     this._name = name;
@@ -39,7 +39,7 @@ class Formatter {
   }
 }
 
-class PercentFormatter extends Formatter {
+var PercentFormatter = class extends Formatter {
   constructor(name) {
     super(name);
   }
@@ -48,7 +48,7 @@ class PercentFormatter extends Formatter {
   }
 }
 
-class PowerFormatter extends Formatter {
+var PowerFormatter = class extends Formatter {
   constructor() {
     super('PowerFormatter');
   }
@@ -57,7 +57,7 @@ class PowerFormatter extends Formatter {
   }
 }
 
-class MemoryFormatter extends Formatter {
+var MemoryFormatter = class extends Formatter {
   constructor() {
     super('MemoryFormatter');
   }
@@ -67,7 +67,7 @@ class MemoryFormatter extends Formatter {
   }
 }
 
-class TempFormatter extends Formatter {
+var TempFormatter = class extends Formatter {
   //currentUnit: 0,
   constructor(unit) {
     super('TempFormatter')

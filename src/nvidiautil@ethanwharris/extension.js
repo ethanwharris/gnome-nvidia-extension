@@ -18,6 +18,7 @@ const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const Lang = imports.lang;
+const Gio = imports.gi.Gio;
 const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 const Clutter = imports.gi.Clutter;
@@ -33,6 +34,7 @@ const SmiProvider = Me.imports.smiProvider;
 const SettingsAndSmiProvider = Me.imports.settingsAndSmiProvider;
 const OptimusProvider = Me.imports.optimusProvider;
 const Spawn = Me.imports.spawn;
+const GIcons = Me.imports.gIcons;
 
 var PROVIDERS = [
   SettingsAndSmiProvider.SettingsAndSmiProvider,
@@ -46,7 +48,7 @@ var PROVIDER_SETTINGS = [
   "settingsconfig",
   "smiconfig",
   "optimusconfig"
-]
+];
 
 /*
  * Open the preferences for the nvidiautil extension
@@ -55,9 +57,10 @@ function openPreferences() {
   Spawn.spawnAsync("gnome-shell-extension-prefs " + Me.metadata['uuid'], Spawn.defaultErrorHandler);
 }
 
+var PropertyMenuItem = GObject.registerClass(
 class PropertyMenuItem extends PopupMenu.PopupBaseMenuItem {
-  constructor(property, box, labelManager, settings, setting, index) {
-    super();
+  _init(property, box, labelManager, settings, setting, index) {
+    super._init();
 
     this._destroyed = false;
 
@@ -68,15 +71,13 @@ class PropertyMenuItem extends PopupMenu.PopupBaseMenuItem {
     this._box = box;
     this.labelManager = labelManager;
 
-    this.actor.add(new St.Icon({ icon_name: property.getIcon(),
-                                      style_class: 'popup-menu-icon' }));
+    this.actor.add(new St.Icon({ style_class: 'popup-menu-icon', gicon: property.getIcon(), icon_size: 16 }));
 
     this.label = new St.Label({ text: property.getName() });
     this.actor.add(this.label, { expand: true });
     this.actor.label_actor = this.label;
 
-    this._icon = new St.Icon({ icon_name: property.getIcon(),
-                                      style_class: 'system-status-icon' });
+    this._icon = new St.Icon({ style_class: 'system-status-icon', gicon: property.getIcon(), icon_size: 16 });
 
     this._statisticLabelHidden = new St.Label({ text: '0' });
     this._statisticLabelVisible = new St.Label({
@@ -88,11 +89,36 @@ class PropertyMenuItem extends PopupMenu.PopupBaseMenuItem {
     this._box.add_child(this._icon);
     this._box.add_child(this._statisticLabelVisible);
 
-    //this.reloadBox(2);
-
     this.actor.add(this._statisticLabelHidden);
     this._visible = false;
     this._box.visible = false;
+
+    this.actor.old_add_style_pseudo_class = this.actor.add_style_pseudo_class;
+    this.actor.old_remove_style_pseudo_class = this.actor.remove_style_pseudo_class;
+
+    this.actor.add_style_pseudo_class = this.patch_add_pseudo_class;
+    this.actor.remove_style_pseudo_class = this.patch_remove_pseudo_class;
+  }
+  set_pseudo_class() {
+    if (this._visible) {
+      this.actor.old_add_style_pseudo_class('active');
+    } else {
+      this.actor.old_remove_style_pseudo_class('active');
+    }
+  }
+  patch_add_pseudo_class(css) {
+    if (css == 'active') {
+      this.set_pseudo_class();
+    } else {
+      this.actor.old_add_style_pseudo_class(css);
+    }
+  }
+  patch_remove_pseudo_class(css) {
+    if (css == 'active') {
+      this.set_pseudo_class();
+    } else {
+      this.actor.old_remove_style_pseudo_class(css);
+    }
   }
   reloadBox(spacing, icons) {
     if (!this._destroyed) {
@@ -120,18 +146,18 @@ class PropertyMenuItem extends PopupMenu.PopupBaseMenuItem {
   }
   activate(event) {
     if (this._visible) {
-      this.actor.remove_style_pseudo_class('active');
       this._visible = false;
       this._box.visible = false;
+      this.set_pseudo_class();
       this.labelManager.decrement();
 
       let flags = this._settings.get_strv(this._setting);
       flags[this._index] = "inactive";
       this._settings.set_strv(this._setting, flags);
     } else {
-      this.actor.add_style_pseudo_class('active');
       this._visible = true;
       this._box.visible = true;
+      this.set_pseudo_class();
       this.labelManager.increment();
 
       let flags = this._settings.get_strv(this._setting);
@@ -156,9 +182,9 @@ class PropertyMenuItem extends PopupMenu.PopupBaseMenuItem {
       this.destroy();
     }
   }
-}
+});
 
- class PersistentPopupMenu extends PopupMenu.PopupMenu {
+var PersistentPopupMenu = class extends PopupMenu.PopupMenu {
   constructor(actor, menuAlignment) {
     super(actor, menuAlignment, St.Side.TOP, 0);
   }
@@ -167,7 +193,7 @@ class PropertyMenuItem extends PopupMenu.PopupBaseMenuItem {
   }
 }
 
- class GpuLabelDisplayManager {
+var GpuLabelDisplayManager = class {
   constructor(gpuLabel) {
     this.gpuLabel = gpuLabel;
     this.count = 0;
@@ -189,7 +215,7 @@ class PropertyMenuItem extends PopupMenu.PopupBaseMenuItem {
   }
 }
 
- class EmptyDisplayManager {
+var EmptyDisplayManager = class {
   increment() {
     // Do Nothing
   }
@@ -198,7 +224,7 @@ class PropertyMenuItem extends PopupMenu.PopupBaseMenuItem {
   }
 }
 
-const MainMenu = GObject.registerClass(
+var MainMenu = GObject.registerClass(
  class MainMenu extends PanelMenu.Button {
   _init(settings) {
     super._init(0.0, _("GPU Statistics"));
@@ -208,7 +234,7 @@ const MainMenu = GObject.registerClass(
 
     this.processor = new ProcessorHandler.ProcessorHandler();
 
-    this.setMenu(new PersistentPopupMenu(this.actor, 0.0));
+    this.setMenu(new PersistentPopupMenu(this, 0.0));
 
     let hbox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
 
@@ -216,7 +242,7 @@ const MainMenu = GObject.registerClass(
 
     hbox.add_actor(this.properties);
     hbox.add_actor(PopupMenu.arrowIcon(St.Side.BOTTOM));
-    this.actor.add_child(hbox);
+    this.add_child(hbox);
 
     this._reload();
     this._updatePollTime();
@@ -323,19 +349,24 @@ const MainMenu = GObject.registerClass(
 
     this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
-    let item = new PopupMenu.PopupBaseMenuItem({ reactive: false,
-                                         can_focus: false });
+    let item = new PopupMenu.PopupBaseMenuItem({
+      reactive: false,
+      can_focus: false
+    });
 
     this.wrench = new St.Button({
       reactive: true,
       can_focus: true,
       track_hover: true,
       accessible_name: 'Open Preferences',
-      style_class: 'system-menu-action'
+      style_class: 'system-menu-action',
+      child: new St.Icon({
+        icon_name: 'wrench-symbolic',
+        gicon: GIcons.Wrench,
+      }),
     });
-    this.wrench.child = new St.Icon({ icon_name: 'wrench-symbolic' });
     this.wrench.connect('clicked', () => { openPreferences(); });
-    item.actor.add(this.wrench, { expand: true, x_fill: false });
+    item.add(this.wrench, { expand: true, x_fill: false });
 
     if (this.provider.hasSettings()) {
       this.cog = new St.Button({
@@ -343,9 +374,12 @@ const MainMenu = GObject.registerClass(
         can_focus: true,
         track_hover: true,
         accessible_name: 'Open Nvidia Settings',
-        style_class: 'system-menu-action'
+        style_class: 'system-menu-action',
+        child: new St.Icon({
+          icon_name: 'cog-symbolic',
+          gicon: GIcons.Cog,
+        }),
       });
-      this.cog.child = new St.Icon({ icon_name: 'cog-symbolic' });
       this.cog.connect('clicked', Lang.bind(this.provider, this.provider.openSettings));
       item.actor.add(this.cog, { expand: true, x_fill: false });
     }
