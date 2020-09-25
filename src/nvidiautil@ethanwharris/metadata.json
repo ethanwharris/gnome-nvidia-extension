@@ -8,5 +8,5 @@
   "settings-schema": "org.gnome.shell.extensions.nvidiautil",
   "uuid": "nvidiautil@ethanwharris",
   "url": "https://github.com/ethanwharris/gnome-nvidia-extension",
-  "version": 7
+  "version": 8
 }
