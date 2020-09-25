@@ -74,7 +74,7 @@ class PropertyMenuItem extends PopupMenu.PopupBaseMenuItem {
     this.actor.add(new St.Icon({ style_class: 'popup-menu-icon', gicon: property.getIcon(), icon_size: 16 }));
 
     this.label = new St.Label({ text: property.getName() });
-    this.actor.add(this.label, { expand: true });
+    this.actor.add_child(this.label, { expand: true });
     this.actor.label_actor = this.label;
 
     this._icon = new St.Icon({ style_class: 'system-status-icon', gicon: property.getIcon(), icon_size: 16 });
@@ -366,7 +366,7 @@ var MainMenu = GObject.registerClass(
       }),
     });
     this.wrench.connect('clicked', () => { openPreferences(); });
-    item.add(this.wrench, { expand: true, x_fill: false });
+    item.add_child(this.wrench, { expand: true, x_fill: false });
 
     if (this.provider.hasSettings()) {
       this.cog = new St.Button({
@@ -381,7 +381,7 @@ var MainMenu = GObject.registerClass(
         }),
       });
       this.cog.connect('clicked', Lang.bind(this.provider, this.provider.openSettings));
-      item.actor.add(this.cog, { expand: true, x_fill: false });
+      item.actor.add_child(this.cog, { expand: true, x_fill: false });
     }
 
     this.menu.addMenuItem(item);
