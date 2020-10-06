@@ -359,7 +359,7 @@ var MainMenu = GObject.registerClass(
       can_focus: true,
       track_hover: true,
       accessible_name: 'Open Preferences',
-      style_class: 'system-menu-action',
+      style_class: 'button',
       child: new St.Icon({
         icon_name: 'wrench-symbolic',
         gicon: GIcons.Wrench,
@@ -374,7 +374,7 @@ var MainMenu = GObject.registerClass(
         can_focus: true,
         track_hover: true,
         accessible_name: 'Open Nvidia Settings',
-        style_class: 'system-menu-action',
+        style_class: 'button',
         child: new St.Icon({
           icon_name: 'cog-symbolic',
           gicon: GIcons.Cog,
