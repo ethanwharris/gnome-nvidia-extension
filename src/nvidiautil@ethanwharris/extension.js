@@ -74,7 +74,7 @@ class PropertyMenuItem extends PopupMenu.PopupBaseMenuItem {
     this.actor.add(new St.Icon({ style_class: 'popup-menu-icon', gicon: property.getIcon(), icon_size: 16 }));
 
     this.label = new St.Label({ text: property.getName() });
-    this.actor.add_child(this.label, { expand: true });
+    this.actor.add_child(this.label);
     this.actor.label_actor = this.label;
 
     this._icon = new St.Icon({ style_class: 'system-status-icon', gicon: property.getIcon(), icon_size: 16 });
@@ -359,14 +359,14 @@ var MainMenu = GObject.registerClass(
       can_focus: true,
       track_hover: true,
       accessible_name: 'Open Preferences',
-      style_class: 'system-menu-action',
+      style_class: 'button',
       child: new St.Icon({
         icon_name: 'wrench-symbolic',
         gicon: GIcons.Wrench,
       }),
     });
     this.wrench.connect('clicked', () => { openPreferences(); });
-    item.add_child(this.wrench, { expand: true, x_fill: false });
+    item.add_child(this.wrench);
 
     if (this.provider.hasSettings()) {
       this.cog = new St.Button({
@@ -374,14 +374,14 @@ var MainMenu = GObject.registerClass(
         can_focus: true,
         track_hover: true,
         accessible_name: 'Open Nvidia Settings',
-        style_class: 'system-menu-action',
+        style_class: 'button',
         child: new St.Icon({
           icon_name: 'cog-symbolic',
           gicon: GIcons.Cog,
         }),
       });
       this.cog.connect('clicked', Lang.bind(this.provider, this.provider.openSettings));
-      item.actor.add_child(this.cog, { expand: true, x_fill: false });
+      item.actor.add_child(this.cog);
     }
 
     this.menu.addMenuItem(item);
