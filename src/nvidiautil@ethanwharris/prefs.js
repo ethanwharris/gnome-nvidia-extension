@@ -95,6 +95,8 @@ function buildSettingWidget(setting) {
     control.set_tooltip_text(SETTINGS[setting].tooltip);
 
     box.append(label);
+    label.set_halign(Gtk.Align.FILL);
+    label.set_hexpand(true);
     box.append(control);
   } else if (SETTINGS[setting].type == 'int') {
     let label = new Gtk.Label(({ label : SETTINGS[setting].label, xalign: 0}));
@@ -109,6 +111,8 @@ function buildSettingWidget(setting) {
     control.set_tooltip_text(SETTINGS[setting].tooltip);
 
     box.append(label);
+    label.set_halign(Gtk.Align.FILL);
+    label.set_hexpand(true);
     box.append(control);
   } else if (SETTINGS[setting].type == 'combo') {
     let model = new Gtk.ListStore();
@@ -141,6 +145,8 @@ function buildSettingWidget(setting) {
     combobox.set_tooltip_text(SETTINGS[setting].tooltip);
 
     box.append(label);
+    label.set_halign(Gtk.Align.FILL);
+    label.set_hexpand(true);
     box.append(combobox);
   }
   return box;
@@ -159,6 +165,10 @@ function buildPrefsWidget() {
     }
   }
 
+  vbox.set_margin_start(10);
+  vbox.set_margin_end(10);
+  vbox.set_margin_top(10);
+  vbox.set_margin_bottom(10);
   vbox.show();
 
   return vbox;
