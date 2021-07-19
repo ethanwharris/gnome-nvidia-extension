@@ -94,8 +94,8 @@ function buildSettingWidget(setting) {
     label.set_tooltip_text(SETTINGS[setting].tooltip);
     control.set_tooltip_text(SETTINGS[setting].tooltip);
 
-    box.pack_start(label, true, true, 0);
-    box.add(control);
+    box.append(label);
+    box.append(control);
   } else if (SETTINGS[setting].type == 'int') {
     let label = new Gtk.Label(({ label : SETTINGS[setting].label, xalign: 0}));
     let control = Gtk.SpinButton.new_with_range (SETTINGS[setting].min, SETTINGS[setting].max, 1);
@@ -108,8 +108,8 @@ function buildSettingWidget(setting) {
     label.set_tooltip_text(SETTINGS[setting].tooltip);
     control.set_tooltip_text(SETTINGS[setting].tooltip);
 
-    box.pack_start(label, true, true, 0);
-    box.add(control);
+    box.append(label);
+    box.append(control);
   } else if (SETTINGS[setting].type == 'combo') {
     let model = new Gtk.ListStore();
     model.set_column_types([GObject.TYPE_INT, GObject.TYPE_STRING]);
@@ -140,8 +140,8 @@ function buildSettingWidget(setting) {
     label.set_tooltip_text(SETTINGS[setting].tooltip);
     combobox.set_tooltip_text(SETTINGS[setting].tooltip);
 
-    box.pack_start(label, true, true, 0);
-    box.add(combobox);
+    box.append(label);
+    box.append(combobox);
   }
   return box;
 }
@@ -150,17 +150,17 @@ function buildSettingWidget(setting) {
  * Construct the entire widget for the settings dialog
  */
 function buildPrefsWidget() {
-  let vbox = new Gtk.Box({ orientation : Gtk.Orientation.VERTICAL,
-    border_width: 10, spacing: 10 });
+  let vbox = new Gtk.Box({ orientation : Gtk.Orientation.VERTICAL, spacing: 10 });
 
   for (let setting in SETTINGS) {
     let setting_box = buildSettingWidget(setting);
     if (setting_box) {
-      vbox.add(setting_box);
+      vbox.append(setting_box);
     }
   }
 
-  vbox.show_all();
+  vbox.show();
 
   return vbox;
 }
+
