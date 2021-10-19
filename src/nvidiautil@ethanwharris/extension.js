@@ -470,7 +470,10 @@ let _settings;
  * Init function, nothing major here, do not edit view
  */
 function init() {
-  Gtk.IconTheme.get_default().append_search_path(Me.dir.get_child('icons').get_path());
+  let theme = new Gtk.IconTheme();
+  theme.set_custom_theme(St.Settings.get().gtk_icon_theme);
+  theme.append_search_path(Me.dir.get_child('icons').get_path());
+
   _settings = Util.getSettings();
 }
 
