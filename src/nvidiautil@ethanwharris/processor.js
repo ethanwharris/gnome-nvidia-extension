@@ -13,10 +13,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/licenses/>.*/
 
+'use strict';
+
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const Lang = imports.lang;
-const Spawn = Me.imports.spawn;
+const Subprocess = Me.imports.subprocess;
 
 var NVIDIA_SETTINGS = 0;
 var NVIDIA_SMI = 1;
@@ -26,7 +27,7 @@ var OPTIMUS = 2;
  * Utility function to perform one function and then another
  */
 function andThen(first, second) {
-  return function(lines) {
+  return function (lines) {
     first(lines);
     return second(lines);
   };
@@ -41,7 +42,7 @@ var Processor = class {
     this._tailCall = tailCall;
     this._call = this._baseCall;
 
-    this._parseFunction = function(lines) {
+    this._parseFunction = function (lines) {
       return;
     };
   }
@@ -49,10 +50,12 @@ var Processor = class {
     // Do Nothing
   }
   process() {
-    var output = Spawn.spawnSync(this._call + this._tailCall, Spawn.defaultErrorHandler);
-    if (output != Spawn.ERROR) {
-      this.parse(output);
-    }
+    let call = this._call + this._tailCall;
+    Subprocess.execCommunicate(call.split(' '))
+      .then(output => this.parse(output)).catch(e => {
+        let title = 'Execution of ' + call + ' failed:';
+        Main.notifyError(title, e.message);
+      });
   }
   addProperty(parseFunction, callExtension) {
     this._call += callExtension;
@@ -77,16 +80,7 @@ var OptimusSettingsProcessor = class extends Processor {
     super('optirun nvidia-smi', 'optirun nvidia-smi --query-gpu=', ' --format=csv,noheader,nounits');
   }
   parse(output) {
-    let lines = output.split('\n');
-    let items = [];
-
-    for(let i = 0; i < (lines.length-1); i++) {
-        let fields = lines[i].split(',');
-        for(let j = 0; j < fields.length; j++) {
-          items[((lines.length-1)*j)+i] = fields[j];
-        }
-    }
-
+    let items = output.split('\n').map(line => line.split(',')).flat();
     this._parseFunction(items);
   }
 }
@@ -96,16 +90,7 @@ var NvidiaSmiProcessor = class extends Processor {
     super('nvidia-smi', 'nvidia-smi --query-gpu=', ' --format=csv,noheader,nounits');
   }
   parse(output) {
-    let lines = output.split('\n');
-    let items = [];
-
-    for(let i = 0; i < (lines.length-1); i++) {
-        let fields = lines[i].split(',');
-        for(let j = 0; j < fields.length; j++) {
-          items[((lines.length-1)*j)+i] = fields[j];
-        }
-    }
-
+    let items = output.split('\n').map(line => line.split(',')).flat();
     this._parseFunction(items);
   }
 }

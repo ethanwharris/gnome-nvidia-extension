@@ -13,6 +13,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/licenses/>.*/
 
+'use strict';
+
 const St = imports.gi.St;
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
@@ -33,7 +35,6 @@ const SettingsProvider = Me.imports.settingsProvider;
 const SmiProvider = Me.imports.smiProvider;
 const SettingsAndSmiProvider = Me.imports.settingsAndSmiProvider;
 const OptimusProvider = Me.imports.optimusProvider;
-const Spawn = Me.imports.spawn;
 const GIcons = Me.imports.gIcons;
 
 var PROVIDERS = [
@@ -49,13 +50,6 @@ var PROVIDER_SETTINGS = [
   "smiconfig",
   "optimusconfig"
 ];
-
-/*
- * Open the preferences for the nvidiautil extension
- */
-function openPreferences() {
-  Spawn.spawnAsync("gnome-shell-extension-prefs " + Me.metadata['uuid'], Spawn.defaultErrorHandler);
-}
 
 var PropertyMenuItem = GObject.registerClass(
 class PropertyMenuItem extends PopupMenu.PopupBaseMenuItem {
@@ -270,24 +264,24 @@ var MainMenu = GObject.registerClass(
 
     let flags = this._settings.get_strv(PROVIDER_SETTINGS[p]);
 
-    this.names = this.provider.getGpuNames();
+    this.provider.getGpuNames().then(names => {
 
-    if (this.names != Spawn.ERROR) {
+      this.names = names;
 
       let listeners = [];
 
-      this.providerProperties = this.provider.getProperties(this.names.length - 1);
+      this.providerProperties = this.provider.getProperties(this.names.length);
 
       for (let i = 0; i < this.providerProperties.length; i++) {
         listeners[i] = [];
       }
 
-      for (let n = 0; n < this.names.length - 1; n++) {
+      for (let n = 0; n < this.names.length; n++) {
         let submenu = new PopupMenu.PopupSubMenuMenuItem(this.names[n]);
 
         let manager;
 
-        if (this.names.length - 1 > 1) {
+        if (this.names.length > 1) {
           let style = 'gpulabel';
           if (n == 0) {
             style = 'gpulabelleft';
@@ -324,7 +318,7 @@ var MainMenu = GObject.registerClass(
 
       this.processor.process();
 
-      for (let n = 0; n < this.names.length - 1; n++) {
+      for (let n = 0; n < this.names.length; n++) {
         for (let i = 0; i < this.providerProperties.length; i++) {
           let index = (n * this.providerProperties.length) + i;
 
@@ -343,9 +337,9 @@ var MainMenu = GObject.registerClass(
       this._updateSpacing();
 
       this._settings.set_strv(PROVIDER_SETTINGS[p], flags);
-    } else {
+    }).catch(e => {
       this._error = true;
-    }
+    });
 
     this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
@@ -365,7 +359,7 @@ var MainMenu = GObject.registerClass(
         gicon: GIcons.Wrench,
       }),
     });
-    this.wrench.connect('clicked', () => { openPreferences(); });
+    this.wrench.connect('clicked', () => { ExtensionUtils.openPrefs(); });
     item.add_child(this.wrench);
 
     if (this.provider.hasSettings()) {
@@ -423,7 +417,7 @@ var MainMenu = GObject.registerClass(
     let spacing = _settings.get_int(Util.SETTINGS_SPACING);
     let icons = _settings.get_boolean(Util.SETTINGS_ICONS);
 
-    for (let n = 0; n < this.names.length - 1; n++) {
+    for (let n = 0; n < this.names.length; n++) {
       for (let i = 0; i < this.providerProperties.length; i++) {
         this._items[i][n].reloadBox(spacing, icons);
       }

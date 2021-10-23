@@ -13,37 +13,21 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/licenses/>.*/
 
+'use strict';
+
 const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const Lang = imports.lang;
-const Spawn = Me.imports.spawn;
 const Processor = Me.imports.processor;
 const SmiProperties = Me.imports.smiProperties;
+const Subprocess = Me.imports.subprocess;
 
 var SmiProvider = class {
   constructor() {
   }
   getGpuNames() {
-    let output = Spawn.spawnSync("nvidia-smi --query-gpu=gpu_name --format=csv,noheader", function(command, err) {
-      // Do Nothing
-    });
-
-    if (output == Spawn.ERROR || output.indexOf("ERROR") >= 0) {
-      return Spawn.ERROR;
-    }
-
-    if (output.indexOf("libnvidia-ml.so") >= 0) {
-      return Spawn.ERROR;
-    }
-
-    output = output.split('\n');
-
-    for (let i = 0; i < output.length; i++) {
-      output[i] = i + ": " + output[i];
-    }
-
-    return output;
+    return Subprocess.execCommunicate(['nvidia-smi', '--query-gpu=gpu_name', '--format=csv,noheader'])
+      .then(output => output.split('\n').map((gpu, index) => index + ': ' + gpu));
   }
   getProperties(gpuCount) {
     this.storedProperties = [
