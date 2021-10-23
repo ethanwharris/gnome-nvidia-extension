@@ -12,6 +12,9 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/licenses/>.*/
+
+'use strict';
+
 const Gtk = imports.gi.Gtk;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -173,4 +176,3 @@ function buildPrefsWidget() {
 
   return vbox;
 }
-

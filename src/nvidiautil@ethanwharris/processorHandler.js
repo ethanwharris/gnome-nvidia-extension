@@ -13,11 +13,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/licenses/>.*/
 
+'use strict';
+
 const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Processor = Me.imports.processor;
-const Lang = imports.lang;
 
 var ProcessorHandler = class {
   constructor() {
@@ -41,10 +42,10 @@ var ProcessorHandler = class {
       this._processors[processor] = new Processor.LIST[processor]();
     }
 
-    this._processors[processor].addProperty(function(lines) {
+    this._processors[processor].addProperty(function (lines) {
       let values = property.parse(lines);
-      for(let i = 0; i < values.length; i++) {
-          listeners[i].handle(values[i]);
+      for (let i = 0; i < values.length; i++) {
+        listeners[i].handle(values[i]);
       }
     }, property.getCallExtension());
   }
