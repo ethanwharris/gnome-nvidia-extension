@@ -18,7 +18,6 @@ along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/license
 const Gtk = imports.gi.Gtk;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const Util = Me.imports.util;
 const GObject = imports.gi.GObject;
 const Lang = imports.lang;
 
@@ -74,7 +73,7 @@ let settings;
  * Initialise this
  */
 function init() {
-  settings = Util.getSettings();
+  settings = ExtensionUtils.getSettings();
 }
 
 /*
