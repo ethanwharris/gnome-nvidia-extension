@@ -15,7 +15,6 @@ along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/license
 
 'use strict';
 
-const Shell = imports.gi.Shell;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const SettingsProperties = Me.imports.settingsProperties;

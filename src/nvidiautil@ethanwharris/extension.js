@@ -19,8 +19,6 @@ const St = imports.gi.St;
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
-const Lang = imports.lang;
-const Gio = imports.gi.Gio;
 const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 const Clutter = imports.gi.Clutter;
@@ -248,12 +246,12 @@ var MainMenu = GObject.registerClass(
     this._updatePollTime();
 
     this._settingChangedSignals = [];
-    this._addSettingChangedSignal(SETTINGS_PROVIDER, Lang.bind(this, this._reload));
-    this._addSettingChangedSignal(SETTINGS_REFRESH, Lang.bind(this, this._updatePollTime));
-    this._addSettingChangedSignal(SETTINGS_TEMP_UNIT, Lang.bind(this, this._updateTempUnits));
-    this._addSettingChangedSignal(SETTINGS_POSITION, Lang.bind(this, this._updatePanelPosition));
-    this._addSettingChangedSignal(SETTINGS_SPACING, Lang.bind(this, this._updateSpacing));
-    this._addSettingChangedSignal(SETTINGS_ICONS, Lang.bind(this, this._updateSpacing));
+    this._addSettingChangedSignal(SETTINGS_PROVIDER, () => this._reload());
+    this._addSettingChangedSignal(SETTINGS_REFRESH, () => this._updatePollTime());
+    this._addSettingChangedSignal(SETTINGS_TEMP_UNIT, () => this._updateTempUnits());
+    this._addSettingChangedSignal(SETTINGS_POSITION, () => this._updatePanelPosition());
+    this._addSettingChangedSignal(SETTINGS_SPACING, () => this._updateSpacing());
+    this._addSettingChangedSignal(SETTINGS_ICONS, () => this._updateSpacing());
   }
   _reload() {
     this.menu.removeAll();
@@ -380,7 +378,7 @@ var MainMenu = GObject.registerClass(
           gicon: GIcons.Cog,
         }),
       });
-      this.cog.connect('clicked', Lang.bind(this.provider, this.provider.openSettings));
+      this.cog.connect('clicked', () => this.provider.openSettings());
       item.actor.add_child(this.cog);
     }
 
@@ -435,10 +433,10 @@ var MainMenu = GObject.registerClass(
   _addTimeout(t) {
     this._removeTimeout();
 
-    this.timeoutId = GLib.timeout_add_seconds(0, t, Lang.bind(this, function() {
+    this.timeoutId = GLib.timeout_add_seconds(0, t, () => {
       this.processor.process();
       return true;
-    }));
+    });
   }
   /*
    * Remove current timeout

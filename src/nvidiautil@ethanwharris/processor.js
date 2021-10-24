@@ -15,6 +15,7 @@ along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/license
 
 'use strict';
 
+const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Subprocess = Me.imports.subprocess;

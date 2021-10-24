@@ -17,9 +17,7 @@ along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/license
 
 const Gtk = imports.gi.Gtk;
 const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
 const GObject = imports.gi.GObject;
-const Lang = imports.lang;
 
 const SETTINGS = {
     refreshrate : {
@@ -134,12 +132,12 @@ function buildSettingWidget(setting) {
 
     combobox.set_active(settings.get_int(setting));
 
-    combobox.connect('changed', Lang.bind(this, function(entry) {
+    combobox.connect('changed', (entry) => {
       let [success, iter] = combobox.get_active_iter();
       if (!success)
         return;
       settings.set_int(setting, model.get_value(iter, 0))
-    }));
+    });
 
     let label = new Gtk.Label({ label: SETTINGS[setting].label, xalign : 0})
 
