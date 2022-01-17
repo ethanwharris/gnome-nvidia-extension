@@ -13,8 +13,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/licenses/>.*/
 
-const GObject = imports.gi.GObject;
-const Lang = imports.lang;
+'use strict';
 
 var CENTIGRADE = 0;
 var FAHRENHEIT = 1;
@@ -26,7 +25,7 @@ var Formatter = class {
   }
   format(values) {
     for (let i = 0; i < values.length; i++) {
-      let stringValue = values[i].replace(/[^0-9.]/g,'');
+      let stringValue = values[i].replace(/[^0-9.]/g, '');
       values[i] = parseFloat(stringValue);
       if (stringValue == '' || isNaN(values[i]) || !isFinite(stringValue)) {
         return "ERR";
@@ -87,6 +86,6 @@ var TempFormatter = class extends Formatter {
     return value + "\xB0" + "C";
   }
   _formatFehrenheit(value) {
-    return Math.floor(value*9/5+32) + "\xB0" + "F";
+    return Math.floor(value * 9 / 5 + 32) + "\xB0" + "F";
   }
 }

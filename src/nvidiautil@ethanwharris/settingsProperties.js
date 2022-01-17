@@ -13,9 +13,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/licenses/>.*/
 
+'use strict';
+
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const Lang = imports.lang;
 const Formatter = Me.imports.formatter;
 const Property = Me.imports.property;
 const GIcons = Me.imports.gIcons;
@@ -26,7 +27,7 @@ var UtilisationProperty = class extends Property.Property {
   }
   parse(lines) {
     for (let i = 0; i < this._gpuCount; i++) {
-      lines[i] = lines[i].substring(9,11);
+      lines[i] = lines[i].substring(9, 11);
     }
 
     return super.parse(lines);

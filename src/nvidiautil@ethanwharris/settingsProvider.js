@@ -13,35 +13,22 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/licenses/>.*/
 
+'use strict';
+
 const Shell = imports.gi.Shell;
 const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const Lang = imports.lang;
-const Spawn = Me.imports.spawn;
 const Processor = Me.imports.processor;
 const SettingsProperties = Me.imports.settingsProperties;
+const Subprocess = Me.imports.subprocess;
 
 var SettingsProvider = class {
   constructor() {
   }
   getGpuNames() {
-    let output = Spawn.spawnSync("nvidia-settings -q GpuUUID -t", function(command, err) {
-      // Do Nothing
-    });
-
-    if (output == Spawn.ERROR || output.indexOf("ERROR") >= 0) {
-      return Spawn.ERROR;
-    }
-
-    output = output.split('\n');
-    let result = [];
-
-    for (let i = 0; i < output.length; i++) {
-      result[i] = "GPU " + i;
-    }
-
-    return result;
+    return Subprocess.execCommunicate(['nvidia-settings', '-q', 'GpuUUID', '-t'])
+      .then(output => output.split('\n').map((gpu, index) => 'GPU ' + index));
   }
   getProperties(gpuCount) {
     this.storedProperties = [
@@ -70,7 +57,10 @@ var SettingsProvider = class {
     if (nvidiaSettingsApp.get_n_windows()) {
       nvidiaSettingsApp.activate();
     } else {
-      Spawn.spawnAsync('nvidia-settings', Spawn.defaultErrorHandler);
+      Subprocess.execCheck(['nvidia-settings']).catch(e => {
+        let title = "Failed to open nvidia-settings:";
+        Main.notifyError(title, e.message);
+      });
     }
   }
 }

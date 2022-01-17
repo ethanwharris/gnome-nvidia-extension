@@ -13,11 +13,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/licenses/>.*/
 
-const Shell = imports.gi.Shell;
+'use strict';
+
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const Lang = imports.lang;
-const Spawn = Me.imports.spawn;
 const SettingsProperties = Me.imports.settingsProperties;
 const SmiProperties = Me.imports.smiProperties;
 const Processor = Me.imports.processor;
@@ -34,7 +33,7 @@ var SettingsAndSmiProvider = class {
     return this.smi.getGpuNames();
   }
   getProperties(gpuCount) {
-    this.storedProperties =  [
+    this.storedProperties = [
       new SettingsProperties.UtilisationProperty(gpuCount, Processor.NVIDIA_SETTINGS),
       new SettingsProperties.TemperatureProperty(gpuCount, Processor.NVIDIA_SETTINGS),
       new SettingsProperties.MemoryProperty(gpuCount, Processor.NVIDIA_SETTINGS),

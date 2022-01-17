@@ -13,12 +13,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/licenses/>.*/
 
+'use strict';
+
 const St = imports.gi.St;
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
-const Lang = imports.lang;
-const Gio = imports.gi.Gio;
 const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 const Clutter = imports.gi.Clutter;
@@ -27,35 +27,33 @@ const GObject = imports.gi.GObject;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
-const Util = Me.imports.util;
 const ProcessorHandler = Me.imports.processorHandler;
 const SettingsProvider = Me.imports.settingsProvider;
 const SmiProvider = Me.imports.smiProvider;
 const SettingsAndSmiProvider = Me.imports.settingsAndSmiProvider;
 const OptimusProvider = Me.imports.optimusProvider;
-const Spawn = Me.imports.spawn;
 const GIcons = Me.imports.gIcons;
 
-var PROVIDERS = [
+const SETTINGS_REFRESH = "refreshrate";
+const SETTINGS_PROVIDER = "provider";
+const SETTINGS_POSITION = "position";
+const SETTINGS_TEMP_UNIT = "tempformat";
+const SETTINGS_SPACING = "spacing";
+const SETTINGS_ICONS = "icons";
+
+const PROVIDERS = [
   SettingsAndSmiProvider.SettingsAndSmiProvider,
   SettingsProvider.SettingsProvider,
   SmiProvider.SmiProvider,
   OptimusProvider.OptimusProvider
 ];
 
-var PROVIDER_SETTINGS = [
+const PROVIDER_SETTINGS = [
   "settingsandsmiconfig",
   "settingsconfig",
   "smiconfig",
   "optimusconfig"
 ];
-
-/*
- * Open the preferences for the nvidiautil extension
- */
-function openPreferences() {
-  Spawn.spawnAsync("gnome-shell-extension-prefs " + Me.metadata['uuid'], Spawn.defaultErrorHandler);
-}
 
 var PropertyMenuItem = GObject.registerClass(
 class PropertyMenuItem extends PopupMenu.PopupBaseMenuItem {
@@ -248,12 +246,12 @@ var MainMenu = GObject.registerClass(
     this._updatePollTime();
 
     this._settingChangedSignals = [];
-    this._addSettingChangedSignal(Util.SETTINGS_PROVIDER, Lang.bind(this, this._reload));
-    this._addSettingChangedSignal(Util.SETTINGS_REFRESH, Lang.bind(this, this._updatePollTime));
-    this._addSettingChangedSignal(Util.SETTINGS_TEMP_UNIT, Lang.bind(this, this._updateTempUnits));
-    this._addSettingChangedSignal(Util.SETTINGS_POSITION, Lang.bind(this, this._updatePanelPosition));
-    this._addSettingChangedSignal(Util.SETTINGS_SPACING, Lang.bind(this, this._updateSpacing));
-    this._addSettingChangedSignal(Util.SETTINGS_ICONS, Lang.bind(this, this._updateSpacing));
+    this._addSettingChangedSignal(SETTINGS_PROVIDER, () => this._reload());
+    this._addSettingChangedSignal(SETTINGS_REFRESH, () => this._updatePollTime());
+    this._addSettingChangedSignal(SETTINGS_TEMP_UNIT, () => this._updateTempUnits());
+    this._addSettingChangedSignal(SETTINGS_POSITION, () => this._updatePanelPosition());
+    this._addSettingChangedSignal(SETTINGS_SPACING, () => this._updateSpacing());
+    this._addSettingChangedSignal(SETTINGS_ICONS, () => this._updateSpacing());
   }
   _reload() {
     this.menu.removeAll();
@@ -265,29 +263,29 @@ var MainMenu = GObject.registerClass(
 
     this.processor.reset();
 
-    let p = this._settings.get_int(Util.SETTINGS_PROVIDER);
+    let p = this._settings.get_int(SETTINGS_PROVIDER);
     this.provider = new PROVIDERS[p]();
 
     let flags = this._settings.get_strv(PROVIDER_SETTINGS[p]);
 
-    this.names = this.provider.getGpuNames();
+    this.provider.getGpuNames().then(names => {
 
-    if (this.names != Spawn.ERROR) {
+      this.names = names;
 
       let listeners = [];
 
-      this.providerProperties = this.provider.getProperties(this.names.length - 1);
+      this.providerProperties = this.provider.getProperties(this.names.length);
 
       for (let i = 0; i < this.providerProperties.length; i++) {
         listeners[i] = [];
       }
 
-      for (let n = 0; n < this.names.length - 1; n++) {
+      for (let n = 0; n < this.names.length; n++) {
         let submenu = new PopupMenu.PopupSubMenuMenuItem(this.names[n]);
 
         let manager;
 
-        if (this.names.length - 1 > 1) {
+        if (this.names.length > 1) {
           let style = 'gpulabel';
           if (n == 0) {
             style = 'gpulabelleft';
@@ -308,7 +306,7 @@ var MainMenu = GObject.registerClass(
           let item = new PropertyMenuItem(this.providerProperties[i], box, manager, this._settings, PROVIDER_SETTINGS[p], index);
 
           if (this.providerProperties[i].getName() == "Temperature") {
-            let unit = this._settings.get_int(Util.SETTINGS_TEMP_UNIT)
+            let unit = this._settings.get_int(SETTINGS_TEMP_UNIT)
             this.providerProperties[i].setUnit(unit)
           }
 
@@ -324,7 +322,7 @@ var MainMenu = GObject.registerClass(
 
       this.processor.process();
 
-      for (let n = 0; n < this.names.length - 1; n++) {
+      for (let n = 0; n < this.names.length; n++) {
         for (let i = 0; i < this.providerProperties.length; i++) {
           let index = (n * this.providerProperties.length) + i;
 
@@ -343,9 +341,9 @@ var MainMenu = GObject.registerClass(
       this._updateSpacing();
 
       this._settings.set_strv(PROVIDER_SETTINGS[p], flags);
-    } else {
+    }).catch(e => {
       this._error = true;
-    }
+    });
 
     this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
@@ -365,7 +363,7 @@ var MainMenu = GObject.registerClass(
         gicon: GIcons.Wrench,
       }),
     });
-    this.wrench.connect('clicked', () => { openPreferences(); });
+    this.wrench.connect('clicked', () => { ExtensionUtils.openPrefs(); });
     item.add_child(this.wrench);
 
     if (this.provider.hasSettings()) {
@@ -380,7 +378,7 @@ var MainMenu = GObject.registerClass(
           gicon: GIcons.Cog,
         }),
       });
-      this.cog.connect('clicked', Lang.bind(this.provider, this.provider.openSettings));
+      this.cog.connect('clicked', () => this.provider.openSettings());
       item.actor.add_child(this.cog);
     }
 
@@ -388,7 +386,7 @@ var MainMenu = GObject.registerClass(
   }
   _updatePollTime() {
     if (!this._error) {
-      this._addTimeout(this._settings.get_int(Util.SETTINGS_REFRESH));
+      this._addTimeout(this._settings.get_int(SETTINGS_REFRESH));
     }
   }
   _updateTempUnits() {
@@ -397,7 +395,7 @@ var MainMenu = GObject.registerClass(
     for (let i = 0; i < this.providerProperties.length; i++) {
       if (this.providerProperties[i].getName() == "Temperature") {
 
-        unit = this._settings.get_int(Util.SETTINGS_TEMP_UNIT)
+        unit = this._settings.get_int(SETTINGS_TEMP_UNIT)
         this.providerProperties[i].setUnit(unit)
       }
     }
@@ -417,13 +415,13 @@ var MainMenu = GObject.registerClass(
   }
   getPanelPosition() {
     let positions = ["left", "center", "right"];
-    return positions[_settings.get_int(Util.SETTINGS_POSITION)];
+    return positions[_settings.get_int(SETTINGS_POSITION)];
   }
   _updateSpacing() {
-    let spacing = _settings.get_int(Util.SETTINGS_SPACING);
-    let icons = _settings.get_boolean(Util.SETTINGS_ICONS);
+    let spacing = _settings.get_int(SETTINGS_SPACING);
+    let icons = _settings.get_boolean(SETTINGS_ICONS);
 
-    for (let n = 0; n < this.names.length - 1; n++) {
+    for (let n = 0; n < this.names.length; n++) {
       for (let i = 0; i < this.providerProperties.length; i++) {
         this._items[i][n].reloadBox(spacing, icons);
       }
@@ -435,10 +433,10 @@ var MainMenu = GObject.registerClass(
   _addTimeout(t) {
     this._removeTimeout();
 
-    this.timeoutId = GLib.timeout_add_seconds(0, t, Lang.bind(this, function() {
+    this.timeoutId = GLib.timeout_add_seconds(0, t, () => {
       this.processor.process();
       return true;
-    }));
+    });
   }
   /*
    * Remove current timeout
@@ -471,7 +469,7 @@ let _settings;
  */
 function init() {
   Gtk.IconTheme.get_default().append_search_path(Me.dir.get_child('icons').get_path());
-  _settings = Util.getSettings();
+  _settings = ExtensionUtils.getSettings();
 }
 
 function enable() {
