@@ -13,6 +13,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/licenses/>.*/
 
+/* exported NVIDIA_SETTINGS NVIDIA_SMI OPTIMUS LIST */
 'use strict';
 
 const Main = imports.ui.main;
@@ -35,7 +36,7 @@ function andThen(first, second) {
 }
 
 /* const class */
-var Processor = class {
+class Processor {
     // Abstract: true,
     constructor(name, baseCall, tailCall) {
         this._name = name;
@@ -43,12 +44,10 @@ var Processor = class {
         this._tailCall = tailCall;
         this._call = this._baseCall;
 
-        this._parseFunction = function (lines) {
-
-        };
+        this._parseFunction = function () {};
     }
 
-    parse(output) {
+    parse() {
     // Do Nothing
     }
 
@@ -69,9 +68,9 @@ var Processor = class {
     getName() {
         return this._name;
     }
-};
+}
 
-var NvidiaSettingsProcessor = class extends Processor {
+class NvidiaSettingsProcessor extends Processor {
     constructor() {
         super('nvidia-settings', 'nvidia-settings ', '-t');
     }
@@ -79,9 +78,9 @@ var NvidiaSettingsProcessor = class extends Processor {
     parse(output) {
         this._parseFunction(output.split('\n'));
     }
-};
+}
 
-var OptimusSettingsProcessor = class extends Processor {
+class OptimusSettingsProcessor extends Processor {
     constructor() {
         super('optirun nvidia-smi', 'optirun nvidia-smi --query-gpu=', ' --format=csv,noheader,nounits');
     }
@@ -90,9 +89,9 @@ var OptimusSettingsProcessor = class extends Processor {
         let items = output.split('\n').map(line => line.split(',')).flat();
         this._parseFunction(items);
     }
-};
+}
 
-var NvidiaSmiProcessor = class extends Processor {
+class NvidiaSmiProcessor extends Processor {
     constructor() {
         super('nvidia-smi', 'nvidia-smi --query-gpu=', ' --format=csv,noheader,nounits');
     }
@@ -101,7 +100,7 @@ var NvidiaSmiProcessor = class extends Processor {
         let items = output.split('\n').map(line => line.split(',')).flat();
         this._parseFunction(items);
     }
-};
+}
 
 var LIST = [
     NvidiaSettingsProcessor,

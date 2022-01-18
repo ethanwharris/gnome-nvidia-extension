@@ -13,12 +13,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/licenses/>.*/
 
+/* exported CENTIGRADE FAHRENHEIT PercentFormatter PowerFormatter MemoryFormatter TempFormatter */
 'use strict';
 
 var CENTIGRADE = 0;
 var FAHRENHEIT = 1;
 
-var Formatter = class {
+class Formatter {
     // Abstract: true,
     constructor(name) {
         this._name = name;
@@ -37,7 +38,7 @@ var Formatter = class {
     _format(values) {
         return values;
     }
-};
+}
 
 var PercentFormatter = class extends Formatter {
     constructor(name) {

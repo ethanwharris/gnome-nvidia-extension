@@ -87,7 +87,7 @@ function buildSettingWidget(setting) {
         let label = new Gtk.Label({label: SETTINGS[setting].label, xalign: 0});
         let control = new Gtk.Switch({active: settings.get_boolean(setting)});
 
-        control.connect('notify::active', function (button) {
+        control.connect('notify::active', function () {
             settings.set_boolean(setting, control.get_active());
         });
 
@@ -132,7 +132,7 @@ function buildSettingWidget(setting) {
 
         combobox.set_active(settings.get_int(setting));
 
-        combobox.connect('changed', entry => {
+        combobox.connect('changed', () => {
             let [success, iter] = combobox.get_active_iter();
             if (!success)
                 return;

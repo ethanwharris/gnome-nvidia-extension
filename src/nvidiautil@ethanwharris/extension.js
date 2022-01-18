@@ -135,18 +135,18 @@ class PropertyMenuItem extends PopupMenu.PopupBaseMenuItem {
         this._statisticLabelHidden.destroy();
 
         super.destroy();
-        this.activate = function (event) {
+        this.activate = function () {
             // Do Nothing
         };
-        this.handle = function (value) {
+        this.handle = function () {
             // Do Nothing
         };
-        this.setActive = function (active) {
+        this.setActive = function () {
             // Do Nothing
         };
     }
 
-    activate(event) {
+    activate() {
         if (this._visible) {
             this._visible = false;
             this._box.visible = false;
@@ -347,7 +347,7 @@ var MainMenu = GObject.registerClass(
              this._updateSpacing();
 
              this._settings.set_strv(PROVIDER_SETTINGS[p], flags);
-         }).catch(e => {
+         }).catch(() => {
              this._error = true;
          });
 

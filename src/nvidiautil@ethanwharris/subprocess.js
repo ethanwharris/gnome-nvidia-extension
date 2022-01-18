@@ -1,6 +1,7 @@
 // Copyright 2020 Evan Welsh
 // SPDX-License-Identifier: MIT
 
+/* exported execCommunicate execCheck */
 'use strict';
 
 const GLib = imports.gi.GLib;
