@@ -1,4 +1,4 @@
-/*This file is part of Nvidia Util Gnome Extension.
+/* This file is part of Nvidia Util Gnome Extension.
 
 Nvidia Util Gnome Extension is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -23,29 +23,34 @@ const SmiProperties = Me.imports.smiProperties;
 const Subprocess = Me.imports.subprocess;
 
 var SmiProvider = class {
-  constructor() {
-  }
-  getGpuNames() {
-    return Subprocess.execCommunicate(['nvidia-smi', '--query-gpu=gpu_name', '--format=csv,noheader'])
-      .then(output => output.split('\n').map((gpu, index) => index + ': ' + gpu));
-  }
-  getProperties(gpuCount) {
-    this.storedProperties = [
-      new SmiProperties.UtilisationProperty(gpuCount, Processor.NVIDIA_SMI),
-      new SmiProperties.TemperatureProperty(gpuCount, Processor.NVIDIA_SMI),
-      new SmiProperties.MemoryProperty(gpuCount, Processor.NVIDIA_SMI),
-      new SmiProperties.FanProperty(gpuCount, Processor.NVIDIA_SMI),
-      new SmiProperties.PowerProperty(gpuCount, Processor.NVIDIA_SMI)
-    ];
-    return this.storedProperties;
-  }
-  retrieveProperties() {
-    return this.storedProperties;
-  }
-  hasSettings() {
-    return false;
-  }
-  openSettings() {
-    Main.notifyError("Settings are not available in smi mode", "Switch to a provider which supports nivida-settings");
-  }
-}
+    constructor() {
+    }
+
+    getGpuNames() {
+        return Subprocess.execCommunicate(['nvidia-smi', '--query-gpu=gpu_name', '--format=csv,noheader'])
+      .then(output => output.split('\n').map((gpu, index) => `${index}: ${gpu}`));
+    }
+
+    getProperties(gpuCount) {
+        this.storedProperties = [
+            new SmiProperties.UtilisationProperty(gpuCount, Processor.NVIDIA_SMI),
+            new SmiProperties.TemperatureProperty(gpuCount, Processor.NVIDIA_SMI),
+            new SmiProperties.MemoryProperty(gpuCount, Processor.NVIDIA_SMI),
+            new SmiProperties.FanProperty(gpuCount, Processor.NVIDIA_SMI),
+            new SmiProperties.PowerProperty(gpuCount, Processor.NVIDIA_SMI),
+        ];
+        return this.storedProperties;
+    }
+
+    retrieveProperties() {
+        return this.storedProperties;
+    }
+
+    hasSettings() {
+        return false;
+    }
+
+    openSettings() {
+        Main.notifyError('Settings are not available in smi mode', 'Switch to a provider which supports nivida-settings');
+    }
+};

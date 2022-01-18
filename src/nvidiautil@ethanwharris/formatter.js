@@ -1,4 +1,4 @@
-/*This file is part of Nvidia Util Gnome Extension.
+/* This file is part of Nvidia Util Gnome Extension.
 
 Nvidia Util Gnome Extension is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,73 +19,80 @@ var CENTIGRADE = 0;
 var FAHRENHEIT = 1;
 
 var Formatter = class {
-  //Abstract: true,
-  constructor(name) {
-    this._name = name;
-  }
-  format(values) {
-    for (let i = 0; i < values.length; i++) {
-      let stringValue = values[i].replace(/[^0-9.]/g, '');
-      values[i] = parseFloat(stringValue);
-      if (stringValue == '' || isNaN(values[i]) || !isFinite(stringValue)) {
-        return "ERR";
-      }
+    // Abstract: true,
+    constructor(name) {
+        this._name = name;
     }
-    return this._format(values);
-  }
-  _format(values) {
-    return values;
-  }
-}
+
+    format(values) {
+        for (let i = 0; i < values.length; i++) {
+            let stringValue = values[i].replace(/[^0-9.]/g, '');
+            values[i] = parseFloat(stringValue);
+            if (stringValue == '' || isNaN(values[i]) || !isFinite(stringValue))
+                return 'ERR';
+        }
+        return this._format(values);
+    }
+
+    _format(values) {
+        return values;
+    }
+};
 
 var PercentFormatter = class extends Formatter {
-  constructor(name) {
-    super(name);
-  }
-  _format(values) {
-    return values[0] + "%";
-  }
-}
+    constructor(name) {
+        super(name);
+    }
+
+    _format(values) {
+        return `${values[0]}%`;
+    }
+};
 
 var PowerFormatter = class extends Formatter {
-  constructor() {
-    super('PowerFormatter');
-  }
-  _format(values) {
-    return Math.floor(values[0]) + "W";
-  }
-}
+    constructor() {
+        super('PowerFormatter');
+    }
+
+    _format(values) {
+        return `${Math.floor(values[0])}W`;
+    }
+};
 
 var MemoryFormatter = class extends Formatter {
-  constructor() {
-    super('MemoryFormatter');
-  }
-  _format(values) {
-    let mem_usage = Math.floor((values[0] / values[1]) * 100);
-    return mem_usage + "%";
-  }
-}
+    constructor() {
+        super('MemoryFormatter');
+    }
+
+    _format(values) {
+        let mem_usage = Math.floor((values[0] / values[1]) * 100);
+        return `${mem_usage}%`;
+    }
+};
 
 var TempFormatter = class extends Formatter {
-  //currentUnit: 0,
-  constructor(unit) {
-    super('TempFormatter')
-    this.currentUnit = unit;
-  }
-  setUnit(unit) {
-    this.currentUnit = unit;
-  }
-  _format(value) {
-    if (this.currentUnit == CENTIGRADE) {
-      return this._formatCentigrade(value);
-    } else if (this.currentUnit == FAHRENHEIT) {
-      return this._formatFehrenheit(value);
+    // currentUnit: 0,
+    constructor(unit) {
+        super('TempFormatter');
+        this.currentUnit = unit;
     }
-  }
-  _formatCentigrade(value) {
-    return value + "\xB0" + "C";
-  }
-  _formatFehrenheit(value) {
-    return Math.floor(value * 9 / 5 + 32) + "\xB0" + "F";
-  }
-}
+
+    setUnit(unit) {
+        this.currentUnit = unit;
+    }
+
+    _format(value) {
+        if (this.currentUnit == CENTIGRADE)
+            return this._formatCentigrade(value);
+        else if (this.currentUnit == FAHRENHEIT)
+            return this._formatFehrenheit(value);
+    }
+
+    _formatCentigrade(value) {
+        return `${value}\xB0` + 'C';
+    }
+
+    _formatFehrenheit(value) {
+        return `${Math.floor(value * 9 / 5 + 32)}\xB0` + 'F';
+    }
+};

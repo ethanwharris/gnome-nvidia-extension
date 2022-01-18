@@ -1,4 +1,4 @@
-/*This file is part of Nvidia Util Gnome Extension.
+/* This file is part of Nvidia Util Gnome Extension.
 
 Nvidia Util Gnome Extension is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,34 +16,39 @@ along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/license
 'use strict';
 
 var Property = class {
-  //Abstract: true,
-  constructor(processor, name, callExtension, icon, formatter, gpuCount) {
-    this._processor = processor;
-    this._name = name;
-    this._callExtension = callExtension;
-    this._icon = icon;
-    this._formatter = formatter;
-    this._gpuCount = gpuCount;
-  }
-  getName() {
-    return this._name;
-  }
-  getCallExtension() {
-    return this._callExtension;
-  }
-  getIcon() {
-    return this._icon;
-  }
-  parse(lines) {
-    let values = [];
-
-    for (let i = 0; i < this._gpuCount; i++) {
-      values = values.concat(this._formatter.format([lines.shift()]));
+    // Abstract: true,
+    constructor(processor, name, callExtension, icon, formatter, gpuCount) {
+        this._processor = processor;
+        this._name = name;
+        this._callExtension = callExtension;
+        this._icon = icon;
+        this._formatter = formatter;
+        this._gpuCount = gpuCount;
     }
 
-    return values;
-  }
-  declare() {
-    return this._processor;
-  }
-}
+    getName() {
+        return this._name;
+    }
+
+    getCallExtension() {
+        return this._callExtension;
+    }
+
+    getIcon() {
+        return this._icon;
+    }
+
+    parse(lines) {
+        let values = [];
+
+        for (let i = 0; i < this._gpuCount; i++)
+            values = values.concat(this._formatter.format([lines.shift()]));
+
+
+        return values;
+    }
+
+    declare() {
+        return this._processor;
+    }
+};

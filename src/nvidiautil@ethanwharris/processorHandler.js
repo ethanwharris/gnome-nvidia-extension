@@ -1,4 +1,4 @@
-/*This file is part of Nvidia Util Gnome Extension.
+/* This file is part of Nvidia Util Gnome Extension.
 
 Nvidia Util Gnome Extension is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -21,35 +21,37 @@ const Me = ExtensionUtils.getCurrentExtension();
 const Processor = Me.imports.processor;
 
 var ProcessorHandler = class {
-  constructor() {
-    this._processors = [false, false, false];
-  }
-  process() {
-    for (let i = 0; i < this._processors.length; i++) {
-      if (this._processors[i]) {
-        try {
-          this._processors[i].process();
-        } catch (err) {
-          Main.notifyError("Error parsing " + this._processors[i].getName(), err.message);
-          this._processors[i] = false;
-        }
-      }
-    }
-  }
-  addProperty(property, listeners) {
-    let processor = property.declare();
-    if (!this._processors[processor]) {
-      this._processors[processor] = new Processor.LIST[processor]();
+    constructor() {
+        this._processors = [false, false, false];
     }
 
-    this._processors[processor].addProperty(function (lines) {
-      let values = property.parse(lines);
-      for (let i = 0; i < values.length; i++) {
-        listeners[i].handle(values[i]);
-      }
-    }, property.getCallExtension());
-  }
-  reset() {
-    this._processors = [false, false, false];
-  }
-}
+    process() {
+        for (let i = 0; i < this._processors.length; i++) {
+            if (this._processors[i]) {
+                try {
+                    this._processors[i].process();
+                } catch (err) {
+                    Main.notifyError(`Error parsing ${this._processors[i].getName()}`, err.message);
+                    this._processors[i] = false;
+                }
+            }
+        }
+    }
+
+    addProperty(property, listeners) {
+        let processor = property.declare();
+        if (!this._processors[processor])
+            this._processors[processor] = new Processor.LIST[processor]();
+
+
+        this._processors[processor].addProperty(function (lines) {
+            let values = property.parse(lines);
+            for (let i = 0; i < values.length; i++)
+                listeners[i].handle(values[i]);
+        }, property.getCallExtension());
+    }
+
+    reset() {
+        this._processors = [false, false, false];
+    }
+};

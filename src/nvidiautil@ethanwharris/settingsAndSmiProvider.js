@@ -1,4 +1,4 @@
-/*This file is part of Nvidia Util Gnome Extension.
+/* This file is part of Nvidia Util Gnome Extension.
 
 Nvidia Util Gnome Extension is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -25,30 +25,35 @@ const SettingsProvider = Me.imports.settingsProvider;
 const SmiProvider = Me.imports.smiProvider;
 
 var SettingsAndSmiProvider = class {
-  constructor() {
-    this.settings = new SettingsProvider.SettingsProvider();
-    this.smi = new SmiProvider.SmiProvider();
-  }
-  getGpuNames() {
-    return this.smi.getGpuNames();
-  }
-  getProperties(gpuCount) {
-    this.storedProperties = [
-      new SettingsProperties.UtilisationProperty(gpuCount, Processor.NVIDIA_SETTINGS),
-      new SettingsProperties.TemperatureProperty(gpuCount, Processor.NVIDIA_SETTINGS),
-      new SettingsProperties.MemoryProperty(gpuCount, Processor.NVIDIA_SETTINGS),
-      new SettingsProperties.FanProperty(gpuCount, Processor.NVIDIA_SETTINGS),
-      new SmiProperties.PowerProperty(gpuCount, Processor.NVIDIA_SMI)
-    ];
-    return this.storedProperties;
-  }
-  retrieveProperties() {
-    return this.storedProperties;
-  }
-  hasSettings() {
-    return true;
-  }
-  openSettings() {
-    this.settings.openSettings();
-  }
-}
+    constructor() {
+        this.settings = new SettingsProvider.SettingsProvider();
+        this.smi = new SmiProvider.SmiProvider();
+    }
+
+    getGpuNames() {
+        return this.smi.getGpuNames();
+    }
+
+    getProperties(gpuCount) {
+        this.storedProperties = [
+            new SettingsProperties.UtilisationProperty(gpuCount, Processor.NVIDIA_SETTINGS),
+            new SettingsProperties.TemperatureProperty(gpuCount, Processor.NVIDIA_SETTINGS),
+            new SettingsProperties.MemoryProperty(gpuCount, Processor.NVIDIA_SETTINGS),
+            new SettingsProperties.FanProperty(gpuCount, Processor.NVIDIA_SETTINGS),
+            new SmiProperties.PowerProperty(gpuCount, Processor.NVIDIA_SMI),
+        ];
+        return this.storedProperties;
+    }
+
+    retrieveProperties() {
+        return this.storedProperties;
+    }
+
+    hasSettings() {
+        return true;
+    }
+
+    openSettings() {
+        this.settings.openSettings();
+    }
+};
