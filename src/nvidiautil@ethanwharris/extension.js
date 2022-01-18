@@ -107,14 +107,14 @@ class PropertyMenuItem extends PopupMenu.PopupBaseMenuItem {
     }
 
     patch_add_pseudo_class(css) {
-        if (css == 'active')
+        if (css === 'active')
             this.set_pseudo_class();
         else
             this.actor.old_add_style_pseudo_class(css);
     }
 
     patch_remove_pseudo_class(css) {
-        if (css == 'active')
+        if (css === 'active')
             this.set_pseudo_class();
         else
             this.actor.old_remove_style_pseudo_class(css);
@@ -177,7 +177,7 @@ class PropertyMenuItem extends PopupMenu.PopupBaseMenuItem {
     handle(value) {
         this._statisticLabelHidden.text = value;
         this._statisticLabelVisible.text = value;
-        if (value == 'ERR') {
+        if (value === 'ERR') {
             if (this._visible)
                 this.activate('');
 
@@ -207,14 +207,14 @@ var GpuLabelDisplayManager = class {
     increment() {
         this.count += 1;
 
-        if (this.gpuLabel.visible == false)
+        if (this.gpuLabel.visible === false)
             this.gpuLabel.visible = true;
     }
 
     decrement() {
         this.count -= 1;
 
-        if (this.count == 0 && this.gpuLabel.visible == true)
+        if (this.count === 0 && this.gpuLabel.visible === true)
             this.gpuLabel.visible = false;
     }
 };
@@ -294,7 +294,7 @@ var MainMenu = GObject.registerClass(
 
                  if (this.names.length > 1) {
                      let style = 'gpulabel';
-                     if (n == 0)
+                     if (n === 0)
                          style = 'gpulabelleft';
 
                      let label = new St.Label({text: `${n}:`, style_class: style});
@@ -312,7 +312,7 @@ var MainMenu = GObject.registerClass(
                      let index = (n * this.providerProperties.length) + i;
                      let item = new PropertyMenuItem(this.providerProperties[i], box, manager, this._settings, PROVIDER_SETTINGS[p], index);
 
-                     if (this.providerProperties[i].getName() == 'Temperature') {
+                     if (this.providerProperties[i].getName() === 'Temperature') {
                          let unit = this._settings.get_int(SETTINGS_TEMP_UNIT);
                          this.providerProperties[i].setUnit(unit);
                      }
@@ -337,7 +337,7 @@ var MainMenu = GObject.registerClass(
                          flags[index] = 'inactive';
 
 
-                     if (flags[index] == 'active')
+                     if (flags[index] === 'active')
                          listeners[i][n].activate();
                  }
              }
@@ -402,7 +402,7 @@ var MainMenu = GObject.registerClass(
          let unit = 0;
 
          for (let i = 0; i < this.providerProperties.length; i++) {
-             if (this.providerProperties[i].getName() == 'Temperature') {
+             if (this.providerProperties[i].getName() === 'Temperature') {
                  unit = this._settings.get_int(SETTINGS_TEMP_UNIT);
                  this.providerProperties[i].setUnit(unit);
              }
@@ -420,7 +420,7 @@ var MainMenu = GObject.registerClass(
          };
 
          let pos = this.getPanelPosition();
-         boxes[pos].insert_child_at_index(this.container, pos == 'right' ? 0 : -1);
+         boxes[pos].insert_child_at_index(this.container, pos === 'right' ? 0 : -1);
      }
 
      getPanelPosition() {
@@ -454,7 +454,7 @@ var MainMenu = GObject.registerClass(
    * Remove current timeout
    */
      _removeTimeout() {
-         if (this.timeoutId != -1) {
+         if (this.timeoutId !== -1) {
              GLib.source_remove(this.timeoutId);
              this.timeoutId = -1;
          }
@@ -493,7 +493,7 @@ function enable() {
     _menu = new MainMenu(_settings);
 
     let pos = _menu.getPanelPosition();
-    Main.panel.addToStatusArea('main-menu', _menu, pos == 'right' ? 0 : -1, pos);
+    Main.panel.addToStatusArea('main-menu', _menu, pos === 'right' ? 0 : -1, pos);
 }
 
 function disable() {

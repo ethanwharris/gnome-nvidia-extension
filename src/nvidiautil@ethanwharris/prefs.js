@@ -78,12 +78,12 @@ function init() {
  * Construct the individual widget for an individual setting
  */
 function buildSettingWidget(setting) {
-    if (SETTINGS[setting].type == 'noshow')
+    if (SETTINGS[setting].type === 'noshow')
         return false;
 
     let box = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL});
 
-    if (SETTINGS[setting].type == 'bool') {
+    if (SETTINGS[setting].type === 'bool') {
         let label = new Gtk.Label({label: SETTINGS[setting].label, xalign: 0});
         let control = new Gtk.Switch({active: settings.get_boolean(setting)});
 
@@ -98,7 +98,7 @@ function buildSettingWidget(setting) {
         label.set_halign(Gtk.Align.FILL);
         label.set_hexpand(true);
         box.append(control);
-    } else if (SETTINGS[setting].type == 'int') {
+    } else if (SETTINGS[setting].type === 'int') {
         let label = new Gtk.Label({label: SETTINGS[setting].label, xalign: 0});
         let control = Gtk.SpinButton.new_with_range(SETTINGS[setting].min, SETTINGS[setting].max, 1);
         control.set_value(settings.get_int(setting));
@@ -114,7 +114,7 @@ function buildSettingWidget(setting) {
         label.set_halign(Gtk.Align.FILL);
         label.set_hexpand(true);
         box.append(control);
-    } else if (SETTINGS[setting].type == 'combo') {
+    } else if (SETTINGS[setting].type === 'combo') {
         let model = new Gtk.ListStore();
         model.set_column_types([GObject.TYPE_INT, GObject.TYPE_STRING]);
         let combobox = new Gtk.ComboBox({model});

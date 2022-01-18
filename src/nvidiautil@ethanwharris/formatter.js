@@ -28,7 +28,7 @@ var Formatter = class {
         for (let i = 0; i < values.length; i++) {
             let stringValue = values[i].replace(/[^0-9.]/g, '');
             values[i] = parseFloat(stringValue);
-            if (stringValue == '' || isNaN(values[i]) || !isFinite(stringValue))
+            if (stringValue === '' || isNaN(values[i]) || !isFinite(stringValue))
                 return 'ERR';
         }
         return this._format(values);
@@ -82,9 +82,9 @@ var TempFormatter = class extends Formatter {
     }
 
     _format(value) {
-        if (this.currentUnit == CENTIGRADE)
+        if (this.currentUnit === CENTIGRADE)
             return this._formatCentigrade(value);
-        else if (this.currentUnit == FAHRENHEIT)
+        else if (this.currentUnit === FAHRENHEIT)
             return this._formatFehrenheit(value);
     }
 
