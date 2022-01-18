@@ -24,9 +24,6 @@ const SmiProperties = Me.imports.smiProperties;
 const Subprocess = Me.imports.subprocess;
 
 var SmiProvider = class {
-    constructor() {
-    }
-
     getGpuNames() {
         return Subprocess.execCommunicate(['nvidia-smi', '--query-gpu=gpu_name', '--format=csv,noheader'])
       .then(output => output.split('\n').map((gpu, index) => `${index}: ${gpu}`));

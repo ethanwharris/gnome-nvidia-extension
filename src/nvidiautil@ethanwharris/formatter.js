@@ -41,9 +41,10 @@ class Formatter {
 }
 
 var PercentFormatter = class extends Formatter {
-    constructor(name) {
-        super(name);
-    }
+    // implicitly use super constructor
+    // constructor(name) {
+    //     super(name);
+    // }
 
     _format(values) {
         return `${values[0]}%`;

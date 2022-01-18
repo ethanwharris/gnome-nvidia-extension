@@ -25,9 +25,6 @@ const SettingsProperties = Me.imports.settingsProperties;
 const Subprocess = Me.imports.subprocess;
 
 var SettingsProvider = class {
-    constructor() {
-    }
-
     getGpuNames() {
         return Subprocess.execCommunicate(['nvidia-settings', '-q', 'GpuUUID', '-t'])
       .then(output => output.split('\n').map((gpu, index) => `GPU ${index}`));
