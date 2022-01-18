@@ -89,10 +89,10 @@ var TempFormatter = class extends Formatter {
     }
 
     _formatCentigrade(value) {
-        return `${value}\xB0` + 'C';
+        return `${value}\xB0C`;
     }
 
     _formatFehrenheit(value) {
-        return `${Math.floor(value * 9 / 5 + 32)}\xB0` + 'F';
+        return `${Math.floor(value * 9 / 5 + 32)}\xB0C`;
     }
 };
