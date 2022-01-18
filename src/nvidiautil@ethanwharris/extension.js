@@ -232,7 +232,7 @@ var EmptyDisplayManager = class {
 var MainMenu = GObject.registerClass(
  class MainMenu extends PanelMenu.Button {
      _init(settings) {
-         super._init(0.0, _('GPU Statistics'));
+         super._init(0.0, 'GPU Statistics');
          this.timeoutId = -1;
          this._settings = settings;
          this._error = false;
