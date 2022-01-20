@@ -1,3 +1,6 @@
+<? SPDX-License-Identifier: GPL-3.0-or-later ?>
+<? Copyright Contributors to the gnome-nvidia-extension project. ?>
+
 ### GNU GENERAL PUBLIC LICENSE
 
 Version 3, 29 June 2007
