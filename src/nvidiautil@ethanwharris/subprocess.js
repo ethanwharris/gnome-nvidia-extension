@@ -1,5 +1,5 @@
-// Copyright 2020 Evan Welsh
-// SPDX-License-Identifier: MIT
+/* SPDX-License-Identifier: GPL-3.0-or-later */
+/* SPDX-FileCopyrightText: Contributors to the gnome-nvidia-extension project. */
 
 /* exported execCommunicate execCheck */
 /* eslint-disable require-await */
