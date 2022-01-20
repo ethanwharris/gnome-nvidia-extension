@@ -1,4 +1,4 @@
-/*This file is part of Nvidia Util Gnome Extension.
+/* This file is part of Nvidia Util Gnome Extension.
 
 Nvidia Util Gnome Extension is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -13,6 +13,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/licenses/>.*/
 
+/* exported init enable disable */
 'use strict';
 
 const St = imports.gi.St;
@@ -34,432 +35,446 @@ const SettingsAndSmiProvider = Me.imports.settingsAndSmiProvider;
 const OptimusProvider = Me.imports.optimusProvider;
 const GIcons = Me.imports.gIcons;
 
-const SETTINGS_REFRESH = "refreshrate";
-const SETTINGS_PROVIDER = "provider";
-const SETTINGS_POSITION = "position";
-const SETTINGS_TEMP_UNIT = "tempformat";
-const SETTINGS_SPACING = "spacing";
-const SETTINGS_ICONS = "icons";
+const SETTINGS_REFRESH = 'refreshrate';
+const SETTINGS_PROVIDER = 'provider';
+const SETTINGS_POSITION = 'position';
+const SETTINGS_TEMP_UNIT = 'tempformat';
+const SETTINGS_SPACING = 'spacing';
+const SETTINGS_ICONS = 'icons';
 
 const PROVIDERS = [
-  SettingsAndSmiProvider.SettingsAndSmiProvider,
-  SettingsProvider.SettingsProvider,
-  SmiProvider.SmiProvider,
-  OptimusProvider.OptimusProvider
+    SettingsAndSmiProvider.SettingsAndSmiProvider,
+    SettingsProvider.SettingsProvider,
+    SmiProvider.SmiProvider,
+    OptimusProvider.OptimusProvider,
 ];
 
 const PROVIDER_SETTINGS = [
-  "settingsandsmiconfig",
-  "settingsconfig",
-  "smiconfig",
-  "optimusconfig"
+    'settingsandsmiconfig',
+    'settingsconfig',
+    'smiconfig',
+    'optimusconfig',
 ];
 
 var PropertyMenuItem = GObject.registerClass(
 class PropertyMenuItem extends PopupMenu.PopupBaseMenuItem {
-  _init(property, box, labelManager, settings, setting, index) {
-    super._init();
+    _init(property, box, labelManager, settings, setting, index) {
+        super._init();
 
-    this._destroyed = false;
+        this._destroyed = false;
 
-    this._settings = settings;
-    this._setting = setting;
-    this._index = index;
+        this._settings = settings;
+        this._setting = setting;
+        this._index = index;
 
-    this._box = box;
-    this.labelManager = labelManager;
+        this._box = box;
+        this.labelManager = labelManager;
 
-    this.actor.add(new St.Icon({ style_class: 'popup-menu-icon', gicon: property.getIcon(), icon_size: 16 }));
+        this.actor.add(new St.Icon({style_class: 'popup-menu-icon', gicon: property.getIcon(), icon_size: 16}));
 
-    this.label = new St.Label({ text: property.getName() });
-    this.actor.add_child(this.label);
-    this.actor.label_actor = this.label;
+        this.label = new St.Label({text: property.getName()});
+        this.actor.add_child(this.label);
+        this.actor.label_actor = this.label;
 
-    this._icon = new St.Icon({ style_class: 'system-status-icon', gicon: property.getIcon(), icon_size: 16 });
+        this._icon = new St.Icon({style_class: 'system-status-icon', gicon: property.getIcon(), icon_size: 16});
 
-    this._statisticLabelHidden = new St.Label({ text: '0' });
-    this._statisticLabelVisible = new St.Label({
-        text: '0',
-        style_class: 'label',
-        y_expand: true,
-        y_align: Clutter.ActorAlign.CENTER });
+        this._statisticLabelHidden = new St.Label({text: '0'});
+        this._statisticLabelVisible = new St.Label({
+            text: '0',
+            style_class: 'label',
+            y_expand: true,
+            y_align: Clutter.ActorAlign.CENTER,
+        });
 
-    this._box.add_child(this._icon);
-    this._box.add_child(this._statisticLabelVisible);
+        this._box.add_child(this._icon);
+        this._box.add_child(this._statisticLabelVisible);
 
-    this.actor.add(this._statisticLabelHidden);
-    this._visible = false;
-    this._box.visible = false;
+        this.actor.add(this._statisticLabelHidden);
+        this._visible = false;
+        this._box.visible = false;
 
-    this.actor.old_add_style_pseudo_class = this.actor.add_style_pseudo_class;
-    this.actor.old_remove_style_pseudo_class = this.actor.remove_style_pseudo_class;
+        this.actor.old_add_style_pseudo_class = this.actor.add_style_pseudo_class;
+        this.actor.old_remove_style_pseudo_class = this.actor.remove_style_pseudo_class;
 
-    this.actor.add_style_pseudo_class = this.patch_add_pseudo_class;
-    this.actor.remove_style_pseudo_class = this.patch_remove_pseudo_class;
-  }
-  set_pseudo_class() {
-    if (this._visible) {
-      this.actor.old_add_style_pseudo_class('active');
-    } else {
-      this.actor.old_remove_style_pseudo_class('active');
+        this.actor.add_style_pseudo_class = this.patch_add_pseudo_class;
+        this.actor.remove_style_pseudo_class = this.patch_remove_pseudo_class;
     }
-  }
-  patch_add_pseudo_class(css) {
-    if (css == 'active') {
-      this.set_pseudo_class();
-    } else {
-      this.actor.old_add_style_pseudo_class(css);
-    }
-  }
-  patch_remove_pseudo_class(css) {
-    if (css == 'active') {
-      this.set_pseudo_class();
-    } else {
-      this.actor.old_remove_style_pseudo_class(css);
-    }
-  }
-  reloadBox(spacing, icons) {
-    if (!this._destroyed) {
-      this._icon.visible = icons;
 
-      this._statisticLabelVisible.set_style('margin-right: ' + spacing + 'px');
+    set_pseudo_class() {
+        if (this._visible)
+            this.actor.old_add_style_pseudo_class('active');
+        else
+            this.actor.old_remove_style_pseudo_class('active');
     }
-  }
-  destroy() {
-    this._destroyed = true;
 
-    this._box.destroy();
-    this._statisticLabelHidden.destroy();
-
-    super.destroy();
-    this.activate = function(event) {
-      // Do Nothing
-    };
-    this.handle = function(value) {
-      // Do Nothing
-    };
-    this.setActive = function(active) {
-      // Do Nothing
+    patch_add_pseudo_class(css) {
+        if (css === 'active')
+            this.set_pseudo_class();
+        else
+            this.actor.old_add_style_pseudo_class(css);
     }
-  }
-  activate(event) {
-    if (this._visible) {
-      this._visible = false;
-      this._box.visible = false;
-      this.set_pseudo_class();
-      this.labelManager.decrement();
 
-      let flags = this._settings.get_strv(this._setting);
-      flags[this._index] = "inactive";
-      this._settings.set_strv(this._setting, flags);
-    } else {
-      this._visible = true;
-      this._box.visible = true;
-      this.set_pseudo_class();
-      this.labelManager.increment();
+    patch_remove_pseudo_class(css) {
+        if (css === 'active')
+            this.set_pseudo_class();
+        else
+            this.actor.old_remove_style_pseudo_class(css);
+    }
 
-      let flags = this._settings.get_strv(this._setting);
-      flags[this._index] = "active";
-      this._settings.set_strv(this._setting, flags);
-    }
-  }
-  setActive(active) {
-    super.setActive(active);
-    if (this._visible) {
-      this.actor.add_style_pseudo_class('active');
-    }
-  }
-  handle(value) {
-    this._statisticLabelHidden.text = value;
-    this._statisticLabelVisible.text = value;
-    if (value == 'ERR') {
-      if (this._visible) {
-        this.activate("");
-      }
+    reloadBox(spacing, icons) {
+        if (!this._destroyed) {
+            this._icon.visible = icons;
 
-      this.destroy();
+            this._statisticLabelVisible.set_style(`margin-right: ${spacing}px`);
+        }
     }
-  }
+
+    destroy() {
+        this._destroyed = true;
+
+        this._box.destroy();
+        this._statisticLabelHidden.destroy();
+
+        super.destroy();
+        this.activate = function () {
+            // Do Nothing
+        };
+        this.handle = function () {
+            // Do Nothing
+        };
+        this.setActive = function () {
+            // Do Nothing
+        };
+    }
+
+    activate() {
+        if (this._visible) {
+            this._visible = false;
+            this._box.visible = false;
+            this.set_pseudo_class();
+            this.labelManager.decrement();
+
+            let flags = this._settings.get_strv(this._setting);
+            flags[this._index] = 'inactive';
+            this._settings.set_strv(this._setting, flags);
+        } else {
+            this._visible = true;
+            this._box.visible = true;
+            this.set_pseudo_class();
+            this.labelManager.increment();
+
+            let flags = this._settings.get_strv(this._setting);
+            flags[this._index] = 'active';
+            this._settings.set_strv(this._setting, flags);
+        }
+    }
+
+    setActive(active) {
+        super.setActive(active);
+        if (this._visible)
+            this.actor.add_style_pseudo_class('active');
+    }
+
+    handle(value) {
+        this._statisticLabelHidden.text = value;
+        this._statisticLabelVisible.text = value;
+        if (value === 'ERR') {
+            if (this._visible)
+                this.activate('');
+
+
+            this.destroy();
+        }
+    }
 });
 
 var PersistentPopupMenu = class extends PopupMenu.PopupMenu {
-  constructor(actor, menuAlignment) {
-    super(actor, menuAlignment, St.Side.TOP, 0);
-  }
-  _setOpenedSubMenu(submenu) {
-    this._openedSubMenu = submenu;
-  }
-}
+    constructor(actor, menuAlignment) {
+        super(actor, menuAlignment, St.Side.TOP, 0);
+    }
+
+    _setOpenedSubMenu(submenu) {
+        this._openedSubMenu = submenu;
+    }
+};
 
 var GpuLabelDisplayManager = class {
-  constructor(gpuLabel) {
-    this.gpuLabel = gpuLabel;
-    this.count = 0;
-    this.gpuLabel.visible = false;
-  }
-  increment() {
-    this.count = this.count + 1;
-
-    if (this.gpuLabel.visible == false) {
-      this.gpuLabel.visible = true;
+    constructor(gpuLabel) {
+        this.gpuLabel = gpuLabel;
+        this.count = 0;
+        this.gpuLabel.visible = false;
     }
-  }
-  decrement() {
-    this.count = this.count - 1;
 
-    if (this.count == 0 && this.gpuLabel.visible == true) {
-      this.gpuLabel.visible = false;
+    increment() {
+        this.count += 1;
+
+        if (this.gpuLabel.visible === false)
+            this.gpuLabel.visible = true;
     }
-  }
-}
+
+    decrement() {
+        this.count -= 1;
+
+        if (this.count === 0 && this.gpuLabel.visible === true)
+            this.gpuLabel.visible = false;
+    }
+};
 
 var EmptyDisplayManager = class {
-  increment() {
+    increment() {
     // Do Nothing
-  }
-  decrement() {
+    }
+
+    decrement() {
     // Do Nothing
-  }
-}
+    }
+};
 
 var MainMenu = GObject.registerClass(
  class MainMenu extends PanelMenu.Button {
-  _init(settings) {
-    super._init(0.0, _("GPU Statistics"));
-    this.timeoutId = -1;
-    this._settings = settings;
-    this._error = false;
+     _init(settings) {
+         super._init(0.0, 'GPU Statistics');
+         this.timeoutId = -1;
+         this._settings = settings;
+         this._error = false;
 
-    this.processor = new ProcessorHandler.ProcessorHandler();
+         this.processor = new ProcessorHandler.ProcessorHandler();
 
-    this.setMenu(new PersistentPopupMenu(this, 0.0));
+         this.setMenu(new PersistentPopupMenu(this, 0.0));
 
-    let hbox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
+         let hbox = new St.BoxLayout({style_class: 'panel-status-menu-box'});
 
-    this.properties = new St.BoxLayout({style_class: 'panel-status-menu-box'});
+         this.properties = new St.BoxLayout({style_class: 'panel-status-menu-box'});
 
-    hbox.add_actor(this.properties);
-    hbox.add_actor(PopupMenu.arrowIcon(St.Side.BOTTOM));
-    this.add_child(hbox);
+         hbox.add_actor(this.properties);
+         hbox.add_actor(PopupMenu.arrowIcon(St.Side.BOTTOM));
+         this.add_child(hbox);
 
-    this._reload();
-    this._updatePollTime();
+         this._reload();
+         this._updatePollTime();
 
-    this._settingChangedSignals = [];
-    this._addSettingChangedSignal(SETTINGS_PROVIDER, () => this._reload());
-    this._addSettingChangedSignal(SETTINGS_REFRESH, () => this._updatePollTime());
-    this._addSettingChangedSignal(SETTINGS_TEMP_UNIT, () => this._updateTempUnits());
-    this._addSettingChangedSignal(SETTINGS_POSITION, () => this._updatePanelPosition());
-    this._addSettingChangedSignal(SETTINGS_SPACING, () => this._updateSpacing());
-    this._addSettingChangedSignal(SETTINGS_ICONS, () => this._updateSpacing());
-  }
-  _reload() {
-    this.menu.removeAll();
+         this._settingChangedSignals = [];
+         this._addSettingChangedSignal(SETTINGS_PROVIDER, () => this._reload());
+         this._addSettingChangedSignal(SETTINGS_REFRESH, () => this._updatePollTime());
+         this._addSettingChangedSignal(SETTINGS_TEMP_UNIT, () => this._updateTempUnits());
+         this._addSettingChangedSignal(SETTINGS_POSITION, () => this._updatePanelPosition());
+         this._addSettingChangedSignal(SETTINGS_SPACING, () => this._updateSpacing());
+         this._addSettingChangedSignal(SETTINGS_ICONS, () => this._updateSpacing());
+     }
 
-    this._propertiesMenu = new PopupMenu.PopupMenuSection();
-    this.menu.addMenuItem(this._propertiesMenu);
+     _reload() {
+         this.menu.removeAll();
 
-    this.properties.destroy_all_children();
+         this._propertiesMenu = new PopupMenu.PopupMenuSection();
+         this.menu.addMenuItem(this._propertiesMenu);
 
-    this.processor.reset();
+         this.properties.destroy_all_children();
 
-    let p = this._settings.get_int(SETTINGS_PROVIDER);
-    this.provider = new PROVIDERS[p]();
+         this.processor.reset();
 
-    let flags = this._settings.get_strv(PROVIDER_SETTINGS[p]);
+         let p = this._settings.get_int(SETTINGS_PROVIDER);
+         this.provider = new PROVIDERS[p]();
 
-    this.provider.getGpuNames().then(names => {
+         let flags = this._settings.get_strv(PROVIDER_SETTINGS[p]);
 
-      this.names = names;
+         this.provider.getGpuNames().then(names => {
+             this.names = names;
 
-      let listeners = [];
+             let listeners = [];
 
-      this.providerProperties = this.provider.getProperties(this.names.length);
+             this.providerProperties = this.provider.getProperties(this.names.length);
 
-      for (let i = 0; i < this.providerProperties.length; i++) {
-        listeners[i] = [];
-      }
+             for (let i = 0; i < this.providerProperties.length; i++)
+                 listeners[i] = [];
 
-      for (let n = 0; n < this.names.length; n++) {
-        let submenu = new PopupMenu.PopupSubMenuMenuItem(this.names[n]);
 
-        let manager;
+             for (let n = 0; n < this.names.length; n++) {
+                 let submenu = new PopupMenu.PopupSubMenuMenuItem(this.names[n]);
 
-        if (this.names.length > 1) {
-          let style = 'gpulabel';
-          if (n == 0) {
-            style = 'gpulabelleft';
-          }
-          let label = new St.Label({ text : n + ':', style_class : style});
-          manager = new GpuLabelDisplayManager(label);
-          this.properties.add_child(label);
-        } else {
-          manager = new EmptyDisplayManager();
-        }
+                 let manager;
 
-        this._propertiesMenu.addMenuItem(submenu);
+                 if (this.names.length > 1) {
+                     let style = 'gpulabel';
+                     if (n === 0)
+                         style = 'gpulabelleft';
 
-        for (let i = 0; i < this.providerProperties.length; i++) {
-          let box = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
+                     let label = new St.Label({text: `${n}:`, style_class: style});
+                     manager = new GpuLabelDisplayManager(label);
+                     this.properties.add_child(label);
+                 } else {
+                     manager = new EmptyDisplayManager();
+                 }
 
-          let index = (n * this.providerProperties.length) + i;
-          let item = new PropertyMenuItem(this.providerProperties[i], box, manager, this._settings, PROVIDER_SETTINGS[p], index);
+                 this._propertiesMenu.addMenuItem(submenu);
 
-          if (this.providerProperties[i].getName() == "Temperature") {
-            let unit = this._settings.get_int(SETTINGS_TEMP_UNIT)
-            this.providerProperties[i].setUnit(unit)
-          }
+                 for (let i = 0; i < this.providerProperties.length; i++) {
+                     let box = new St.BoxLayout({style_class: 'panel-status-menu-box'});
 
-          listeners[i][n] = item;
-          submenu.menu.addMenuItem(item);
-          this.properties.add_child(box);
-        }
-      }
+                     let index = (n * this.providerProperties.length) + i;
+                     let item = new PropertyMenuItem(this.providerProperties[i], box, manager, this._settings, PROVIDER_SETTINGS[p], index);
 
-      for (let i = 0; i < this.providerProperties.length; i++) {
-        this.processor.addProperty(this.providerProperties[i], listeners[i]);
-      }
+                     if (this.providerProperties[i].getName() === 'Temperature') {
+                         let unit = this._settings.get_int(SETTINGS_TEMP_UNIT);
+                         this.providerProperties[i].setUnit(unit);
+                     }
 
-      this.processor.process();
+                     listeners[i][n] = item;
+                     submenu.menu.addMenuItem(item);
+                     this.properties.add_child(box);
+                 }
+             }
 
-      for (let n = 0; n < this.names.length; n++) {
-        for (let i = 0; i < this.providerProperties.length; i++) {
-          let index = (n * this.providerProperties.length) + i;
+             for (let i = 0; i < this.providerProperties.length; i++)
+                 this.processor.addProperty(this.providerProperties[i], listeners[i]);
 
-          if (!flags[index]) {
-            flags[index] = "inactive";
-          }
 
-          if (flags[index] == "active") {
-            listeners[i][n].activate();
-          }
-        }
-      }
+             this.processor.process();
 
-      this._items = listeners;
+             for (let n = 0; n < this.names.length; n++) {
+                 for (let i = 0; i < this.providerProperties.length; i++) {
+                     let index = (n * this.providerProperties.length) + i;
 
-      this._updateSpacing();
+                     if (!flags[index])
+                         flags[index] = 'inactive';
 
-      this._settings.set_strv(PROVIDER_SETTINGS[p], flags);
-    }).catch(e => {
-      this._error = true;
-    });
 
-    this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+                     if (flags[index] === 'active')
+                         listeners[i][n].activate();
+                 }
+             }
 
-    let item = new PopupMenu.PopupBaseMenuItem({
-      reactive: false,
-      can_focus: false
-    });
+             this._items = listeners;
 
-    this.wrench = new St.Button({
-      reactive: true,
-      can_focus: true,
-      track_hover: true,
-      accessible_name: 'Open Preferences',
-      style_class: 'button',
-      child: new St.Icon({
-        icon_name: 'wrench-symbolic',
-        gicon: GIcons.Wrench,
-      }),
-    });
-    this.wrench.connect('clicked', () => { ExtensionUtils.openPrefs(); });
-    item.add_child(this.wrench);
+             this._updateSpacing();
 
-    if (this.provider.hasSettings()) {
-      this.cog = new St.Button({
-        reactive: true,
-        can_focus: true,
-        track_hover: true,
-        accessible_name: 'Open Nvidia Settings',
-        style_class: 'button',
-        child: new St.Icon({
-          icon_name: 'cog-symbolic',
-          gicon: GIcons.Cog,
-        }),
-      });
-      this.cog.connect('clicked', () => this.provider.openSettings());
-      item.actor.add_child(this.cog);
-    }
+             this._settings.set_strv(PROVIDER_SETTINGS[p], flags);
+         }).catch(() => {
+             this._error = true;
+         });
 
-    this.menu.addMenuItem(item);
-  }
-  _updatePollTime() {
-    if (!this._error) {
-      this._addTimeout(this._settings.get_int(SETTINGS_REFRESH));
-    }
-  }
-  _updateTempUnits() {
-    let unit = 0;
+         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
-    for (let i = 0; i < this.providerProperties.length; i++) {
-      if (this.providerProperties[i].getName() == "Temperature") {
+         let item = new PopupMenu.PopupBaseMenuItem({
+             reactive: false,
+             can_focus: false,
+         });
 
-        unit = this._settings.get_int(SETTINGS_TEMP_UNIT)
-        this.providerProperties[i].setUnit(unit)
-      }
-    }
-    this.processor.process();
-  }
-  _updatePanelPosition() {
-    this.container.get_parent().remove_actor(this.container);
+         this.wrench = new St.Button({
+             reactive: true,
+             can_focus: true,
+             track_hover: true,
+             accessible_name: 'Open Preferences',
+             style_class: 'button',
+             child: new St.Icon({
+                 icon_name: 'wrench-symbolic',
+                 gicon: GIcons.Wrench,
+             }),
+         });
+         this.wrench.connect('clicked', () => {
+             ExtensionUtils.openPrefs();
+         });
+         item.add_child(this.wrench);
 
-    let boxes = {
-      left: Main.panel._leftBox,
-      center: Main.panel._centerBox,
-      right: Main.panel._rightBox
-    };
+         if (this.provider.hasSettings()) {
+             this.cog = new St.Button({
+                 reactive: true,
+                 can_focus: true,
+                 track_hover: true,
+                 accessible_name: 'Open Nvidia Settings',
+                 style_class: 'button',
+                 child: new St.Icon({
+                     icon_name: 'cog-symbolic',
+                     gicon: GIcons.Cog,
+                 }),
+             });
+             this.cog.connect('clicked', () => this.provider.openSettings());
+             item.actor.add_child(this.cog);
+         }
 
-    let pos = this.getPanelPosition();
-    boxes[pos].insert_child_at_index(this.container, pos == 'right' ? 0 : -1)
-  }
-  getPanelPosition() {
-    let positions = ["left", "center", "right"];
-    return positions[_settings.get_int(SETTINGS_POSITION)];
-  }
-  _updateSpacing() {
-    let spacing = _settings.get_int(SETTINGS_SPACING);
-    let icons = _settings.get_boolean(SETTINGS_ICONS);
+         this.menu.addMenuItem(item);
+     }
 
-    for (let n = 0; n < this.names.length; n++) {
-      for (let i = 0; i < this.providerProperties.length; i++) {
-        this._items[i][n].reloadBox(spacing, icons);
-      }
-    }
-  }
-  /*
+     _updatePollTime() {
+         if (!this._error)
+             this._addTimeout(this._settings.get_int(SETTINGS_REFRESH));
+     }
+
+     _updateTempUnits() {
+         let unit = 0;
+
+         for (let i = 0; i < this.providerProperties.length; i++) {
+             if (this.providerProperties[i].getName() === 'Temperature') {
+                 unit = this._settings.get_int(SETTINGS_TEMP_UNIT);
+                 this.providerProperties[i].setUnit(unit);
+             }
+         }
+         this.processor.process();
+     }
+
+     _updatePanelPosition() {
+         this.container.get_parent().remove_actor(this.container);
+
+         let boxes = {
+             left: Main.panel._leftBox,
+             center: Main.panel._centerBox,
+             right: Main.panel._rightBox,
+         };
+
+         let pos = this.getPanelPosition();
+         boxes[pos].insert_child_at_index(this.container, pos === 'right' ? 0 : -1);
+     }
+
+     getPanelPosition() {
+         let positions = ['left', 'center', 'right'];
+         return positions[_settings.get_int(SETTINGS_POSITION)];
+     }
+
+     _updateSpacing() {
+         let spacing = _settings.get_int(SETTINGS_SPACING);
+         let icons = _settings.get_boolean(SETTINGS_ICONS);
+
+         for (let n = 0; n < this.names.length; n++) {
+             for (let i = 0; i < this.providerProperties.length; i++)
+                 this._items[i][n].reloadBox(spacing, icons);
+         }
+     }
+
+     /*
    * Create and add the timeout which updates values every t seconds
    */
-  _addTimeout(t) {
-    this._removeTimeout();
+     _addTimeout(t) {
+         this._removeTimeout();
 
-    this.timeoutId = GLib.timeout_add_seconds(0, t, () => {
-      this.processor.process();
-      return true;
-    });
-  }
-  /*
+         this.timeoutId = GLib.timeout_add_seconds(0, t, () => {
+             this.processor.process();
+             return true;
+         });
+     }
+
+     /*
    * Remove current timeout
    */
-  _removeTimeout() {
-    if (this.timeoutId != -1) {
-      GLib.source_remove(this.timeoutId);
-      this.timeoutId = -1;
-    }
-  }
-  _addSettingChangedSignal(key, callback) {
-    this._settingChangedSignals.push(this._settings.connect('changed::' + key, callback));
-  }
-  destroy() {
-    this._removeTimeout();
+     _removeTimeout() {
+         if (this.timeoutId !== -1) {
+             GLib.source_remove(this.timeoutId);
+             this.timeoutId = -1;
+         }
+     }
 
-    for (let signal of this._settingChangedSignals) {
-      this._settings.disconnect(signal);
-    };
+     _addSettingChangedSignal(key, callback) {
+         this._settingChangedSignals.push(this._settings.connect(`changed::${key}`, callback));
+     }
 
-    super.destroy();
-  }
-});
+     destroy() {
+         this._removeTimeout();
+
+         for (let signal of this._settingChangedSignals)
+             this._settings.disconnect(signal);
+
+
+         super.destroy();
+     }
+ });
 
 let _menu;
 let _settings;
@@ -468,15 +483,18 @@ let _settings;
  * Init function, nothing major here, do not edit view
  */
 function init() {
-  Gtk.IconTheme.get_default().append_search_path(Me.dir.get_child('icons').get_path());
-  _settings = ExtensionUtils.getSettings();
+    let theme = new Gtk.IconTheme();
+    theme.set_custom_theme(St.Settings.get().gtk_icon_theme);
+    theme.append_search_path(Me.dir.get_child('icons').get_path());
+
+    _settings = ExtensionUtils.getSettings();
 }
 
 function enable() {
     _menu = new MainMenu(_settings);
 
     let pos = _menu.getPanelPosition();
-    Main.panel.addToStatusArea('main-menu', _menu, pos == 'right' ? 0 : -1, pos);
+    Main.panel.addToStatusArea('main-menu', _menu, pos === 'right' ? 0 : -1, pos);
 }
 
 function disable() {

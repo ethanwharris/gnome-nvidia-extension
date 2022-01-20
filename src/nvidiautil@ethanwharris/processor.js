@@ -1,4 +1,4 @@
-/*This file is part of Nvidia Util Gnome Extension.
+/* This file is part of Nvidia Util Gnome Extension.
 
 Nvidia Util Gnome Extension is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -13,6 +13,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Nvidia Util Gnome Extension.  If not, see <http://www.gnu.org/licenses/>.*/
 
+/* exported NVIDIA_SETTINGS NVIDIA_SMI OPTIMUS LIST */
 'use strict';
 
 const Main = imports.ui.main;
@@ -28,76 +29,81 @@ var OPTIMUS = 2;
  * Utility function to perform one function and then another
  */
 function andThen(first, second) {
-  return function (lines) {
-    first(lines);
-    return second(lines);
-  };
+    return function (lines) {
+        first(lines);
+        return second(lines);
+    };
 }
 
 /* const class */
-var Processor = class {
-  //Abstract: true,
-  constructor(name, baseCall, tailCall) {
-    this._name = name;
-    this._baseCall = baseCall;
-    this._tailCall = tailCall;
-    this._call = this._baseCall;
+class Processor {
+    // Abstract: true,
+    constructor(name, baseCall, tailCall) {
+        this._name = name;
+        this._baseCall = baseCall;
+        this._tailCall = tailCall;
+        this._call = this._baseCall;
 
-    this._parseFunction = function (lines) {
-      return;
-    };
-  }
-  parse(output) {
+        this._parseFunction = function () {};
+    }
+
+    parse() {
     // Do Nothing
-  }
-  process() {
-    let call = this._call + this._tailCall;
-    Subprocess.execCommunicate(call.split(' '))
+    }
+
+    process() {
+        let call = this._call + this._tailCall;
+        Subprocess.execCommunicate(call.split(' '))
       .then(output => this.parse(output)).catch(e => {
-        let title = 'Execution of ' + call + ' failed:';
-        Main.notifyError(title, e.message);
+          let title = `Execution of ${call} failed:`;
+          Main.notifyError(title, e.message);
       });
-  }
-  addProperty(parseFunction, callExtension) {
-    this._call += callExtension;
-    this._parseFunction = andThen(this._parseFunction, parseFunction);
-  }
-  getName() {
-    return this._name;
-  }
+    }
+
+    addProperty(parseFunction, callExtension) {
+        this._call += callExtension;
+        this._parseFunction = andThen(this._parseFunction, parseFunction);
+    }
+
+    getName() {
+        return this._name;
+    }
 }
 
-var NvidiaSettingsProcessor = class extends Processor {
-  constructor() {
-    super('nvidia-settings', 'nvidia-settings ', '-t');
-  }
-  parse(output) {
-    this._parseFunction(output.split('\n'));
-  }
+class NvidiaSettingsProcessor extends Processor {
+    constructor() {
+        super('nvidia-settings', 'nvidia-settings ', '-t');
+    }
+
+    parse(output) {
+        this._parseFunction(output.split('\n'));
+    }
 }
 
-var OptimusSettingsProcessor = class extends Processor {
-  constructor() {
-    super('optirun nvidia-smi', 'optirun nvidia-smi --query-gpu=', ' --format=csv,noheader,nounits');
-  }
-  parse(output) {
-    let items = output.split('\n').map(line => line.split(',')).flat();
-    this._parseFunction(items);
-  }
+class OptimusSettingsProcessor extends Processor {
+    constructor() {
+        super('optirun nvidia-smi', 'optirun nvidia-smi --query-gpu=', ' --format=csv,noheader,nounits');
+    }
+
+    parse(output) {
+        let items = output.split('\n').map(line => line.split(',')).flat();
+        this._parseFunction(items);
+    }
 }
 
-var NvidiaSmiProcessor = class extends Processor {
-  constructor() {
-    super('nvidia-smi', 'nvidia-smi --query-gpu=', ' --format=csv,noheader,nounits');
-  }
-  parse(output) {
-    let items = output.split('\n').map(line => line.split(',')).flat();
-    this._parseFunction(items);
-  }
+class NvidiaSmiProcessor extends Processor {
+    constructor() {
+        super('nvidia-smi', 'nvidia-smi --query-gpu=', ' --format=csv,noheader,nounits');
+    }
+
+    parse(output) {
+        let items = output.split('\n').map(line => line.split(',')).flat();
+        this._parseFunction(items);
+    }
 }
 
 var LIST = [
-  NvidiaSettingsProcessor,
-  NvidiaSmiProcessor,
-  OptimusSettingsProcessor
+    NvidiaSettingsProcessor,
+    NvidiaSmiProcessor,
+    OptimusSettingsProcessor,
 ];
