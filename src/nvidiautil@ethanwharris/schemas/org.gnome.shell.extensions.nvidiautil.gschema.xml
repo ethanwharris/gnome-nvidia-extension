@@ -1,3 +1,5 @@
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- Copyright Contributors to the gnome-nvidia-extension project.-->
 <schemalist gettext-domain="gse-nvidiautil">
    <schema id="org.gnome.shell.extensions.nvidiautil" path="/org/gnome/shell/extensions/nvidiautil/">
      <key name="refreshrate" type="i">
