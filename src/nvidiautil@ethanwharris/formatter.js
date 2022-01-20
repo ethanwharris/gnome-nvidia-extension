@@ -87,14 +87,14 @@ var TempFormatter = class extends Formatter {
         if (this.currentUnit === CENTIGRADE)
             return this._formatCentigrade(value);
         else if (this.currentUnit === FAHRENHEIT)
-            return this._formatFehrenheit(value);
+            return this._formatFahrenheit(value);
     }
 
     _formatCentigrade(value) {
         return `${value}\xB0C`;
     }
 
-    _formatFehrenheit(value) {
-        return `${Math.floor(value * 9 / 5 + 32)}\xB0C`;
+    _formatFahrenheit(value) {
+        return `${Math.floor(value * 9 / 5 + 32)}\xB0F`;
     }
 };
