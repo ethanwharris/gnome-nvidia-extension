@@ -1,3 +1,6 @@
+<? SPDX-License-Identifier: GPL-3.0-or-later ?>
+<? Copyright Contributors to the gnome-nvidia-extension project. ?>
+
 # Prerequisites
 
 Please answer the following questions for yourself before submitting an issue.
