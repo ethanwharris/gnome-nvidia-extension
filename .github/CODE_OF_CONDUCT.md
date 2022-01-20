@@ -1,5 +1,5 @@
-<? SPDX-License-Identifier: GPL-3.0-or-later ?>
-<? Copyright Contributors to the gnome-nvidia-extension project. ?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- Copyright Contributors to the gnome-nvidia-extension project. -->
 
 # Contributor Covenant Code of Conduct
 
