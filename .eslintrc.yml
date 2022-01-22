@@ -3,9 +3,11 @@
 # SPDX-FileCopyrightText: 2018 Claudio André <claudioandre.br@gmail.com>
 env:
   es2021: true
-extends: 'eslint:recommended'
-#plugins:
-#  - jsdoc
+# extends: 'eslint:recommended'
+# Enable jsdoc and import their recommended settings (changed from original)
+plugins:
+  - jsdoc
+extends: ['eslint:recommended', 'plugin:jsdoc/recommended']
 rules:
   array-bracket-newline:
     - error
@@ -63,6 +65,7 @@ rules:
       - 'CallExpression[callee.object.name=GObject][callee.property.name=registerClass] > ClassExpression:first-child'
       # Allow dedenting chained member expressions
       MemberExpression: 'off'
+  # Original GJS jsdoc settings, disabled in favour of recommended settings
   # jsdoc/check-alignment: error
   # jsdoc/check-param-names: error
   # jsdoc/check-tag-names: error
