@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-3.0-or-later */
-/* SPDX-FileCopyrightText: Contributors to the gnome-nvidia-extension project. */
+/* SPDX-License-Identifier: MIT */
+/* SPDX-FileCopyrightText: 2021 Evan Welsh */
 
 /* exported execCommunicate execCheck */
 /* eslint-disable require-await */
