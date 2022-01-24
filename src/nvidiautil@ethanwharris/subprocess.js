@@ -31,10 +31,10 @@ async function execCheck(argv, cancellable = null) {
 
 
     return new Promise((resolve, reject) => {
-        proc.wait_check_async(null, (_proc, res) => {
+        proc.wait_check_async(null, (proc_, res) => {
             try {
-                if (!_proc.wait_check_finish(res)) {
-                    let status = _proc.get_exit_status();
+                if (!proc_.wait_check_finish(res)) {
+                    let status = proc_.get_exit_status();
 
                     throw new Gio.IOErrorEnum({
                         code: Gio.io_error_from_errno(status),
@@ -85,10 +85,10 @@ async function execCommunicate(argv, input = null, cancellable = null) {
 
 
     return new Promise((resolve, reject) => {
-        proc.communicate_utf8_async(input, null, (_proc, res) => {
+        proc.communicate_utf8_async(input, null, (proc_, res) => {
             try {
-                let [, stdout, stderr] = _proc.communicate_utf8_finish(res);
-                let status = _proc.get_exit_status();
+                let [, stdout, stderr] = proc_.communicate_utf8_finish(res);
+                let status = proc_.get_exit_status();
 
                 if (status !== 0) {
                     throw new Gio.IOErrorEnum({
