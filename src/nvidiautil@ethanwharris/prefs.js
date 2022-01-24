@@ -56,15 +56,18 @@ const SETTINGS = {
 
 let settings;
 
-/*
+/**
  * Initialise this
  */
 function init() {
     settings = ExtensionUtils.getSettings();
 }
 
-/*
+/**
  * Construct the individual widget for an individual setting
+ *
+ * @param {string} setting Key from the SETTINGS dictionary
+ * @returns {object} GTK box for this single setting
  */
 function buildSettingWidget(setting) {
     if (SETTINGS[setting].type === 'noshow')
@@ -141,8 +144,10 @@ function buildSettingWidget(setting) {
     return box;
 }
 
-/*
+/**
  * Construct the entire widget for the settings dialog
+ *
+ * @returns {object} GTK box containing the entire settings dialog
  */
 function buildPrefsWidget() {
     let vbox = new Gtk.Box({orientation: Gtk.Orientation.VERTICAL, spacing: 10});

@@ -427,9 +427,7 @@ var MainMenu = GObject.registerClass(
          }
      }
 
-     /*
-   * Create and add the timeout which updates values every t seconds
-   */
+     /* Create and add the timeout which updates values every t seconds */
      _addTimeout(t) {
          this._removeTimeout();
 
@@ -439,9 +437,7 @@ var MainMenu = GObject.registerClass(
          });
      }
 
-     /*
-   * Remove current timeout
-   */
+     /* Remove current timeout */
      _removeTimeout() {
          if (this.timeoutId !== -1) {
              GLib.source_remove(this.timeoutId);
@@ -467,7 +463,7 @@ var MainMenu = GObject.registerClass(
 let _menu;
 let _settings;
 
-/*
+/**
  * Init function, nothing major here, do not edit view
  */
 function init() {
@@ -478,6 +474,9 @@ function init() {
     _settings = ExtensionUtils.getSettings();
 }
 
+/**
+ * When the extension is enabled, add the menu to gnome panel
+ */
 function enable() {
     _menu = new MainMenu(_settings);
 
@@ -485,6 +484,9 @@ function enable() {
     Main.panel.addToStatusArea('main-menu', _menu, pos === 'right' ? 0 : -1, pos);
 }
 
+/**
+ * When the extension is disabled, remove the menu from gnome panel
+ */
 function disable() {
     _menu.destroy();
 }
