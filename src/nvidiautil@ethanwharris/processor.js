@@ -13,19 +13,21 @@ var NVIDIA_SETTINGS = 0;
 var NVIDIA_SMI = 1;
 var OPTIMUS = 2;
 
-/*
+/**
  * Utility function to perform one function and then another
+ *
+ * @param {Function} first The function executed first
+ * @param {Function} second The function executed second
+ * @returns {Function} A function that runs both given functions
  */
-function andThen(first, second) {
+function _andThen(first, second) {
     return function (lines) {
         first(lines);
         return second(lines);
     };
 }
 
-/* const class */
-class Processor {
-    // Abstract: true,
+class _Processor {
     constructor(name, baseCall, tailCall) {
         this._name = name;
         this._baseCall = baseCall;
@@ -36,21 +38,19 @@ class Processor {
     }
 
     parse() {
-    // Do Nothing
+        // Implemented by child classes
     }
 
     process() {
         let call = this._call + this._tailCall;
         Subprocess.execCommunicate(call.split(' '))
-      .then(output => this.parse(output)).catch(e => {
-          let title = `Execution of ${call} failed:`;
-          Main.notifyError(title, e.message);
-      });
+      .then(output => this.parse(output))
+      .catch(e => Main.notifyError(`Execution of ${call} failed:`, e.message));
     }
 
     addProperty(parseFunction, callExtension) {
         this._call += callExtension;
-        this._parseFunction = andThen(this._parseFunction, parseFunction);
+        this._parseFunction = _andThen(this._parseFunction, parseFunction);
     }
 
     getName() {
@@ -58,7 +58,7 @@ class Processor {
     }
 }
 
-class NvidiaSettingsProcessor extends Processor {
+class NvidiaSettingsProcessor extends _Processor {
     constructor() {
         super('nvidia-settings', 'nvidia-settings ', '-t');
     }
@@ -68,7 +68,7 @@ class NvidiaSettingsProcessor extends Processor {
     }
 }
 
-class OptimusSettingsProcessor extends Processor {
+class OptimusSettingsProcessor extends _Processor {
     constructor() {
         super('optirun nvidia-smi', 'optirun nvidia-smi --query-gpu=', ' --format=csv,noheader,nounits');
     }
@@ -79,7 +79,7 @@ class OptimusSettingsProcessor extends Processor {
     }
 }
 
-class NvidiaSmiProcessor extends Processor {
+class NvidiaSmiProcessor extends _Processor {
     constructor() {
         super('nvidia-smi', 'nvidia-smi --query-gpu=', ' --format=csv,noheader,nounits');
     }
@@ -90,6 +90,7 @@ class NvidiaSmiProcessor extends Processor {
     }
 }
 
+/* The public interface consists of this array and the constants for indexing */
 var LIST = [
     NvidiaSettingsProcessor,
     NvidiaSmiProcessor,
