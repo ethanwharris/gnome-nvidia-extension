@@ -6,10 +6,10 @@
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
+
 const SettingsProperties = Me.imports.settingsProperties;
 const SmiProperties = Me.imports.smiProperties;
 const Processor = Me.imports.processor;
-
 const SettingsProvider = Me.imports.settingsProvider;
 const SmiProvider = Me.imports.smiProvider;
 

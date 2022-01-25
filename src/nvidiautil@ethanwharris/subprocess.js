@@ -5,9 +5,7 @@
 /* eslint-disable require-await */
 'use strict';
 
-const GLib = imports.gi.GLib;
-const Gio = imports.gi.Gio;
-
+const {Gio, GLib} = imports.gi;
 
 /**
  * Execute a command asynchronously and check the exit status.

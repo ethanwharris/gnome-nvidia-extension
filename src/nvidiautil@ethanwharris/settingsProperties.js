@@ -6,6 +6,7 @@
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
+
 const Formatter = Me.imports.formatter;
 const Property = Me.imports.property;
 const GIcons = Me.imports.gIcons;

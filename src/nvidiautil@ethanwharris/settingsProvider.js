@@ -8,6 +8,7 @@ const Shell = imports.gi.Shell;
 const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
+
 const Processor = Me.imports.processor;
 const SettingsProperties = Me.imports.settingsProperties;
 const Subprocess = Me.imports.subprocess;

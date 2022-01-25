@@ -4,9 +4,8 @@
 /* exported init buildPrefsWidget */
 'use strict';
 
-const Gtk = imports.gi.Gtk;
+const {GObject, Gtk} = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
-const GObject = imports.gi.GObject;
 
 const SETTINGS = {
     refreshrate: {

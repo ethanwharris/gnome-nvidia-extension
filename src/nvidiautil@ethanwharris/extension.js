@@ -4,15 +4,10 @@
 /* exported init enable disable */
 'use strict';
 
-const St = imports.gi.St;
+const {Clutter, GLib, GObject, Gtk, St} = imports.gi;
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
-const GLib = imports.gi.GLib;
-const Gtk = imports.gi.Gtk;
-const Clutter = imports.gi.Clutter;
-const GObject = imports.gi.GObject;
-
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
