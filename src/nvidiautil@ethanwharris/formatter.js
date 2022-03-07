@@ -7,8 +7,7 @@
 var CENTIGRADE = 0;
 var FAHRENHEIT = 1;
 
-class Formatter {
-    // Abstract: true,
+class _Formatter {
     constructor(name) {
         this._name = name;
     }
@@ -28,18 +27,15 @@ class Formatter {
     }
 }
 
-var PercentFormatter = class extends Formatter {
+var PercentFormatter = class extends _Formatter {
     // implicitly use super constructor
-    // constructor(name) {
-    //     super(name);
-    // }
 
     _format(values) {
         return `${values[0]}%`;
     }
 };
 
-var PowerFormatter = class extends Formatter {
+var PowerFormatter = class extends _Formatter {
     constructor() {
         super('PowerFormatter');
     }
@@ -49,7 +45,7 @@ var PowerFormatter = class extends Formatter {
     }
 };
 
-var MemoryFormatter = class extends Formatter {
+var MemoryFormatter = class extends _Formatter {
     constructor() {
         super('MemoryFormatter');
     }
@@ -60,8 +56,7 @@ var MemoryFormatter = class extends Formatter {
     }
 };
 
-var TempFormatter = class extends Formatter {
-    // currentUnit: 0,
+var TempFormatter = class extends _Formatter {
     constructor(unit) {
         super('TempFormatter');
         this.currentUnit = unit;
@@ -73,16 +68,8 @@ var TempFormatter = class extends Formatter {
 
     _format(value) {
         if (this.currentUnit === CENTIGRADE)
-            return this._formatCentigrade(value);
+            return `${value}\xB0C`;
         else if (this.currentUnit === FAHRENHEIT)
-            return this._formatFahrenheit(value);
-    }
-
-    _formatCentigrade(value) {
-        return `${value}\xB0C`;
-    }
-
-    _formatFahrenheit(value) {
-        return `${Math.floor(value * 9 / 5 + 32)}\xB0F`;
+            return `${Math.floor(value * 9 / 5 + 32)}\xB0F`;
     }
 };

@@ -7,6 +7,7 @@
 const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
+
 const Processor = Me.imports.processor;
 const SmiProperties = Me.imports.smiProperties;
 const Subprocess = Me.imports.subprocess;
