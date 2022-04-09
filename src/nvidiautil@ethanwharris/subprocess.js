@@ -1,11 +1,11 @@
-// Copyright 2020 Evan Welsh
-// SPDX-License-Identifier: MIT
+/* SPDX-License-Identifier: MIT */
+/* SPDX-FileCopyrightText: 2021 Evan Welsh */
 
+/* exported execCommunicate execCheck */
+/* eslint-disable require-await */
 'use strict';
 
-const GLib = imports.gi.GLib;
-const Gio = imports.gi.Gio;
-
+const {Gio, GLib} = imports.gi;
 
 /**
  * Execute a command asynchronously and check the exit status.
@@ -19,24 +19,24 @@ const Gio = imports.gi.Gio;
 async function execCheck(argv, cancellable = null) {
     let cancelId = 0;
     let proc = new Gio.Subprocess({
-        argv: argv,
-        flags: Gio.SubprocessFlags.NONE
+        argv,
+        flags: Gio.SubprocessFlags.NONE,
     });
     proc.init(cancellable);
 
-    if (cancellable instanceof Gio.Cancellable) {
+    if (cancellable instanceof Gio.Cancellable)
         cancelId = cancellable.connect(() => proc.force_exit());
-    }
+
 
     return new Promise((resolve, reject) => {
-        proc.wait_check_async(null, (proc, res) => {
+        proc.wait_check_async(null, (proc_, res) => {
             try {
-                if (!proc.wait_check_finish(res)) {
-                    let status = proc.get_exit_status();
+                if (!proc_.wait_check_finish(res)) {
+                    let status = proc_.get_exit_status();
 
                     throw new Gio.IOErrorEnum({
                         code: Gio.io_error_from_errno(status),
-                        message: GLib.strerror(status)
+                        message: GLib.strerror(status),
                     });
                 }
 
@@ -44,9 +44,8 @@ async function execCheck(argv, cancellable = null) {
             } catch (e) {
                 reject(e);
             } finally {
-                if (cancelId > 0) {
+                if (cancelId > 0)
                     cancellable.disconnect(cancelId);
-                }
             }
         });
     });
@@ -67,32 +66,32 @@ async function execCheck(argv, cancellable = null) {
  */
 async function execCommunicate(argv, input = null, cancellable = null) {
     let cancelId = 0;
-    let flags = (Gio.SubprocessFlags.STDOUT_PIPE |
-        Gio.SubprocessFlags.STDERR_PIPE);
+    let flags = Gio.SubprocessFlags.STDOUT_PIPE |
+        Gio.SubprocessFlags.STDERR_PIPE;
 
     if (input !== null)
         flags |= Gio.SubprocessFlags.STDIN_PIPE;
 
     let proc = new Gio.Subprocess({
-        argv: argv,
-        flags: flags
+        argv,
+        flags,
     });
     proc.init(cancellable);
 
-    if (cancellable instanceof Gio.Cancellable) {
+    if (cancellable instanceof Gio.Cancellable)
         cancelId = cancellable.connect(() => proc.force_exit());
-    }
+
 
     return new Promise((resolve, reject) => {
-        proc.communicate_utf8_async(input, null, (proc, res) => {
+        proc.communicate_utf8_async(input, null, (proc_, res) => {
             try {
-                let [, stdout, stderr] = proc.communicate_utf8_finish(res);
-                let status = proc.get_exit_status();
+                let [, stdout, stderr] = proc_.communicate_utf8_finish(res);
+                let status = proc_.get_exit_status();
 
                 if (status !== 0) {
                     throw new Gio.IOErrorEnum({
                         code: Gio.io_error_from_errno(status),
-                        message: stderr ? stderr.trim() : GLib.strerror(status)
+                        message: stderr ? stderr.trim() : GLib.strerror(status),
                     });
                 }
 
@@ -100,9 +99,8 @@ async function execCommunicate(argv, input = null, cancellable = null) {
             } catch (e) {
                 reject(e);
             } finally {
-                if (cancelId > 0) {
+                if (cancelId > 0)
                     cancellable.disconnect(cancelId);
-                }
             }
         });
     });
