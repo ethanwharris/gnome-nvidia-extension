@@ -13,7 +13,8 @@ const GIcons = Me.imports.gIcons;
 
 var UtilisationProperty = class extends Property.Property {
     constructor(gpuCount, processor) {
-        super(processor, 'Utilisation', '-q GPUUtilization ', GIcons.Card, new Formatter.PercentFormatter('UtilisationFormatter'), gpuCount);
+        super(processor, 'Utilisation', '-q GPUUtilization ', GIcons.Icon.Card.get(),
+            new Formatter.PercentFormatter('UtilisationFormatter'), gpuCount);
     }
 
     parse(lines) {
@@ -27,7 +28,8 @@ var UtilisationProperty = class extends Property.Property {
 
 var TemperatureProperty = class extends Property.Property {
     constructor(gpuCount, processor) {
-        super(processor, 'Temperature', '-q [GPU]/GPUCoreTemp ', GIcons.Temp, new Formatter.TempFormatter(Formatter.CENTIGRADE), gpuCount);
+        super(processor, 'Temperature', '-q [GPU]/GPUCoreTemp ', GIcons.Icon.Temp.get(),
+            new Formatter.TempFormatter(Formatter.CENTIGRADE), gpuCount);
     }
 
     setUnit(unit) {
@@ -37,12 +39,12 @@ var TemperatureProperty = class extends Property.Property {
 
 var MemoryProperty = class extends Property.Property {
     constructor(gpuCount, processor) {
-        super(processor, 'Memory Usage', '-q UsedDedicatedGPUMemory -q TotalDedicatedGPUMemory ', GIcons.RAM, new Formatter.MemoryFormatter(), gpuCount);
+        super(processor, 'Memory Usage', '-q UsedDedicatedGPUMemory -q TotalDedicatedGPUMemory ', GIcons.Icon.RAM.get(),
+            new Formatter.MemoryFormatter(), gpuCount);
     }
 
     parse(lines) {
         let values = [];
-
         let used_memory = [];
 
         for (let i = 0; i < this._gpuCount; i++)
@@ -61,6 +63,7 @@ var MemoryProperty = class extends Property.Property {
 
 var FanProperty = class extends Property.Property {
     constructor(gpuCount, processor) {
-        super(processor, 'Fan Speed', '-q GPUCurrentFanSpeed ', GIcons.Fan, new Formatter.PercentFormatter('FanFormatter'), gpuCount);
+        super(processor, 'Fan Speed', '-q GPUCurrentFanSpeed ', GIcons.Icon.Fan.get(),
+            new Formatter.PercentFormatter('FanFormatter'), gpuCount);
     }
 };
