@@ -8,14 +8,14 @@ const Gio = imports.gi.Gio;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
-class Icon {
-    static Card = new Icon('card-symbolic');
-    static Temp = new Icon('temp-symbolic');
-    static RAM = new Icon('ram-symbolic');
-    static Fan = new Icon('fan-symbolic');
-    static Power = new Icon('power-symbolic');
-    static Wrench = new Icon('wrench-symbolic');
-    static Cog = new Icon('cog-symbolic');
+var Icon = class {
+    static Card = new this('card-symbolic');
+    static Temp = new this('temp-symbolic');
+    static RAM = new this('ram-symbolic');
+    static Fan = new this('fan-symbolic');
+    static Power = new this('power-symbolic');
+    static Wrench = new this('wrench-symbolic');
+    static Cog = new this('cog-symbolic');
 
     constructor(name) {
         this.name = name;
