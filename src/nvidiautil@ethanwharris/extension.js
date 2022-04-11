@@ -459,20 +459,10 @@ let _menu;
 let _settings;
 
 /**
- * Init function, nothing major here, do not edit view
- */
-function init() {
-    let theme = new Gtk.IconTheme();
-    theme.set_custom_theme(St.Settings.get().gtk_icon_theme);
-    theme.append_search_path(Me.dir.get_child('icons').get_path());
-
-    _settings = ExtensionUtils.getSettings();
-}
-
-/**
  * When the extension is enabled, add the menu to gnome panel
  */
 function enable() {
+    _settings = ExtensionUtils.getSettings();
     _menu = new MainMenu(_settings);
 
     let pos = _menu.getPanelPosition();
@@ -484,4 +474,6 @@ function enable() {
  */
 function disable() {
     _menu.destroy();
+    _menu = null;
+    _settings = null;
 }
