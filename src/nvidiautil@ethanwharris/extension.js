@@ -4,7 +4,7 @@
 /* exported init enable disable */
 'use strict';
 
-const {Clutter, GLib, GObject, Gtk, St} = imports.gi;
+const {Clutter, GLib, GObject, St} = imports.gi;
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;

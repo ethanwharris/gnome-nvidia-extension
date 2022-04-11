@@ -24,4 +24,4 @@ var Icon = class {
     get() {
         return Gio.icon_new_for_string(`${Me.path}/icons/${this.name}.svg`);
     }
-}
+};
