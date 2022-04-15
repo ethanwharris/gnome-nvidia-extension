@@ -4,7 +4,7 @@
 /* exported init enable disable */
 'use strict';
 
-const {Clutter, GLib, GObject, Gtk, St} = imports.gi;
+const {Clutter, GLib, GObject, St} = imports.gi;
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
@@ -349,8 +349,8 @@ class MainMenu extends PanelMenu.Button {
             accessible_name: 'Open Preferences',
             style_class: 'button',
             child: new St.Icon({
-                icon_name: 'wrench-symbolic',
-                gicon: GIcons.Wrench,
+                icon_name: GIcons.Icon.Wrench.name,
+                gicon: GIcons.Icon.Wrench.get(),
             }),
         });
         this.wrench.connect('clicked', () => {
@@ -366,8 +366,8 @@ class MainMenu extends PanelMenu.Button {
                 accessible_name: 'Open Nvidia Settings',
                 style_class: 'button',
                 child: new St.Icon({
-                    icon_name: 'cog-symbolic',
-                    gicon: GIcons.Cog,
+                    icon_name: GIcons.Icon.Cog.name,
+                    gicon: GIcons.Icon.Cog.get(),
                 }),
             });
             this.cog.connect('clicked', () => this.provider.openSettings());
@@ -459,20 +459,10 @@ let _menu;
 let _settings;
 
 /**
- * Init function, nothing major here, do not edit view
- */
-function init() {
-    let theme = new Gtk.IconTheme();
-    theme.set_custom_theme(St.Settings.get().gtk_icon_theme);
-    theme.append_search_path(Me.dir.get_child('icons').get_path());
-
-    _settings = ExtensionUtils.getSettings();
-}
-
-/**
  * When the extension is enabled, add the menu to gnome panel
  */
 function enable() {
+    _settings = ExtensionUtils.getSettings();
     _menu = new MainMenu(_settings);
 
     let pos = _menu.getPanelPosition();
@@ -484,4 +474,6 @@ function enable() {
  */
 function disable() {
     _menu.destroy();
+    _menu = null;
+    _settings = null;
 }
