@@ -66,4 +66,36 @@ var FanProperty = class extends Property.Property {
         super(processor, 'Fan Speed', '-q GPUCurrentFanSpeed ', GIcons.Icon.Fan.get(),
             new Formatter.PercentFormatter('FanFormatter'), gpuCount);
     }
+
+    // NOTE: to check logs, use `journalctl` and `journalctl | grep -e "nvidia gnome extension"`
+    //       (the former for errors, latter for expected output)
+    parse(lines) {
+        let values = [];
+
+        // Sanity check: How many times are we going to loop
+        log('[nvidia gnome extension]: gpu #: `' + this._gpuCount + '`');
+
+        for (let i = 0; i < this._gpuCount; i++) {
+            let currentValue = lines.shift();
+
+            // Sanity check: Output current value
+            log('[nvidia gnome extension]: fan query output: `' + currentValue + '`');
+
+            // TEST: used for ensuring the new value works
+            //values = values.concat("N/A");
+
+            // NOTE: this may change... could check for "ERROR" prefix instead to be more stable?
+            // TODO: check nvidia-smi equivalent message
+            if (currentValue == "ERROR: The requested operation is not available on target device") {
+                values = values.concat("N/A");
+            } else {
+                values = values.concat(this._formatter.format([currentValue]));
+            }
+        }
+
+        // Sanity check: Will not be present in logs if this._formatter.format(...) fails
+        log('[nvidia gnome extension]: done! returning values..')
+
+        return values;
+    }
 };
