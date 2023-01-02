@@ -30,6 +30,9 @@ const PROVIDERS = [
     SettingsProvider.SettingsProvider,
     SmiProvider.SmiProvider,
     OptimusProvider.OptimusProvider,
+    SettingsAndSmiProvider.SettingsAndSmiLaptopProvider,
+    SettingsProvider.SettingsLaptopProvider,
+    SmiProvider.SmiLaptopProvider,
 ];
 
 const PROVIDER_SETTINGS = [
@@ -37,6 +40,9 @@ const PROVIDER_SETTINGS = [
     'settingsconfig',
     'smiconfig',
     'optimusconfig',
+    'settingsandsmilaptopconfig',
+    'settingslaptopconfig',
+    'smilaptopconfig',
 ];
 
 const PropertyMenuItem = GObject.registerClass(

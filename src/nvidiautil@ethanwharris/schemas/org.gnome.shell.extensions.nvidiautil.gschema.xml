@@ -56,5 +56,14 @@
      <key name="optimusconfig" type="as">
        <default>[]</default>
      </key>
+     <key name="settingsandsmilaptopconfig" type="as">
+       <default>[]</default>
+     </key>
+     <key name="settingslaptopconfig" type="as">
+       <default>[]</default>
+     </key>
+     <key name="smilaptopconfig" type="as">
+       <default>[]</default>
+     </key>
   </schema>
 </schemalist>

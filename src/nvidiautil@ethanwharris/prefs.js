@@ -35,7 +35,7 @@ const SETTINGS = {
         key: 'provider',
         label: 'Properties Provider',
         tooltip: 'Select the properties provider to use',
-        options: ['Nvidia Settings and SMI', 'Nvidia Settings', 'Nvidia SMI', 'Optimus with Bumblebee'],
+        options: ['Nvidia Settings and SMI', 'Nvidia Settings', 'Nvidia SMI', 'Optimus with Bumblebee', 'Nvidia Settings and SMI (Laptops)', 'Nvidia Settings (Laptops)', 'Nvidia SMI (Laptops)'],
     },
     spacing: {
         type: 'int',
