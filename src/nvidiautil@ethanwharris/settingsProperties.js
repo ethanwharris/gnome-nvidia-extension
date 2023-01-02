@@ -69,13 +69,13 @@ var FanProperty = class extends Property.Property {
 
     parse(lines) {
         let values = [];
-        
+
         for (let i = 0; i < this._gpuCount; i++) {
             let currentValue = lines.shift();
-            
+
             values = values.concat(this._formatter.format([currentValue]));
         }
-        
+
         return values;
     }
 };
