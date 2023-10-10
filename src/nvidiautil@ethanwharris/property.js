@@ -4,7 +4,7 @@
 /* exported Property */
 'use strict';
 
-var Property = class {
+export class Property {
     // Abstract: true,
     constructor(processor, name, callExtension, icon, formatter, gpuCount) {
         this._processor = processor;

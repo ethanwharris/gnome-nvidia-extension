@@ -4,11 +4,13 @@
 /* exported NVIDIA_SETTINGS NVIDIA_SMI OPTIMUS LIST */
 'use strict';
 
-const Main = imports.ui.main;
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+//const Main = imports.ui.main;
+//const ExtensionUtils = imports.misc.extensionUtils;
+//const Me = ExtensionUtils.getCurrentExtension();
 
-const Subprocess = Me.imports.subprocess;
+import * as Subprocess from './subprocess.js';
+//const Subprocess = Me.imports.subprocess;
 
 var NVIDIA_SETTINGS = 0;
 var NVIDIA_SMI = 1;

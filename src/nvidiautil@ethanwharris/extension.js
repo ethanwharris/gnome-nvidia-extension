@@ -4,19 +4,33 @@
 /* exported init enable disable */
 'use strict';
 
-const {Clutter, GLib, GObject, St} = imports.gi;
-const Main = imports.ui.main;
-const PanelMenu = imports.ui.panelMenu;
-const PopupMenu = imports.ui.popupMenu;
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
+import Clutter from 'gi://Clutter';
+import GLib from 'gi://GLib';
+import GObject from 'gi://GObject';
+import St from 'gi://St';
+//const {Clutter, GLib, GObject, St} = imports.gi;
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
+//const Main = imports.ui.main;
+//const PanelMenu = imports.ui.panelMenu;
+//const PopupMenu = imports.ui.popupMenu;
+import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
+//const ExtensionUtils = imports.misc.extensionUtils;
+//const Me = ExtensionUtils.getCurrentExtension();
 
-const ProcessorHandler = Me.imports.processorHandler;
-const SettingsProvider = Me.imports.settingsProvider;
-const SmiProvider = Me.imports.smiProvider;
-const SettingsAndSmiProvider = Me.imports.settingsAndSmiProvider;
-const OptimusProvider = Me.imports.optimusProvider;
-const GIcons = Me.imports.gIcons;
+import {ProcessorHandler} from './processorHandler.js';
+import {SettingsProvider} from './settingsProvider.js';
+import {SmiProvider} from './smiProvider.js';
+import {SettingsAndSmiProvider} from './settingsAndSmiProvider.js';
+import {OptimusProvider} from './optimusProvider.js';
+import * as GIcons from './gIcons.js';
+//const ProcessorHandler = Me.imports.processorHandler;
+//const SettingsProvider = Me.imports.settingsProvider;
+//const SmiProvider = Me.imports.smiProvider;
+//const SettingsAndSmiProvider = Me.imports.settingsAndSmiProvider;
+//const OptimusProvider = Me.imports.optimusProvider;
+//const GIcons = Me.imports.gIcons;
 
 const SETTINGS_REFRESH = 'refreshrate';
 const SETTINGS_PROVIDER = 'provider';
@@ -26,10 +40,10 @@ const SETTINGS_SPACING = 'spacing';
 const SETTINGS_ICONS = 'icons';
 
 const PROVIDERS = [
-    SettingsAndSmiProvider.SettingsAndSmiProvider,
-    SettingsProvider.SettingsProvider,
-    SmiProvider.SmiProvider,
-    OptimusProvider.OptimusProvider,
+    SettingsAndSmiProvider,
+    SettingsProvider,
+    SmiProvider,
+    OptimusProvider,
 ];
 
 const PROVIDER_SETTINGS = [
@@ -221,7 +235,7 @@ class MainMenu extends PanelMenu.Button {
         this._settings = settings;
         this._error = false;
 
-        this.processor = new ProcessorHandler.ProcessorHandler();
+        this.processor = new ProcessorHandler();
 
         this.setMenu(new _PersistentPopupMenu(this, 0.0));
 
@@ -354,7 +368,9 @@ class MainMenu extends PanelMenu.Button {
             }),
         });
         this.wrench.connect('clicked', () => {
-            ExtensionUtils.openPrefs();
+            let extensionObject = Extension.lookupByURL(import.meta.url);
+            extensionObject.openPreferences();
+            //ExtensionUtils.openPrefs();
         });
         item.add_child(this.wrench);
 
@@ -458,22 +474,24 @@ class MainMenu extends PanelMenu.Button {
 let _menu;
 let _settings;
 
-/**
- * When the extension is enabled, add the menu to gnome panel
- */
-function enable() {
-    _settings = ExtensionUtils.getSettings();
-    _menu = new MainMenu(_settings);
+export default class NvidiaUtil extends Extension {
+    /**
+     * When the extension is enabled, add the menu to gnome panel
+     */
+    enable() {
+        _settings = this.getSettings();
+        _menu = new MainMenu(_settings);
 
-    let pos = _menu.getPanelPosition();
-    Main.panel.addToStatusArea('main-menu', _menu, pos === 'right' ? 0 : -1, pos);
-}
+        let pos = _menu.getPanelPosition();
+        Main.panel.addToStatusArea('main-menu', _menu, pos === 'right' ? 0 : -1, pos);
+    }
 
-/**
- * When the extension is disabled, remove the menu from gnome panel
- */
-function disable() {
-    _menu.destroy();
-    _menu = null;
-    _settings = null;
+    /**
+     * When the extension is disabled, remove the menu from gnome panel
+     */
+    disable() {
+        _menu.destroy();
+        _menu = null;
+        _settings = null;
+    }
 }

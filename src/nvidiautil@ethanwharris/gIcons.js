@@ -4,11 +4,14 @@
 /* exported Icon */
 'use strict';
 
-const Gio = imports.gi.Gio;
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
+import Gio from 'gi://Gio';
+//const Gio = imports.gi.Gio;
+import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 
-var Icon = class {
+//const ExtensionUtils = imports.misc.extensionUtils;
+//const Me = ExtensionUtils.getCurrentExtension();
+
+export class Icon {
     static Card = new this('card-symbolic');
     static Temp = new this('temp-symbolic');
     static RAM = new this('ram-symbolic');
@@ -22,6 +25,7 @@ var Icon = class {
     }
 
     get() {
-        return Gio.icon_new_for_string(`${Me.path}/icons/${this.name}.svg`);
+        let extensionObject = Extension.lookupByURL(import.meta.url);
+        return Gio.icon_new_for_string(`${extensionObject.path}/icons/${this.name}.svg`);
     }
 };

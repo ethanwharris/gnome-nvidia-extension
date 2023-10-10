@@ -4,16 +4,21 @@
 /* exported SettingsAndSmiProvider */
 'use strict';
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
+//const ExtensionUtils = imports.misc.extensionUtils;
+//const Me = ExtensionUtils.getCurrentExtension();
 
-const SettingsProperties = Me.imports.settingsProperties;
-const SmiProperties = Me.imports.smiProperties;
-const Processor = Me.imports.processor;
-const SettingsProvider = Me.imports.settingsProvider;
-const SmiProvider = Me.imports.smiProvider;
+import * as SettingsProperties from './settingsProperties.js';
+import * as SmiProperties from './smiProperties.js';
+import * as Processor from './processor.js';
+import * as SettingsProvider from './settingsProvider.js';
+import * as SmiProvider from './smiProvider.js';
+//const SettingsProperties = Me.imports.settingsProperties;
+//const SmiProperties = Me.imports.smiProperties;
+//const Processor = Me.imports.processor;
+//const SettingsProvider = Me.imports.settingsProvider;
+//const SmiProvider = Me.imports.smiProvider;
 
-var SettingsAndSmiProvider = class {
+export class SettingsAndSmiProvider {
     constructor() {
         this.settings = new SettingsProvider.SettingsProvider();
         this.smi = new SmiProvider.SmiProvider();

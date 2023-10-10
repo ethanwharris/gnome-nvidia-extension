@@ -4,13 +4,15 @@
 /* exported ProcessorHandler */
 'use strict';
 
-const Main = imports.ui.main;
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+//const Main = imports.ui.main;
+//const ExtensionUtils = imports.misc.extensionUtils;
+//const Me = ExtensionUtils.getCurrentExtension();
 
-const Processor = Me.imports.processor;
+import * as Processor from './processor.js';
+//const Processor = Me.imports.processor;
 
-var ProcessorHandler = class {
+export class ProcessorHandler {
     constructor() {
         this._processors = [false, false, false];
     }
