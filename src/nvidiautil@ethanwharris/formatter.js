@@ -4,8 +4,8 @@
 /* exported CENTIGRADE FAHRENHEIT PercentFormatter PowerFormatter MemoryFormatter TempFormatter */
 'use strict';
 
-var CENTIGRADE = 0;
-var FAHRENHEIT = 1;
+export const CENTIGRADE = 0;
+export const FAHRENHEIT = 1;
 
 class _Formatter {
     constructor(name) {
@@ -27,7 +27,7 @@ class _Formatter {
     }
 }
 
-var PercentFormatter = class extends _Formatter {
+export class PercentFormatter extends _Formatter {
     // implicitly use super constructor
 
     _format(values) {
@@ -35,7 +35,7 @@ var PercentFormatter = class extends _Formatter {
     }
 };
 
-var PowerFormatter = class extends _Formatter {
+export class PowerFormatter extends _Formatter {
     constructor() {
         super('PowerFormatter');
     }
@@ -45,7 +45,7 @@ var PowerFormatter = class extends _Formatter {
     }
 };
 
-var MemoryFormatter = class extends _Formatter {
+export class MemoryFormatter extends _Formatter {
     constructor() {
         super('MemoryFormatter');
     }
@@ -56,7 +56,7 @@ var MemoryFormatter = class extends _Formatter {
     }
 };
 
-var TempFormatter = class extends _Formatter {
+export class TempFormatter extends _Formatter {
     constructor(unit) {
         super('TempFormatter');
         this.currentUnit = unit;

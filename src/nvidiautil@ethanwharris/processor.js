@@ -12,9 +12,9 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as Subprocess from './subprocess.js';
 //const Subprocess = Me.imports.subprocess;
 
-var NVIDIA_SETTINGS = 0;
-var NVIDIA_SMI = 1;
-var OPTIMUS = 2;
+export const NVIDIA_SETTINGS = 0;
+export const NVIDIA_SMI = 1;
+export const OPTIMUS = 2;
 
 /**
  * Utility function to perform one function and then another
@@ -94,7 +94,7 @@ class NvidiaSmiProcessor extends _Processor {
 }
 
 /* The public interface consists of this array and the constants for indexing */
-var LIST = [
+export const LIST = [
     NvidiaSettingsProcessor,
     NvidiaSmiProcessor,
     OptimusSettingsProcessor,
