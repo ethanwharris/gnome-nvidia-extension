@@ -1,22 +1,14 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 /* SPDX-FileCopyrightText: Contributors to the gnome-nvidia-extension project. */
 
-/* exported SettingsProvider */
 'use strict';
 
 import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-//const Shell = imports.gi.Shell;
-//const Main = imports.ui.main;
-//const ExtensionUtils = imports.misc.extensionUtils;
-//const Me = ExtensionUtils.getCurrentExtension();
 
 import * as Processor from './processor.js';
 import * as SettingsProperties from './settingsProperties.js';
 import * as Subprocess from './subprocess.js';
-//const Processor = Me.imports.processor;
-//const SettingsProperties = Me.imports.settingsProperties;
-//const Subprocess = Me.imports.subprocess;
 
 export class SettingsProvider {
     getGpuNames() {
@@ -60,4 +52,4 @@ export class SettingsProvider {
             });
         }
     }
-};
+}

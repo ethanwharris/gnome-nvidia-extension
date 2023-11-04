@@ -1,22 +1,13 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 /* SPDX-FileCopyrightText: Contributors to the gnome-nvidia-extension project. */
 
-/* exported SettingsAndSmiProvider */
 'use strict';
-
-//const ExtensionUtils = imports.misc.extensionUtils;
-//const Me = ExtensionUtils.getCurrentExtension();
 
 import * as SettingsProperties from './settingsProperties.js';
 import * as SmiProperties from './smiProperties.js';
 import * as Processor from './processor.js';
 import * as SettingsProvider from './settingsProvider.js';
 import * as SmiProvider from './smiProvider.js';
-//const SettingsProperties = Me.imports.settingsProperties;
-//const SmiProperties = Me.imports.smiProperties;
-//const Processor = Me.imports.processor;
-//const SettingsProvider = Me.imports.settingsProvider;
-//const SmiProvider = Me.imports.smiProvider;
 
 export class SettingsAndSmiProvider {
     constructor() {
@@ -50,4 +41,4 @@ export class SettingsAndSmiProvider {
     openSettings() {
         this.settings.openSettings();
     }
-};
+}

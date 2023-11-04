@@ -1,23 +1,16 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 /* SPDX-FileCopyrightText: Contributors to the gnome-nvidia-extension project. */
 
-/* exported init enable disable */
 'use strict';
 
 import Clutter from 'gi://Clutter';
 import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
 import St from 'gi://St';
-//const {Clutter, GLib, GObject, St} = imports.gi;
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
-//const Main = imports.ui.main;
-//const PanelMenu = imports.ui.panelMenu;
-//const PopupMenu = imports.ui.popupMenu;
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
-//const ExtensionUtils = imports.misc.extensionUtils;
-//const Me = ExtensionUtils.getCurrentExtension();
 
 import {ProcessorHandler} from './processorHandler.js';
 import {SettingsProvider} from './settingsProvider.js';
@@ -25,12 +18,6 @@ import {SmiProvider} from './smiProvider.js';
 import {SettingsAndSmiProvider} from './settingsAndSmiProvider.js';
 import {OptimusProvider} from './optimusProvider.js';
 import * as GIcons from './gIcons.js';
-//const ProcessorHandler = Me.imports.processorHandler;
-//const SettingsProvider = Me.imports.settingsProvider;
-//const SmiProvider = Me.imports.smiProvider;
-//const SettingsAndSmiProvider = Me.imports.settingsAndSmiProvider;
-//const OptimusProvider = Me.imports.optimusProvider;
-//const GIcons = Me.imports.gIcons;
 
 const SETTINGS_REFRESH = 'refreshrate';
 const SETTINGS_PROVIDER = 'provider';
@@ -370,7 +357,6 @@ class MainMenu extends PanelMenu.Button {
         this.wrench.connect('clicked', () => {
             let extensionObject = Extension.lookupByURL(import.meta.url);
             extensionObject.openPreferences();
-            //ExtensionUtils.openPrefs();
         });
         item.add_child(this.wrench);
 

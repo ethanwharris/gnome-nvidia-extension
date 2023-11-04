@@ -1,16 +1,11 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 /* SPDX-FileCopyrightText: Contributors to the gnome-nvidia-extension project. */
 
-/* exported NVIDIA_SETTINGS NVIDIA_SMI OPTIMUS LIST */
 'use strict';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-//const Main = imports.ui.main;
-//const ExtensionUtils = imports.misc.extensionUtils;
-//const Me = ExtensionUtils.getCurrentExtension();
 
 import * as Subprocess from './subprocess.js';
-//const Subprocess = Me.imports.subprocess;
 
 export const NVIDIA_SETTINGS = 0;
 export const NVIDIA_SMI = 1;

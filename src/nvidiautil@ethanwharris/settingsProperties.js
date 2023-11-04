@@ -1,18 +1,11 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 /* SPDX-FileCopyrightText: Contributors to the gnome-nvidia-extension project. */
 
-/* exported UtilisationProperty TemperatureProperty MemoryProperty FanProperty */
 'use strict';
-
-//const ExtensionUtils = imports.misc.extensionUtils;
-//const Me = ExtensionUtils.getCurrentExtension();
 
 import * as Formatter from './formatter.js';
 import {Property} from './property.js';
 import * as GIcons from './gIcons.js';
-//const Formatter = Me.imports.formatter;
-//const Property = Me.imports.property;
-//const GIcons = Me.imports.gIcons;
 
 export class UtilisationProperty extends Property {
     constructor(gpuCount, processor) {
@@ -27,7 +20,7 @@ export class UtilisationProperty extends Property {
 
         return super.parse(lines);
     }
-};
+}
 
 export class TemperatureProperty extends Property {
     constructor(gpuCount, processor) {
@@ -38,7 +31,7 @@ export class TemperatureProperty extends Property {
     setUnit(unit) {
         this._formatter.setUnit(unit);
     }
-};
+}
 
 export class MemoryProperty extends Property {
     constructor(gpuCount, processor) {
@@ -62,11 +55,11 @@ export class MemoryProperty extends Property {
 
         return values;
     }
-};
+}
 
 export class FanProperty extends Property {
     constructor(gpuCount, processor) {
         super(processor, 'Fan Speed', '-q GPUCurrentFanSpeed ', GIcons.Icon.Fan.get(),
             new Formatter.PercentFormatter('FanFormatter'), gpuCount);
     }
-};
+}

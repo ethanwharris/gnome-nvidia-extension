@@ -270,4 +270,5 @@ globals:
   clearTimeout: readonly
   clearInterval: readonly
 parserOptions:
+  sourceType: module
   ecmaVersion: 2022

@@ -1,13 +1,11 @@
 /* SPDX-License-Identifier: MIT */
 /* SPDX-FileCopyrightText: 2021 Evan Welsh */
 
-/* exported execCommunicate execCheck */
 /* eslint-disable require-await */
 'use strict';
 
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
-//const {Gio, GLib} = imports.gi;
 
 /**
  * Execute a command asynchronously and check the exit status.

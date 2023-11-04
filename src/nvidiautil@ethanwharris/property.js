@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 /* SPDX-FileCopyrightText: Contributors to the gnome-nvidia-extension project. */
 
-/* exported Property */
 'use strict';
 
 export class Property {
@@ -40,4 +39,4 @@ export class Property {
     declare() {
         return this._processor;
     }
-};
+}

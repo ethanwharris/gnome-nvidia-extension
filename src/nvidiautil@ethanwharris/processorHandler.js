@@ -1,16 +1,11 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 /* SPDX-FileCopyrightText: Contributors to the gnome-nvidia-extension project. */
 
-/* exported ProcessorHandler */
 'use strict';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-//const Main = imports.ui.main;
-//const ExtensionUtils = imports.misc.extensionUtils;
-//const Me = ExtensionUtils.getCurrentExtension();
 
 import * as Processor from './processor.js';
-//const Processor = Me.imports.processor;
 
 export class ProcessorHandler {
     constructor() {
@@ -46,4 +41,4 @@ export class ProcessorHandler {
     reset() {
         this._processors = [false, false, false];
     }
-};
+}

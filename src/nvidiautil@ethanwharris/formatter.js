@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 /* SPDX-FileCopyrightText: Contributors to the gnome-nvidia-extension project. */
 
-/* exported CENTIGRADE FAHRENHEIT PercentFormatter PowerFormatter MemoryFormatter TempFormatter */
 'use strict';
 
 export const CENTIGRADE = 0;
@@ -33,7 +32,7 @@ export class PercentFormatter extends _Formatter {
     _format(values) {
         return `${values[0]}%`;
     }
-};
+}
 
 export class PowerFormatter extends _Formatter {
     constructor() {
@@ -43,7 +42,7 @@ export class PowerFormatter extends _Formatter {
     _format(values) {
         return `${Math.floor(values[0])}W`;
     }
-};
+}
 
 export class MemoryFormatter extends _Formatter {
     constructor() {
@@ -54,7 +53,7 @@ export class MemoryFormatter extends _Formatter {
         let mem_usage = Math.floor((values[0] / values[1]) * 100);
         return `${mem_usage}%`;
     }
-};
+}
 
 export class TempFormatter extends _Formatter {
     constructor(unit) {
@@ -72,4 +71,4 @@ export class TempFormatter extends _Formatter {
         else if (this.currentUnit === FAHRENHEIT)
             return `${Math.floor(value * 9 / 5 + 32)}\xB0F`;
     }
-};
+}
