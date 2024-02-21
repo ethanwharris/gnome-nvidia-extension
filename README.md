@@ -6,7 +6,8 @@ A Gnome extension to show Nvidia GPU information
 (https://extensions.gnome.org/extension/1320/nvidia-gpu-stats-tool/)
 
 # Requirements
-nvidia-settings and nvidia-smi
+The extension requires `nvidia-smi`, which should be included with the drivers.
+Additionally, `nvidia-settings` is supported as a data source.
 
 # Installation from git
     git clone https://github.com/ethanwharris/gnome-nvidia-extension.git
@@ -14,8 +15,9 @@ nvidia-settings and nvidia-smi
     make
     make install
 
-Use `alt + f2`, `r`, `Enter` to restart the gnome shell (if this is not allowed then log out and log back in)
-Enable the extension in the gnome tweak tool.
+Restart gnome shell by logging out and back in.
+On X11, you can also use `alt + f2`, `r`, `Enter` to reload more quickly.
+Afterwards, you can enable the extension in the gnome tweak tool.
 
 # Icons
 For icons we use font-awesome:
