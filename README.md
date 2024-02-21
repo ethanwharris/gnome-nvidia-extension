@@ -19,6 +19,10 @@ Restart gnome shell by logging out and back in.
 On X11, you can also use `alt + f2`, `r`, `Enter` to reload more quickly.
 Afterwards, you can enable the extension in the gnome tweak tool.
 
+# Selecting Properties
+By default, no measurements are displayed in the menu bar.
+You can open the dropdown menu and select the properties to be shown.
+
 # Icons
 For icons we use font-awesome:
 http://fontawesome.io/
