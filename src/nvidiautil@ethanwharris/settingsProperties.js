@@ -1,17 +1,13 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 /* SPDX-FileCopyrightText: Contributors to the gnome-nvidia-extension project. */
 
-/* exported UtilisationProperty TemperatureProperty MemoryProperty FanProperty */
 'use strict';
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
+import * as Formatter from './formatter.js';
+import {Property} from './property.js';
+import * as GIcons from './gIcons.js';
 
-const Formatter = Me.imports.formatter;
-const Property = Me.imports.property;
-const GIcons = Me.imports.gIcons;
-
-var UtilisationProperty = class extends Property.Property {
+export class UtilisationProperty extends Property {
     constructor(gpuCount, processor) {
         super(processor, 'Utilisation', '-q GPUUtilization ', GIcons.Icon.Card.get(),
             new Formatter.PercentFormatter('UtilisationFormatter'), gpuCount);
@@ -24,9 +20,9 @@ var UtilisationProperty = class extends Property.Property {
 
         return super.parse(lines);
     }
-};
+}
 
-var TemperatureProperty = class extends Property.Property {
+export class TemperatureProperty extends Property {
     constructor(gpuCount, processor) {
         super(processor, 'Temperature', '-q [GPU]/GPUCoreTemp ', GIcons.Icon.Temp.get(),
             new Formatter.TempFormatter(Formatter.CENTIGRADE), gpuCount);
@@ -35,9 +31,9 @@ var TemperatureProperty = class extends Property.Property {
     setUnit(unit) {
         this._formatter.setUnit(unit);
     }
-};
+}
 
-var MemoryProperty = class extends Property.Property {
+export class MemoryProperty extends Property {
     constructor(gpuCount, processor) {
         super(processor, 'Memory Usage', '-q UsedDedicatedGPUMemory -q TotalDedicatedGPUMemory ', GIcons.Icon.RAM.get(),
             new Formatter.MemoryFormatter(), gpuCount);
@@ -59,11 +55,11 @@ var MemoryProperty = class extends Property.Property {
 
         return values;
     }
-};
+}
 
-var FanProperty = class extends Property.Property {
+export class FanProperty extends Property {
     constructor(gpuCount, processor) {
         super(processor, 'Fan Speed', '-q GPUCurrentFanSpeed ', GIcons.Icon.Fan.get(),
             new Formatter.PercentFormatter('FanFormatter'), gpuCount);
     }
-};
+}

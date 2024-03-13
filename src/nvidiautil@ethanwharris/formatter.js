@@ -1,11 +1,10 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 /* SPDX-FileCopyrightText: Contributors to the gnome-nvidia-extension project. */
 
-/* exported CENTIGRADE FAHRENHEIT PercentFormatter PowerFormatter MemoryFormatter TempFormatter */
 'use strict';
 
-var CENTIGRADE = 0;
-var FAHRENHEIT = 1;
+export const CENTIGRADE = 0;
+export const FAHRENHEIT = 1;
 
 class _Formatter {
     constructor(name) {
@@ -27,15 +26,15 @@ class _Formatter {
     }
 }
 
-var PercentFormatter = class extends _Formatter {
+export class PercentFormatter extends _Formatter {
     // implicitly use super constructor
 
     _format(values) {
         return `${values[0]}%`;
     }
-};
+}
 
-var PowerFormatter = class extends _Formatter {
+export class PowerFormatter extends _Formatter {
     constructor() {
         super('PowerFormatter');
     }
@@ -43,9 +42,9 @@ var PowerFormatter = class extends _Formatter {
     _format(values) {
         return `${Math.floor(values[0])}W`;
     }
-};
+}
 
-var MemoryFormatter = class extends _Formatter {
+export class MemoryFormatter extends _Formatter {
     constructor() {
         super('MemoryFormatter');
     }
@@ -54,9 +53,9 @@ var MemoryFormatter = class extends _Formatter {
         let mem_usage = Math.floor((values[0] / values[1]) * 100);
         return `${mem_usage}%`;
     }
-};
+}
 
-var TempFormatter = class extends _Formatter {
+export class TempFormatter extends _Formatter {
     constructor(unit) {
         super('TempFormatter');
         this.currentUnit = unit;
@@ -72,4 +71,4 @@ var TempFormatter = class extends _Formatter {
         else if (this.currentUnit === FAHRENHEIT)
             return `${Math.floor(value * 9 / 5 + 32)}\xB0F`;
     }
-};
+}

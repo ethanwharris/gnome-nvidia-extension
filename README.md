@@ -5,6 +5,10 @@
 A Gnome extension to show Nvidia GPU information
 (https://extensions.gnome.org/extension/1320/nvidia-gpu-stats-tool/)
 
+# Supported Gnome versions
+The "master" branch supports only Gnome v45+.
+For older shell versions, please check out the "legacy" branch.
+
 # Requirements
 nvidia-settings and nvidia-smi
 

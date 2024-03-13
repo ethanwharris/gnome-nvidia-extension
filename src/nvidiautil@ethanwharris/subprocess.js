@@ -1,11 +1,11 @@
 /* SPDX-License-Identifier: MIT */
 /* SPDX-FileCopyrightText: 2021 Evan Welsh */
 
-/* exported execCommunicate execCheck */
 /* eslint-disable require-await */
 'use strict';
 
-const {Gio, GLib} = imports.gi;
+import Gio from 'gi://Gio';
+import GLib from 'gi://GLib';
 
 /**
  * Execute a command asynchronously and check the exit status.
@@ -16,7 +16,7 @@ const {Gio, GLib} = imports.gi;
  * @param {Gio.Cancellable} [cancellable] - optional cancellable object
  * @returns {Promise<boolean>} - The process success
  */
-async function execCheck(argv, cancellable = null) {
+export async function execCheck(argv, cancellable = null) {
     let cancelId = 0;
     let proc = new Gio.Subprocess({
         argv,
@@ -64,7 +64,7 @@ async function execCheck(argv, cancellable = null) {
  * @param {Gio.Cancellable} [cancellable] - optional cancellable object
  * @returns {Promise<string>} - The process output
  */
-async function execCommunicate(argv, input = null, cancellable = null) {
+export async function execCommunicate(argv, input = null, cancellable = null) {
     let cancelId = 0;
     let flags = Gio.SubprocessFlags.STDOUT_PIPE |
         Gio.SubprocessFlags.STDERR_PIPE;

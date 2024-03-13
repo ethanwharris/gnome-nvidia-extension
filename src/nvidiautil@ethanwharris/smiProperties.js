@@ -1,31 +1,27 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 /* SPDX-FileCopyrightText: Contributors to the gnome-nvidia-extension project. */
 
-/* exported UtilisationProperty PowerProperty TemperatureProperty MemoryProperty FanProperty */
 'use strict';
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
+import * as Formatter from './formatter.js';
+import {Property} from './property.js';
+import * as GIcons from './gIcons.js';
 
-const Property = Me.imports.property;
-const Formatter = Me.imports.formatter;
-const GIcons = Me.imports.gIcons;
-
-var UtilisationProperty = class extends Property.Property {
+export class UtilisationProperty extends Property {
     constructor(gpuCount, processor) {
         super(processor, 'Utilisation', 'utilization.gpu,', GIcons.Icon.Card.get(),
             new Formatter.PercentFormatter('UtilisationFormatter'), gpuCount);
     }
-};
+}
 
-var PowerProperty = class extends Property.Property {
+export class PowerProperty extends Property {
     constructor(gpuCount, processor) {
         super(processor, 'Power Usage (W)', 'power.draw,', GIcons.Icon.Power.get(),
             new Formatter.PowerFormatter(), gpuCount);
     }
-};
+}
 
-var TemperatureProperty = class extends Property.Property {
+export class TemperatureProperty extends Property {
     constructor(gpuCount, processor) {
         super(processor, 'Temperature', 'temperature.gpu,', GIcons.Icon.Temp.get(),
             new Formatter.TempFormatter(Formatter.CENTIGRADE), gpuCount);
@@ -34,9 +30,9 @@ var TemperatureProperty = class extends Property.Property {
     setUnit(unit) {
         this._formatter.setUnit(unit);
     }
-};
+}
 
-var MemoryProperty = class extends Property.Property {
+export class MemoryProperty extends Property {
     constructor(gpuCount, processor) {
         super(processor, 'Memory Usage', 'memory.used,memory.total,', GIcons.Icon.RAM.get(),
             new Formatter.MemoryFormatter('MemoryFormatter'), gpuCount);
@@ -58,11 +54,11 @@ var MemoryProperty = class extends Property.Property {
 
         return values;
     }
-};
+}
 
-var FanProperty = class extends Property.Property {
+export class FanProperty extends Property {
     constructor(gpuCount, processor) {
         super(processor, 'Fan Speed', 'fan.speed,', GIcons.Icon.Fan.get(),
             new Formatter.PercentFormatter('FanFormatter'), gpuCount);
     }
-};
+}

@@ -1,11 +1,12 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 /* SPDX-FileCopyrightText: Contributors to the gnome-nvidia-extension project. */
 
-/* exported init buildPrefsWidget */
 'use strict';
 
-const {GObject, Gtk} = imports.gi;
-const ExtensionUtils = imports.misc.extensionUtils;
+import Adw from 'gi://Adw';
+import GObject from 'gi://GObject';
+import Gtk from 'gi://Gtk';
+import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 const SETTINGS = {
     refreshrate: {
@@ -55,11 +56,17 @@ const SETTINGS = {
 
 let settings;
 
-/**
- * Initialise this
- */
-function init() {
-    settings = ExtensionUtils.getSettings();
+export default class NvidiaUtilPreferences extends ExtensionPreferences {
+    fillPreferencesWindow(window) {
+        settings = this.getSettings();
+
+        const page = new Adw.PreferencesPage();
+        const group = new Adw.PreferencesGroup();
+
+        group.add(buildPrefsWidget());
+        page.add(group);
+        window.add(page);
+    }
 }
 
 /**

@@ -1,10 +1,9 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 /* SPDX-FileCopyrightText: Contributors to the gnome-nvidia-extension project. */
 
-/* exported Property */
 'use strict';
 
-var Property = class {
+export class Property {
     // Abstract: true,
     constructor(processor, name, callExtension, icon, formatter, gpuCount) {
         this._processor = processor;
@@ -40,4 +39,4 @@ var Property = class {
     declare() {
         return this._processor;
     }
-};
+}
