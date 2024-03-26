@@ -16,7 +16,6 @@ var OPTIMUS = 2;
 
 /**
  * Utility function to perform one function and then another
- *
  * @param {Function} first The function executed first
  * @param {Function} second The function executed second
  * @returns {Function} A function that runs both given functions
