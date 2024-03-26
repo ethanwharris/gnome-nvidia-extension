@@ -54,7 +54,7 @@ class PropertyMenuItem extends PopupMenu.PopupBaseMenuItem {
         this._box = box;
         this.labelManager = labelManager;
 
-        this.actor.add(new St.Icon({style_class: 'popup-menu-icon', gicon: property.getIcon(), icon_size: 16}));
+        this.actor.add_child(new St.Icon({style_class: 'popup-menu-icon', gicon: property.getIcon(), icon_size: 16}));
 
         this.label = new St.Label({text: property.getName()});
         this.actor.add_child(this.label);
@@ -73,7 +73,7 @@ class PropertyMenuItem extends PopupMenu.PopupBaseMenuItem {
         this._box.add_child(this._icon);
         this._box.add_child(this._statisticLabelVisible);
 
-        this.actor.add(this._statisticLabelHidden);
+        this.actor.add_child(this._statisticLabelHidden);
         this._visible = false;
         this._box.visible = false;
 
@@ -230,8 +230,8 @@ class MainMenu extends PanelMenu.Button {
 
         this.properties = new St.BoxLayout({style_class: 'panel-status-menu-box'});
 
-        hbox.add_actor(this.properties);
-        hbox.add_actor(PopupMenu.arrowIcon(St.Side.BOTTOM));
+        hbox.add_child(this.properties);
+        hbox.add_child(PopupMenu.arrowIcon(St.Side.BOTTOM));
         this.add_child(hbox);
 
         this._reload();
@@ -397,7 +397,7 @@ class MainMenu extends PanelMenu.Button {
     }
 
     _updatePanelPosition() {
-        this.container.get_parent().remove_actor(this.container);
+        this.container.get_parent().remove_child(this.container);
 
         let boxes = {
             left: Main.panel._leftBox,
