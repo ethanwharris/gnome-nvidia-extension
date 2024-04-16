@@ -14,6 +14,8 @@ For older shell versions, please check out the "legacy" branch.
 The extension requires `nvidia-smi`, which should be included with the drivers.
 Additionally, `nvidia-settings` is supported as a data source.
 
+If you still use [Bumblebee](https://wiki.archlinux.org/title/Bumblebee), the data can also be sourced through `optirun` (this is untested and may be deprecated in future versions).
+
 ## Installation from git
     git clone https://github.com/ethanwharris/gnome-nvidia-extension.git
     cd gnome-nvidia-extension
