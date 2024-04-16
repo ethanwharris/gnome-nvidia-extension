@@ -64,7 +64,6 @@ function init() {
 
 /**
  * Construct the individual widget for an individual setting
- *
  * @param {string} setting Key from the SETTINGS dictionary
  * @returns {object} GTK box for this single setting
  */
@@ -145,7 +144,6 @@ function buildSettingWidget(setting) {
 
 /**
  * Construct the entire widget for the settings dialog
- *
  * @returns {object} GTK box containing the entire settings dialog
  */
 function buildPrefsWidget() {

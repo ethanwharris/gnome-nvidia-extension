@@ -6,18 +6,33 @@ A Gnome extension to show Nvidia GPU information
 (https://extensions.gnome.org/extension/1320/nvidia-gpu-stats-tool/)
 
 # Requirements
-nvidia-settings and nvidia-smi
+## Supported Gnome versions
+The "master" branch supports only Gnome v45+.
+For older shell versions, please check out the "legacy" branch.
 
-# Installation from git
+## Requirements
+The extension requires `nvidia-smi`, which should be included with the drivers.
+Additionally, `nvidia-settings` is supported as a data source.
+
+If you still use [Bumblebee](https://wiki.archlinux.org/title/Bumblebee), the data can also be sourced through `optirun` (this is untested and may be deprecated in future versions).
+
+## Installation from git
     git clone https://github.com/ethanwharris/gnome-nvidia-extension.git
     cd gnome-nvidia-extension
     make
     make install
 
-Use `alt + f2`, `r`, `Enter` to restart the gnome shell (if this is not allowed then log out and log back in)
-Enable the extension in the gnome tweak tool.
+Restart gnome shell to load the extension:
+- On Wayland, log out and back in.
+- On X11, you can also use `alt + f2`, `r`, `Enter` to reload more quickly.
 
-# Icons
+Afterwards, you can enable the extension in gnome-extensions.
+
+## Selecting Properties
+By default, no measurements are displayed in the menu bar.
+You can open the dropdown menu and select the properties to be shown.
+
+## Icons
 For icons we use font-awesome:
 http://fontawesome.io/
 

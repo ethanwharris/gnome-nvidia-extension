@@ -11,7 +11,6 @@ const {Gio, GLib} = imports.gi;
  * Execute a command asynchronously and check the exit status.
  *
  * If given, @cancellable can be used to stop the process before it finishes.
- *
  * @param {string[]} argv - a list of string arguments
  * @param {Gio.Cancellable} [cancellable] - optional cancellable object
  * @returns {Promise<boolean>} - The process success
@@ -58,7 +57,6 @@ async function execCheck(argv, cancellable = null) {
  *
  * If given, @input will be passed to `stdin` and @cancellable can be used to
  * stop the process before it finishes.
- *
  * @param {string[]} argv - a list of string arguments
  * @param {string} [input] - Input to write to `stdin` or %null to ignore
  * @param {Gio.Cancellable} [cancellable] - optional cancellable object
