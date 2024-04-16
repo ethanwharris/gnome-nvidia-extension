@@ -19,9 +19,11 @@ Additionally, `nvidia-settings` is supported as a data source.
     make
     make install
 
-Restart gnome shell by logging out and back in.
-On X11, you can also use `alt + f2`, `r`, `Enter` to reload more quickly.
-Afterwards, you can enable the extension in the gnome tweak tool.
+Restart gnome shell to load the extension:
+- On Wayland, log out and back in.
+- On X11, you can also use `alt + f2`, `r`, `Enter` to reload more quickly.
+
+Afterwards, you can enable the extension in gnome-extensions.
 
 ## Selecting Properties
 By default, no measurements are displayed in the menu bar.
