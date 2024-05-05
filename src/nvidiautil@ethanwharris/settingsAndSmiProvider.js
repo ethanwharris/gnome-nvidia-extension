@@ -3,9 +3,6 @@
 
 'use strict';
 
-import * as SettingsProperties from './settingsProperties.js';
-import * as SmiProperties from './smiProperties.js';
-import * as Processor from './processor.js';
 import * as SettingsProvider from './settingsProvider.js';
 import * as SmiProvider from './smiProvider.js';
 

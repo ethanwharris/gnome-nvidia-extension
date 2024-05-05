@@ -350,8 +350,8 @@ class MainMenu extends PanelMenu.Button {
             accessible_name: 'Open Preferences',
             style_class: 'button',
             child: new St.Icon({
-                icon_name: GIcons.Icon.Wrench.name,
-                gicon: GIcons.Icon.Wrench.get(),
+                icon_name: GIcons.Icon.Wrench,
+                gicon: GIcons.get(GIcons.Icon.Wrench),
             }),
         });
         this.wrench.connect('clicked', () => {
@@ -368,8 +368,8 @@ class MainMenu extends PanelMenu.Button {
                 accessible_name: 'Open Nvidia Settings',
                 style_class: 'button',
                 child: new St.Icon({
-                    icon_name: GIcons.Icon.Cog.name,
-                    gicon: GIcons.Icon.Cog.get(),
+                    icon_name: GIcons.Icon.Cog,
+                    gicon: GIcons.get(GIcons.Icon.Cog),
                 }),
             });
             this.cog.connect('clicked', () => this.provider.openSettings());

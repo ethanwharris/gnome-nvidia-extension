@@ -9,21 +9,21 @@ import * as GIcons from './gIcons.js';
 
 export class UtilisationProperty extends Property {
     constructor(gpuCount, processor) {
-        super(processor, 'Utilisation', 'utilization.gpu,', GIcons.Icon.Card.get(),
+        super(processor, 'Utilisation', 'utilization.gpu,', GIcons.get(GIcons.Icon.Card),
             new Formatter.PercentFormatter('UtilisationFormatter'), gpuCount);
     }
 }
 
 export class PowerProperty extends Property {
     constructor(gpuCount, processor) {
-        super(processor, 'Power Usage (W)', 'power.draw,', GIcons.Icon.Power.get(),
+        super(processor, 'Power Usage (W)', 'power.draw,', GIcons.get(GIcons.Icon.Power),
             new Formatter.PowerFormatter(), gpuCount);
     }
 }
 
 export class TemperatureProperty extends Property {
     constructor(gpuCount, processor) {
-        super(processor, 'Temperature', 'temperature.gpu,', GIcons.Icon.Temp.get(),
+        super(processor, 'Temperature', 'temperature.gpu,', GIcons.get(GIcons.Icon.Temp),
             new Formatter.TempFormatter(Formatter.CENTIGRADE), gpuCount);
     }
 
@@ -34,7 +34,7 @@ export class TemperatureProperty extends Property {
 
 export class MemoryProperty extends Property {
     constructor(gpuCount, processor) {
-        super(processor, 'Memory Usage', 'memory.used,memory.total,', GIcons.Icon.RAM.get(),
+        super(processor, 'Memory Usage', 'memory.used,memory.total,', GIcons.get(GIcons.Icon.RAM),
             new Formatter.MemoryFormatter('MemoryFormatter'), gpuCount);
     }
 
@@ -58,7 +58,7 @@ export class MemoryProperty extends Property {
 
 export class FanProperty extends Property {
     constructor(gpuCount, processor) {
-        super(processor, 'Fan Speed', 'fan.speed,', GIcons.Icon.Fan.get(),
+        super(processor, 'Fan Speed', 'fan.speed,', GIcons.get(GIcons.Icon.Fan),
             new Formatter.PercentFormatter('FanFormatter'), gpuCount);
     }
 }
